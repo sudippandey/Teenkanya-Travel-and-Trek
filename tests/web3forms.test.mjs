@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { readFile } from 'node:fs/promises'
 import test from 'node:test'
 import { createWeb3FormsNotifier } from '../lib/enquiries/web3forms.ts'
 
@@ -66,4 +67,78 @@ test('missing server configuration fails closed without a network request', asyn
 
   assert.deepEqual(await notify(enquiry), { success: false, reason: 'configuration' })
   assert.equal(requestCount, 0)
+})
+
+test('an invalid access key is a generic provider rejection and does not escape in the result', async () => {
+  const invalidAccessKey = 'synthetic-invalid-access-key'
+  let requestPayload
+  const notify = createWeb3FormsNotifier({
+    accessKey: invalidAccessKey,
+    ccEmail: 'teenkanyatravelandtrek@gmail.com',
+    fetcher: async (_url, init) => {
+      requestPayload = JSON.parse(init.body)
+      return new Response(JSON.stringify({
+        success: false,
+        message: `Invalid access key ${invalidAccessKey}`,
+      }), { status: 401 })
+    },
+  })
+
+  const result = await notify(enquiry)
+
+  assert.equal(requestPayload.access_key, invalidAccessKey)
+  assert.deepEqual(result, { success: false, reason: 'rejected' })
+  assert.equal(JSON.stringify(result).includes(invalidAccessKey), false)
+})
+
+test('a provider 403 response without JSON is handled as an invalid-key rejection', async () => {
+  const notify = createWeb3FormsNotifier({
+    accessKey: 'synthetic-invalid-key-verification',
+    ccEmail: 'teenkanyatravelandtrek@gmail.com',
+    fetcher: async () => new Response('Forbidden', { status: 403 }),
+  })
+
+  assert.deepEqual(await notify(enquiry), { success: false, reason: 'rejected' })
+})
+
+test('a non-success HTTP response cannot report a successful submission', async () => {
+  const notify = createWeb3FormsNotifier({
+    accessKey: 'synthetic-test-key',
+    ccEmail: 'teenkanyatravelandtrek@gmail.com',
+    fetcher: async () => new Response(JSON.stringify({ success: true }), { status: 503 }),
+  })
+
+  assert.deepEqual(await notify(enquiry), { success: false, reason: 'rejected' })
+})
+
+test('malformed provider JSON is treated as a generic rejection', async () => {
+  const notify = createWeb3FormsNotifier({
+    accessKey: 'synthetic-test-key',
+    ccEmail: 'teenkanyatravelandtrek@gmail.com',
+    fetcher: async () => new Response('not-json', { status: 200 }),
+  })
+
+  assert.deepEqual(await notify(enquiry), { success: false, reason: 'rejected' })
+})
+
+test('network failures return unavailable without exposing transport details', async () => {
+  const syntheticKey = 'synthetic-network-test-key'
+  const notify = createWeb3FormsNotifier({
+    accessKey: syntheticKey,
+    ccEmail: 'teenkanyatravelandtrek@gmail.com',
+    fetcher: async () => {
+      throw new TypeError(`Network failure for ${syntheticKey}`)
+    },
+  })
+
+  const result = await notify(enquiry)
+
+  assert.deepEqual(result, { success: false, reason: 'unavailable' })
+  assert.equal(JSON.stringify(result).includes(syntheticKey), false)
+})
+
+test('the client contact form does not reference server credentials or the provider endpoint', async () => {
+  const source = await readFile(new URL('../components/contact-form.tsx', import.meta.url), 'utf8')
+
+  assert.doesNotMatch(source, /WEB3FORMS_ACCESS_KEY|access_key|api\.web3forms\.com|process\.env/)
 })
