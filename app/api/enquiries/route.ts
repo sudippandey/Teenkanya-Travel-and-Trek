@@ -1,11 +1,11 @@
 import { sendEnquiryNotification } from '@/lib/enquiries/notification-provider.server'
 import { saveEnquiry, updateEnquiryNotificationStatus } from '@/lib/enquiries/server'
+import { getTrustedClientIdentifier } from '@/lib/enquiries/client-identifier'
+import { maxEnquiryRequestBodyBytes, readRequestBodyBounded } from '@/lib/enquiries/request-body'
 import { processEnquirySubmission } from '@/lib/enquiries/submission-workflow'
 
 export const runtime = 'nodejs'
 export const maxDuration = 15
-
-const maxBodySize = 16_000
 
 function respond(body: Record<string, unknown>, status: number, headers: HeadersInit = {}) {
   return Response.json(body, {
@@ -32,13 +32,6 @@ function getRequestOrigin(request: Request) {
   }
 
   return new URL(request.url).origin
-}
-
-function getClientIdentifier(request: Request) {
-  const realIp = request.headers.get('x-real-ip')?.trim()
-  const forwardedIp = request.headers.get('x-forwarded-for')?.split(',').at(-1)?.trim()
-  const identifier = realIp || forwardedIp || 'unknown'
-  return identifier.length <= 128 ? identifier : 'unknown'
 }
 
 function getSourcePage(request: Request) {
@@ -70,15 +63,20 @@ export async function POST(request: Request) {
     return respond({ error: 'unsupported_media_type', message: 'Submit the enquiry using the website form.' }, 415)
   }
 
-  const contentLength = Number(request.headers.get('content-length'))
-  if (Number.isFinite(contentLength) && contentLength > maxBodySize) {
-    return respond({ error: 'payload_too_large', message: 'The enquiry is too long to submit.' }, 413)
+  const bodyResult = await readRequestBodyBounded(request, maxEnquiryRequestBodyBytes)
+  if (!bodyResult.ok) {
+    if (bodyResult.reason === 'too_large') {
+      return respond({ error: 'payload_too_large', message: 'The enquiry is too long to submit.' }, 413)
+    }
+
+    if (bodyResult.reason === 'invalid_content_length') {
+      return respond({ error: 'invalid_content_length', message: 'The form could not be read. Please try again.' }, 400)
+    }
+
+    return respond({ error: 'invalid_json', message: 'The form could not be read. Please try again.' }, 400)
   }
 
-  const bodyText = await request.text()
-  if (new TextEncoder().encode(bodyText).byteLength > maxBodySize) {
-    return respond({ error: 'payload_too_large', message: 'The enquiry is too long to submit.' }, 413)
-  }
+  const bodyText = bodyResult.text
 
   let payload: unknown
   try {
@@ -94,7 +92,7 @@ export async function POST(request: Request) {
   try {
     const outcome = await processEnquirySubmission(
       payload,
-      getClientIdentifier(request),
+      getTrustedClientIdentifier(request.headers),
       getSourcePage(request),
       {
         persist: saveEnquiry,

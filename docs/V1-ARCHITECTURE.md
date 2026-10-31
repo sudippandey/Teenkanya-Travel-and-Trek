@@ -60,13 +60,13 @@ Introduce modules behind server-side boundaries as each capability is implemente
 - `POST /api/enquiries` validates and stores submissions, applies a honeypot and a database-backed rate limit, and only reports success after Web3Forms confirms the submission.
 - Enquiry persistence and email delivery are tracked separately. A provider failure leaves the enquiry saved with `notification_status = failed`, returns a retryable error, and never displays a delivered-success state.
 - Retries use the same submission ID and saved enquiry snapshot, preventing duplicate records and avoiding edits to an already-saved enquiry being silently substituted.
-- Web3Forms credentials are server-only. The standard `/submit` endpoint binds its primary recipient to the access key; `CONTACT_TO_EMAIL` is sent as the server-controlled `ccemail` field (Web3Forms Pro feature). The Vercel server request must also be allowed by the Web3Forms account's server-side/IP restrictions. If either provider requirement rejects the request, the enquiry remains stored and the form reports that delivery was not confirmed.
+- Web3Forms credentials are server-only. Standard `/submit` binds the notification recipient to the access key; the app does not send `to` or Pro-only `ccemail` overrides. The Vercel server request must be allowed by the Web3Forms account's server-side/IP restrictions. If the provider rejects the request, the enquiry remains stored and the form reports that delivery was not confirmed.
 - The staff enquiry console remains a later milestone.
 
 ### Local setup and checks
 - Use pnpm 12.3.4 and run `pnpm install`.
 - Configure `SUPABASE_URL` and one server-only key (`SUPABASE_SECRET_KEY` or `SUPABASE_SERVICE_ROLE_KEY`) as shown in `.env.example`.
-- Configure `WEB3FORMS_ACCESS_KEY` and `CONTACT_TO_EMAIL` in server environment variables; never expose them to browser code.
+- Configure `WEB3FORMS_ACCESS_KEY` in a server environment variable; set the intended notification recipient on that access key in the Web3Forms dashboard. Never expose the key to browser code.
 - Apply `supabase/migrations/20261031000000_create_enquiries.sql` to the intended Supabase project before accepting submissions.
 - Run `pnpm dev` for local development, `pnpm check` for TypeScript and unit tests, and `pnpm build` for a production build.
 
