@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   quality:
-    name: Typecheck and production build
+    name: Typecheck, tests and production build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -41,6 +41,9 @@ jobs:
 
       - name: TypeScript check
         run: pnpm typecheck
+
+      - name: Unit tests
+        run: pnpm test
 
       - name: Production build
         run: pnpm build

@@ -43,16 +43,29 @@ Introduce modules behind server-side boundaries as each capability is implemente
 ### Data access
 - Preserve lib/travel-service.ts as the catalogue abstraction.
 - Add repository/service interfaces for new database-backed modules.
-- PostgreSQL is the intended system of record.
-- Prisma is the proposed ORM, to be added with the first database-backed feature after the hosting and credential choices are confirmed.
+- Supabase Postgres is the V1 system of record.
+- Use the Supabase JavaScript client from server-only repository modules; do not add an ORM for this integration.
+- Keep SQL migrations under supabase/migrations and apply schema changes through the connected Supabase integration.
 - Keep credentials in server-only environment variables. Never expose secrets to client components.
 
 ### Security
 - Validate all untrusted input on the server.
 - Add rate limiting and spam controls to public submission endpoints.
+- Keep public enquiry tables inaccessible to anon/authenticated roles; only server routes may use a server-only Supabase secret.
 - Restrict staff data and admin routes with server-verified authorization.
 - Record important administrative changes in an audit trail.
 - Collect only customer information needed to respond to the enquiry.
+
+### Enquiry implementation status
+- `POST /api/enquiries` validates and stores submissions, applies a honeypot and a database-backed rate limit, and returns a reference only after persistence succeeds.
+- The contact-form integration is a separate milestone; the current preview explicitly tells visitors that it has not sent their message.
+- Email notifications and the staff enquiry console are later milestones. New rows use `notification_status = not_configured`; no email is sent yet.
+
+### Local setup and checks
+- Use pnpm 12.3.4 and run `pnpm install`.
+- Configure `SUPABASE_URL` and one server-only key (`SUPABASE_SECRET_KEY` or `SUPABASE_SERVICE_ROLE_KEY`) as shown in `.env.example`.
+- Apply `supabase/migrations/20261031000000_create_enquiries.sql` to the intended Supabase project before accepting submissions.
+- Run `pnpm dev` for local development, `pnpm check` for TypeScript and unit tests, and `pnpm build` for a production build.
 
 ## Delivery phases
 
