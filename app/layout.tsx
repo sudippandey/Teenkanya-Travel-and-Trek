@@ -7,26 +7,37 @@ import './globals.css'
 export const metadata: Metadata = {
   metadataBase: new URL('https://3kanyatravel.vercel.app'),
   title: {
-    default: 'Teenkanya Travel & Trek | Discover Nepal',
+    default: 'Teenkanya Travel & Trek | Thoughtful Journeys Through Nepal',
     template: '%s | Teenkanya Travel & Trek',
   },
-  description: 'Discover Nepal with Teenkanya Travel & Trek. Explore thoughtfully planned holidays, Himalayan trekking, cultural journeys and travel services from Kathmandu.',
+  description: 'Plan thoughtful holidays, cultural journeys and Himalayan treks through Nepal with a Kathmandu-based travel team.',
+  alternates: { canonical: '/' },
   openGraph: {
     type: 'website',
     locale: 'en_US',
     siteName: 'Teenkanya Travel & Trek Pvt. Ltd.',
-    title: 'Teenkanya Travel & Trek | Discover Nepal',
-    description: 'Thoughtfully planned journeys through Nepal, from Kathmandu to the Himalaya.',
-    images: [{ url: '/images/nepal-hero.png', width: 1536, height: 1024, alt: 'Sunrise over the Nepal Himalaya' }],
+    title: 'Teenkanya Travel & Trek | Thoughtful Journeys Through Nepal',
+    description: 'Thoughtful journeys through Nepal, from Kathmandu Valley to the high Himalaya.',
+    images: [{ url: '/images/destinations/everest-region/01.jpg', width: 1200, height: 800, alt: 'Khumbu Glacier and Himalayan peaks in Sagarmatha National Park' }],
   },
   icons: { icon: '/icon.svg', apple: '/apple-icon.png' },
 }
 
 export const viewport: Viewport = {
   colorScheme: 'light',
-  themeColor: '#201548',
+  themeColor: '#26382f',
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en" data-scroll-behavior="smooth"><body className="antialiased"><SiteHeader /><main>{children}</main><SiteFooter />{process.env.NODE_ENV === 'production' && <Analytics />}</body></html>
+  return (
+    <html lang="en">
+      <body className="antialiased">
+        <a className="skip-link" href="#main-content">Skip to content</a>
+        <SiteHeader />
+        <main id="main-content">{children}</main>
+        <SiteFooter />
+        {process.env.NODE_ENV === 'production' && <Analytics />}
+      </body>
+    </html>
+  )
 }
