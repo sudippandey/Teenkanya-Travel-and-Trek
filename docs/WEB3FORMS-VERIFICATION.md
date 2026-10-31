@@ -15,7 +15,7 @@ Intended PR base: `v1/enquiry-api`
 
 ## Live provider probe
 
-A synthetic request using the configured credential and sandbox recipient was sent directly to the Web3Forms `/submit` endpoint. It returned HTTP 403 with a non-JSON response; no provider success was confirmed, so no email notification can be claimed. A separate request with a synthetic invalid key also returned HTTP 403 without JSON. These results establish rejection, but do not distinguish an invalid/disabled key, a provider plan restriction, or server-origin/IP policy. No response body, credentials, or customer data were logged.
+Synthetic requests using the configured credential were sent directly from the verification runner to Web3Forms `/submit`: first with the previous CC field, then with the Standard payload (no `to` or `ccemail`). Both returned HTTP 403 with non-JSON responses. A separate request with a synthetic invalid key also returned HTTP 403 without JSON. No provider success was confirmed and no email notification can be claimed. Because these requests did not originate from Vercel, the results do not distinguish an invalid/disabled key from provider account restrictions or origin/IP policy. No response body, credentials, or customer data were logged.
 
 ## Vercel preview
 
@@ -29,6 +29,6 @@ The deployment is protected by Vercel Authentication. Browser navigation redirec
 
 - `WEB3FORMS_ACCESS_KEY` is read only in the server-only provider module. The UI receives generic application messages and never receives provider response text.
 - Route logs contain fixed operational messages only; provider bodies, credentials, and transport errors are not logged.
-- Web3Forms documents `ccemail` as a Pro feature. This implementation sends `CONTACT_TO_EMAIL` through `ccemail`; a Standard account may reject it. For Standard `/submit`, the primary recipient is the address associated with the access key. The observed 403 is consistent with several provider-side restrictions and does not identify which one applies.
+- The Standard payload uses the recipient bound to `WEB3FORMS_ACCESS_KEY` and sends neither `to` nor Pro-only `ccemail`. The user confirmed the key-bound recipient is the temporary sandbox mailbox. Vercel-origin requests may also require provider-side IP allowlisting. The previously configured `CONTACT_TO_EMAIL` variable is no longer read by the application.
 - Provider acceptance would confirm that Web3Forms accepted the notification request, not independently verify inbox delivery. Inbox access was not available.
 - No production deployment or merge was performed. GitHub CLI has read-only PR permissions, so no draft PR was opened. The branch is pushed. Draft PR form with base `v1/enquiry-api`: https://github.com/sudippandey/Teenkanya-Travel-and-Trek/compare/v1/enquiry-api...v1/web3forms-verification?expand=1

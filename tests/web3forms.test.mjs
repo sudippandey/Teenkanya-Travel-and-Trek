@@ -24,7 +24,6 @@ test('Web3Forms success requires an HTTP success and success=true response', asy
   let requestInit
   const notify = createWeb3FormsNotifier({
     accessKey: 'test-access-key',
-    ccEmail: 'teenkanya@example.com',
     fetcher: async (url, init) => {
       requestUrl = url
       requestInit = init
@@ -39,7 +38,7 @@ test('Web3Forms success requires an HTTP success and success=true response', asy
   assert.equal(requestUrl, 'https://api.web3forms.com/submit')
   assert.equal(requestInit.method, 'POST')
   assert.equal(payload.access_key, 'test-access-key')
-  assert.equal(payload.ccemail, 'teenkanya@example.com')
+  assert.equal(payload.ccemail, undefined)
   assert.equal(payload.to, undefined)
   assert.equal(payload.replyto, 'asha@example.com')
 })
@@ -47,7 +46,6 @@ test('Web3Forms success requires an HTTP success and success=true response', asy
 test('Web3Forms provider rejection does not report success', async () => {
   const notify = createWeb3FormsNotifier({
     accessKey: 'test-access-key',
-    ccEmail: 'teenkanya@example.com',
     fetcher: async () => new Response(JSON.stringify({ success: false }), { status: 200 }),
   })
 
@@ -58,7 +56,6 @@ test('missing server configuration fails closed without a network request', asyn
   let requestCount = 0
   const notify = createWeb3FormsNotifier({
     accessKey: undefined,
-    ccEmail: 'teenkanya@example.com',
     fetcher: async () => {
       requestCount += 1
       return new Response(JSON.stringify({ success: true }), { status: 200 })
@@ -74,7 +71,6 @@ test('an invalid access key is a generic provider rejection and does not escape 
   let requestPayload
   const notify = createWeb3FormsNotifier({
     accessKey: invalidAccessKey,
-    ccEmail: 'teenkanyatravelandtrek@gmail.com',
     fetcher: async (_url, init) => {
       requestPayload = JSON.parse(init.body)
       return new Response(JSON.stringify({
@@ -94,7 +90,6 @@ test('an invalid access key is a generic provider rejection and does not escape 
 test('a provider 403 response without JSON is handled as an invalid-key rejection', async () => {
   const notify = createWeb3FormsNotifier({
     accessKey: 'synthetic-invalid-key-verification',
-    ccEmail: 'teenkanyatravelandtrek@gmail.com',
     fetcher: async () => new Response('Forbidden', { status: 403 }),
   })
 
@@ -104,7 +99,6 @@ test('a provider 403 response without JSON is handled as an invalid-key rejectio
 test('a non-success HTTP response cannot report a successful submission', async () => {
   const notify = createWeb3FormsNotifier({
     accessKey: 'synthetic-test-key',
-    ccEmail: 'teenkanyatravelandtrek@gmail.com',
     fetcher: async () => new Response(JSON.stringify({ success: true }), { status: 503 }),
   })
 
@@ -114,7 +108,6 @@ test('a non-success HTTP response cannot report a successful submission', async 
 test('malformed provider JSON is treated as a generic rejection', async () => {
   const notify = createWeb3FormsNotifier({
     accessKey: 'synthetic-test-key',
-    ccEmail: 'teenkanyatravelandtrek@gmail.com',
     fetcher: async () => new Response('not-json', { status: 200 }),
   })
 
@@ -125,7 +118,6 @@ test('network failures return unavailable without exposing transport details', a
   const syntheticKey = 'synthetic-network-test-key'
   const notify = createWeb3FormsNotifier({
     accessKey: syntheticKey,
-    ccEmail: 'teenkanyatravelandtrek@gmail.com',
     fetcher: async () => {
       throw new TypeError(`Network failure for ${syntheticKey}`)
     },

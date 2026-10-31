@@ -1,7 +1,6 @@
 import type { EnquiryDeliverySnapshot } from './submission-workflow'
 
 const web3FormsEndpoint = 'https://api.web3forms.com/submit'
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/u
 
 export type Web3FormsFailureReason = 'configuration' | 'unavailable' | 'rejected'
 
@@ -11,7 +10,6 @@ export type Web3FormsResult =
 
 interface Web3FormsOptions {
   accessKey: string | undefined
-  ccEmail: string | undefined
   fetcher?: typeof fetch
   timeoutMs?: number
 }
@@ -22,15 +20,13 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 export function createWeb3FormsNotifier({
   accessKey,
-  ccEmail,
   fetcher = fetch,
   timeoutMs = 3_000,
 }: Web3FormsOptions) {
   return async (enquiry: EnquiryDeliverySnapshot): Promise<Web3FormsResult> => {
     const configuredAccessKey = accessKey?.trim()
-    const configuredCcEmail = ccEmail?.trim()
 
-    if (!configuredAccessKey || !configuredCcEmail || !emailPattern.test(configuredCcEmail)) {
+    if (!configuredAccessKey) {
       return { success: false, reason: 'configuration' }
     }
 
@@ -53,7 +49,6 @@ export function createWeb3FormsNotifier({
 
     const payload: Record<string, string> = {
       access_key: configuredAccessKey,
-      ccemail: configuredCcEmail,
       subject: `New ${enquiry.interest.replaceAll('_', ' ')} enquiry ${enquiry.reference}`,
       from_name: 'Teenkanya Travel & Trek website',
       name: enquiry.fullName,
