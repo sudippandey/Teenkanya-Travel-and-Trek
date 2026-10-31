@@ -1,11 +1,18 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { PageHero, PageIntro, JourneyCta } from '@/components/page-templates'
+import { ArticleCard } from '@/components/travel-cards'
+import { ScrollReveal } from '@/components/scroll-reveal'
 import { travelCatalog } from '@/lib/travel-service'
+import { destinationPhotos } from '@/lib/travel-data'
 
-export const metadata: Metadata = { title: 'Travel Journal', description: 'Read sample destination guides, trekking notes and practical travel tips for Nepal.' }
+export const metadata: Metadata = {
+  title: 'Travel Journal',
+  description: 'Read destination guides, trekking notes and practical travel tips for Nepal.',
+  alternates: { canonical: '/blog' },
+  openGraph: { title: 'Travel Journal | Teenkanya Travel & Trek', description: 'Practical notes for planning a thoughtful journey through Nepal.', images: [destinationPhotos.mustang[1].src] },
+}
 
 export default async function BlogPage() {
   const articles = await travelCatalog.listArticles()
-  return <><PageHero eyebrow="TRAVEL JOURNAL" title="Notes for the road ahead." description="Thoughtful guides and practical notes to help you prepare for a journey through Nepal." image="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1800&q=85" /><section className="section"><div className="container"><PageIntro label="THE FIELD NOTES" title="A little context before you go.">These editable sample articles are a starting point for Teenkanya’s future travel journal, not company news or claims.</PageIntro><div className="article-grid">{articles.map((article) => <article className="article-card" key={article.slug}><Link className="article-image" href={`/blog/${article.slug}`}><img src={article.image} alt={article.title} loading="lazy" /></Link><div className="article-body"><span>{article.category} · {article.readingTime}</span><h2><Link href={`/blog/${article.slug}`}>{article.title}</Link></h2><p>{article.excerpt}</p><Link className="text-link" href={`/blog/${article.slug}`}>Read the guide</Link></div></article>)}</div></div></section><JourneyCta title="Planning a trip and need a local perspective?" /></>
+  return <><PageHero eyebrow="TRAVEL JOURNAL" title="Notes for the road ahead." description="Thoughtful guides and practical notes to help you prepare for a journey through Nepal." image={destinationPhotos.mustang[1]} /><section className="section"><div className="container"><PageIntro label="THE FIELD NOTES" title="A little context before you go.">These general planning notes are a starting point. Confirm current access, safety and seasonal details with official sources and local operators before travel.</PageIntro><div className="article-grid">{articles.map((article, index) => <ScrollReveal key={article.slug} delay={index * 80}><ArticleCard article={article} /></ScrollReveal>)}</div></div></section><JourneyCta title="Planning a trip and need a local perspective?" /></>
 }

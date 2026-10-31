@@ -8,7 +8,12 @@ export async function generateStaticParams() { return (await travelCatalog.listP
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
   const item = await travelCatalog.getPackage(slug)
-  return item ? { title: item.title, description: item.description } : { title: 'Journey not found' }
+  return item ? {
+    title: item.title,
+    description: item.description,
+    alternates: { canonical: `/tours/${item.slug}` },
+    openGraph: { title: `${item.title} | Teenkanya Travel & Trek`, description: item.description, images: [item.image] },
+  } : { title: 'Journey not found' }
 }
 
 export default async function TourPage({ params }: { params: Promise<{ slug: string }> }) {

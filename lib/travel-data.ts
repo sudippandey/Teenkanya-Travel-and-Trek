@@ -156,7 +156,7 @@ export const destinations: Destination[] = [
       { name: 'Ghorepani viewpoints', description: 'Mountain panoramas from the foothills, with clear views never guaranteed.', image: photoSets['annapurna-region'][4] },
     ],
     practicalTips: ['Choose a route based on experience, health and the time available.', 'Confirm permits, trail conditions and seasonal closures with a local source.', 'Build in rest and flexibility; high elevations affect people differently.'],
-    contentSources: [{ label: 'Nepal Tourism Board — Annapurna region', url: 'https://ntb.gov.np/annapurna-region' }],
+    contentSources: [{ label: 'Nepal Tourism Board — Annapurna Region', url: 'https://ntb.gov.np/en/annapurnaregion' }],
   },
   {
     slug: 'chitwan', title: 'Chitwan', region: 'Southern Nepal', category: 'Wildlife',
@@ -192,6 +192,7 @@ export const destinations: Destination[] = [
       { name: 'Jharkot', description: 'A village in Mustang District with mountain views and local architecture.', image: photoSets.mustang[2] },
     ],
     practicalTips: ['Check current Upper Mustang permit rules and route access before booking.', 'Build flexibility into travel plans because road and weather conditions can change.', 'Ask before photographing residents or entering religious spaces.'],
+    contentSources: [{ label: 'Nepal Tourism Board — Annapurna Region & Mustang', url: 'https://trade.ntb.gov.np/tourist-destination/annapurna-region/' }],
   },
   {
     slug: 'langtang', title: 'Langtang Valley', region: 'Northern Nepal', category: 'Trekking',
@@ -206,9 +207,10 @@ export const destinations: Destination[] = [
       { name: 'Kyanjin Gompa', description: 'A settlement and trekking waypoint in the upper valley; current access should be confirmed locally.', image: photoSets.langtang[6] },
       { name: 'Langtang Lirung', description: 'A prominent mountain in the region; visibility depends on weather and route.', image: photoSets.langtang[7] },
       { name: 'Langtang National Park', description: 'A protected area with mountain habitats and wildlife; follow park guidance.', image: photoSets.langtang[4] },
-      { name: 'Tamang communities', description: 'Meet local hosts respectfully and follow their guidance on customs and photography.', image: photoSets.langtang[0] },
+      { name: 'Langtang Village', description: 'A mountain settlement along the valley route; follow local guidance and confirm current access conditions.', image: photoSets.langtang[8] },
     ],
     practicalTips: ['Plan for altitude and changing weather, and allow a flexible schedule.', 'Confirm trail access and current local conditions before departure.', 'Choose local services respectfully and carry out all waste.'],
+    contentSources: [{ label: 'Nepal Tourism Board — Langtang National Park', url: 'https://ntb.gov.np/en/langtang-national-park' }],
   },
   {
     slug: 'lumbini', title: 'Lumbini', region: 'Southern Nepal', category: 'Pilgrimage',
@@ -340,12 +342,12 @@ export const articles: Article[] = [
 ]
 
 export const services = [
-  { title: 'Flights & air tickets', status: 'Enquire', description: 'Ask our team about domestic or international flight planning.', icon: '✈' },
-  { title: 'Bus tickets', status: 'Coming soon', description: 'Intercity bus reservation support is planned for a future phase.', icon: '↗' },
-  { title: 'Hotel reservations', status: 'Enquire', description: 'Share your route and preferences for accommodation suggestions.', icon: '⌂' },
-  { title: 'Vehicles & transfers', status: 'Enquire', description: 'Plan private ground transport for your Nepal journey.', icon: '↔' },
-  { title: 'Tours & trekking', status: 'Enquire', description: 'Explore a sample journey or start with a custom itinerary.', icon: '⌁' },
-  { title: 'Travel assistance', status: 'Enquire', description: 'Talk through your travel plans with our Kathmandu-based team.', icon: '＋' },
+  { number: '01', title: 'Flights & air tickets', status: 'Enquire', description: 'Ask our team about domestic or international flight planning.' },
+  { number: '02', title: 'Bus tickets', status: 'Coming soon', description: 'Intercity bus reservation support is planned for a future phase.' },
+  { number: '03', title: 'Hotel reservations', status: 'Enquire', description: 'Share your route and preferences for accommodation suggestions.' },
+  { number: '04', title: 'Vehicles & transfers', status: 'Enquire', description: 'Plan private ground transport for your Nepal journey.' },
+  { number: '05', title: 'Tours & trekking', status: 'Enquire', description: 'Explore a sample journey or start with a custom itinerary.' },
+  { number: '06', title: 'Travel assistance', status: 'Enquire', description: 'Talk through your travel plans with our Kathmandu-based team.' },
 ]
 
 export const galleryImages: DestinationImage[] = [

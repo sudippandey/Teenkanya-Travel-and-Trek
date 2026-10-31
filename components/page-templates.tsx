@@ -71,6 +71,13 @@ export function DestinationDetail({ destination, relatedPackages = [], relatedTr
               <h2>Ways to explore</h2>
               <ul className="detail-list">{destination.activities.map((activity) => <li key={activity}>{activity}</li>)}</ul>
             </section>
+            <section aria-labelledby="destination-notes-heading">
+              <h2 className="sr-only" id="destination-notes-heading">Destination notes</h2>
+              <div className="destination-notes-grid">
+                <article className="destination-notes"><h3>Highlights to explore</h3><ul>{destination.highlights.map((highlight) => <li key={highlight}>{highlight}</li>)}</ul></article>
+                <article className="destination-notes"><h3>Practical notes</h3><ul>{destination.practicalTips.map((tip) => <li key={tip}>{tip}</li>)}</ul></article>
+              </div>
+            </section>
             {destination.contentSources && <section>
               <h2>Further reading</h2>
               <p>Use current local guidance for opening hours, access and seasonal conditions.</p>

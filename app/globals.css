@@ -103,7 +103,7 @@ figure { margin: 0; }
 .section-forest { background: var(--forest); color: #fffefa; }
 .section-destinations { padding-top: clamp(82px, 10vw, 138px); }
 .section-heading { display: flex; justify-content: space-between; align-items: end; gap: 40px; margin-bottom: 46px; }
-.section-heading h2, .editorial-copy h2, .page-hero h1, .contact-intro h1 { margin: 16px 0 0; color: var(--forest-deep); font-family: var(--display); font-size: clamp(38px, 5vw, 62px); line-height: 1.02; letter-spacing: -.045em; font-weight: 400; }
+.section-heading h2, .editorial-copy h2, .page-hero h1, .contact-intro h2 { margin: 16px 0 0; color: var(--forest-deep); font-family: var(--display); font-size: clamp(38px, 5vw, 62px); line-height: 1.02; letter-spacing: -.045em; font-weight: 400; }
 .section-heading h2 em, .editorial-copy h2 em { color: var(--clay); font-weight: 400; }
 .section-heading p, .section-heading-aside p { max-width: 410px; margin: 0 0 8px; color: var(--muted-foreground); font-size: 13px; line-height: 1.85; }
 .section-heading-aside { display: flex; flex-direction: column; align-items: flex-start; gap: 13px; }
@@ -202,11 +202,11 @@ figure { margin: 0; }
 .editorial-points span { display: flex; align-items: flex-start; gap: 9px; color: var(--forest); font-size: 10px; line-height: 1.5; }
 .editorial-points span::before { width: 5px; height: 5px; flex: 0 0 auto; margin-top: 4px; background: var(--clay); content: ''; }
 
-.gallery-grid { display: grid; grid-template-columns: 1.25fr .85fr 1fr 1fr; grid-template-rows: 205px 205px; gap: 12px; }
+.gallery-grid { display: grid; grid-template-columns: 1.25fr .85fr 1fr 1fr; grid-template-rows: 205px 205px; grid-auto-rows: 205px; gap: 12px; }
 .gallery-item { min-width: 0; position: relative; overflow: hidden; background: #d7d4c9; }
 .gallery-item-1 { grid-row: span 2; }
 .gallery-item-4 { grid-column: span 2; }
-.gallery-open { position: absolute; inset: 0; display: block; width: 100%; height: 100%; padding: 0; border: 0; background: transparent; text-align: left; }
+.gallery-open { position: relative; display: block; width: 100%; height: 100%; min-height: 100%; padding: 0; border: 0; background: transparent; text-align: left; }
 .gallery-open img { object-fit: cover; transition: transform .7s cubic-bezier(.2,.7,.2,1); }
 .gallery-open:hover img, .gallery-open:focus-visible img { transform: scale(1.045); }
 .gallery-caption { position: absolute; right: 13px; bottom: 38px; left: 13px; color: white; font-family: var(--display); font-size: 17px; line-height: 1.2; text-shadow: 0 1px 8px rgba(0,0,0,.65); }
@@ -291,6 +291,10 @@ figure { margin: 0; }
 .contact-form textarea { min-height: 132px; resize: vertical; }
 .contact-form input:focus, .contact-form select:focus, .contact-form textarea:focus { border-color: var(--forest); box-shadow: 0 0 0 2px rgba(38,56,47,.1); }
 .contact-form input::placeholder, .contact-form textarea::placeholder { color: #9a9c94; }
+.form-honeypot { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.contact-form .checkbox-label { flex-direction: row; align-items: center; gap: 10px; padding-top: 23px; }
+.contact-form .checkbox-label input { width: 18px; min-height: 18px; flex: 0 0 auto; margin: 0; padding: 0; accent-color: var(--forest); }
+.contact-form button:disabled { cursor: wait; opacity: .7; }
 .form-submit-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
 .form-submit-row > p { max-width: 290px; margin: 0; color: #7a7e75; font-size: 9px; line-height: 1.6; }
 .form-submit-row .button { flex-shrink: 0; }
@@ -362,12 +366,15 @@ figure { margin: 0; }
 .value-card p { margin: 0; color: var(--muted-foreground); font-size: 10px; line-height: 1.75; }
 .service-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
 .service-card { min-height: 220px; padding: 25px; border: 1px solid var(--border); background: var(--surface); }
-.service-icon { width: 39px; height: 39px; display: grid; place-items: center; margin-bottom: 22px; background: #e9e5d9; color: var(--clay); font-size: 18px; }
+.service-number { display: block; margin-bottom: 15px; color: var(--clay); font-family: var(--display); font-size: 18px; }
 .service-status { color: var(--clay); font-size: 8px; letter-spacing: .12em; text-transform: uppercase; }
 .service-card h3 { margin: 8px 0; color: var(--forest); font-family: var(--display); font-size: 21px; font-weight: 400; }
 .service-card p { min-height: 40px; margin: 0 0 16px; color: var(--muted-foreground); font-size: 10px; line-height: 1.75; }
 .service-card a { display: inline-flex; align-items: center; gap: 8px; color: var(--forest); font-size: 10px; }
 .service-card a svg { width: 13px; height: 13px; }
+.detail-note { display: flex; justify-content: space-between; align-items: center; gap: 24px; padding: 24px; border: 1px solid var(--border); background: var(--surface); }
+.detail-note p { margin: 0; color: var(--muted-foreground); font-size: 12px; line-height: 1.7; }
+.detail-note span { flex: 0 0 auto; color: var(--clay); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; }
 .article-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
 .article-card { min-width: 0; background: var(--surface); border: 1px solid var(--border); }
 .article-image-frame { height: 230px; position: relative; overflow: hidden; background: #d1cec2; }
@@ -495,7 +502,7 @@ figure { margin: 0; }
   .package-body p, .article-body p { min-height: auto; }
   .editorial-image { min-height: 310px; }
   .editorial-points { grid-template-columns: 1fr; }
-  .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: 150px 150px 150px; }
+  .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: 150px 150px 150px; grid-auto-rows: 150px; }
   .gallery-item-1 { grid-row: span 2; }
   .gallery-item-4 { grid-column: span 1; }
   .gallery-item-5 { grid-column: span 2; }
@@ -532,6 +539,7 @@ figure { margin: 0; }
   .value-grid, .service-grid { grid-template-columns: 1fr; }
   .value-card { min-height: 165px; }
   .service-card p { min-height: auto; }
+  .detail-note { align-items: flex-start; flex-direction: column; gap: 12px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

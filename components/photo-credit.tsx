@@ -8,7 +8,11 @@ type PhotoCreditProps = {
 function licenseUrl(license: string) {
   if (license === 'CC0') return 'https://creativecommons.org/publicdomain/zero/1.0/'
   if (license === 'Public domain') return 'https://creativecommons.org/publicdomain/mark/1.0/'
-  return `https://creativecommons.org/licenses/${license.toLowerCase().replaceAll(' ', '-')}/`
+
+  const match = /^CC (BY(?:-SA)?) (\d+(?:\.\d+)*)$/u.exec(license)
+  if (!match) return 'https://creativecommons.org/share-your-work/cclicenses/'
+
+  return `https://creativecommons.org/licenses/${match[1].toLowerCase()}/${match[2]}/`
 }
 
 export function PhotoCredit({ credit, license, sourceUrl, className = '' }: PhotoCreditProps) {

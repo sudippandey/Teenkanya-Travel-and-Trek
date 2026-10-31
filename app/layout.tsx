@@ -11,7 +11,6 @@ export const metadata: Metadata = {
     template: '%s | Teenkanya Travel & Trek',
   },
   description: 'Plan thoughtful holidays, cultural journeys and Himalayan treks through Nepal with a Kathmandu-based travel team.',
-  alternates: { canonical: '/' },
   openGraph: {
     type: 'website',
     locale: 'en_US',
@@ -30,7 +29,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body className="antialiased">
         <a className="skip-link" href="#main-content">Skip to content</a>
         <SiteHeader />

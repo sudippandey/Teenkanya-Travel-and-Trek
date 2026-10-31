@@ -8,7 +8,12 @@ export async function generateStaticParams() { return (await travelCatalog.listA
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
   const article = await travelCatalog.getArticle(slug)
-  return article ? { title: article.title, description: article.excerpt } : { title: 'Guide not found' }
+  return article ? {
+    title: article.title,
+    description: article.excerpt,
+    alternates: { canonical: `/blog/${article.slug}` },
+    openGraph: { title: `${article.title} | Teenkanya Travel & Trek`, description: article.excerpt, images: [article.image] },
+  } : { title: 'Guide not found' }
 }
 
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
