@@ -5,7 +5,7 @@ import { SiteFooter } from '@/components/site-footer'
 import './globals.css'
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://3kanyatravel.com.np'),
+  metadataBase: new URL('https://3kanyatravel.vercel.app'),
   title: {
     default: 'Teenkanya Travel & Trek | Discover Nepal',
     template: '%s | Teenkanya Travel & Trek',
