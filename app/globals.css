@@ -291,16 +291,22 @@ figure { margin: 0; }
 .contact-form textarea { min-height: 132px; resize: vertical; }
 .contact-form input:focus, .contact-form select:focus, .contact-form textarea:focus { border-color: var(--forest); box-shadow: 0 0 0 2px rgba(38,56,47,.1); }
 .contact-form input::placeholder, .contact-form textarea::placeholder { color: #9a9c94; }
-.form-honeypot { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.contact-form input:disabled, .contact-form select:disabled, .contact-form textarea:disabled { background: #f2f0e9; color: #777b70; cursor: not-allowed; }
 .contact-form .checkbox-label { flex-direction: row; align-items: center; gap: 10px; padding-top: 23px; }
 .contact-form .checkbox-label input { width: 18px; min-height: 18px; flex: 0 0 auto; margin: 0; padding: 0; accent-color: var(--forest); }
+.contact-form-honeypot { position: absolute !important; left: -10000px !important; top: auto !important; width: 1px !important; height: 1px !important; overflow: hidden !important; }
 .contact-form button:disabled { cursor: wait; opacity: .7; }
+.field-error { display: block; color: #9e2c38; font-size: 11px; font-weight: 400; line-height: 1.45; }
 .form-submit-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
 .form-submit-row > p { max-width: 290px; margin: 0; color: #7a7e75; font-size: 9px; line-height: 1.6; }
 .form-submit-row .button { flex-shrink: 0; }
+.form-submit-row .button:disabled { opacity: .7; cursor: wait; }
 .form-disclaimer { margin: -5px 0 0; color: #7a7e75; font-size: 9px; line-height: 1.65; }
-.form-error { margin: 0; color: #9c352d; font-size: 11px; }
-.form-success { text-align: center; }
+.form-error { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 13px 15px; border-left: 2px solid #9c352d; background: #fff8f8; color: #9c352d; font-size: 11px; line-height: 1.55; }
+.form-error p { margin: 0; }
+.form-error .text-link { align-self: flex-start; margin: 0; color: #7b2630; }
+.form-success { scroll-margin-top: 100px; text-align: center; }
+.form-success:focus { outline: 2px solid var(--clay); outline-offset: 4px; }
 .success-icon { width: 48px; height: 48px; display: grid; place-items: center; margin: 0 auto 16px; background: #dfe4d8; color: var(--forest); }
 .success-icon svg { width: 21px; }
 .form-success h3 { margin: 14px 0 8px; color: var(--forest); font-family: var(--display); font-size: 27px; font-weight: 400; }

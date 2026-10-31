@@ -1,10 +1,11 @@
-import { saveEnquiry } from '@/lib/enquiries/server'
-import { validateEnquiry } from '@/lib/enquiries/validation'
+import { sendEnquiryNotification } from '@/lib/enquiries/notification-provider.server'
+import { saveEnquiry, updateEnquiryNotificationStatus } from '@/lib/enquiries/server'
+import { getTrustedClientIdentifier } from '@/lib/enquiries/client-identifier'
+import { maxEnquiryRequestBodyBytes, readRequestBodyBounded } from '@/lib/enquiries/request-body'
+import { processEnquirySubmission } from '@/lib/enquiries/submission-workflow'
 
 export const runtime = 'nodejs'
 export const maxDuration = 15
-
-const maxBodySize = 16_000
 
 function respond(body: Record<string, unknown>, status: number, headers: HeadersInit = {}) {
   return Response.json(body, {
@@ -31,13 +32,6 @@ function getRequestOrigin(request: Request) {
   }
 
   return new URL(request.url).origin
-}
-
-function getClientIdentifier(request: Request) {
-  const realIp = request.headers.get('x-real-ip')?.trim()
-  const forwardedIp = request.headers.get('x-forwarded-for')?.split(',').at(-1)?.trim()
-  const identifier = realIp || forwardedIp || 'unknown'
-  return identifier.length <= 128 ? identifier : 'unknown'
 }
 
 function getSourcePage(request: Request) {
@@ -69,15 +63,20 @@ export async function POST(request: Request) {
     return respond({ error: 'unsupported_media_type', message: 'Submit the enquiry using the website form.' }, 415)
   }
 
-  const contentLength = Number(request.headers.get('content-length'))
-  if (Number.isFinite(contentLength) && contentLength > maxBodySize) {
-    return respond({ error: 'payload_too_large', message: 'The enquiry is too long to submit.' }, 413)
+  const bodyResult = await readRequestBodyBounded(request, maxEnquiryRequestBodyBytes)
+  if (!bodyResult.ok) {
+    if (bodyResult.reason === 'too_large') {
+      return respond({ error: 'payload_too_large', message: 'The enquiry is too long to submit.' }, 413)
+    }
+
+    if (bodyResult.reason === 'invalid_content_length') {
+      return respond({ error: 'invalid_content_length', message: 'The form could not be read. Please try again.' }, 400)
+    }
+
+    return respond({ error: 'invalid_json', message: 'The form could not be read. Please try again.' }, 400)
   }
 
-  const bodyText = await request.text()
-  if (new TextEncoder().encode(bodyText).byteLength > maxBodySize) {
-    return respond({ error: 'payload_too_large', message: 'The enquiry is too long to submit.' }, 413)
-  }
+  const bodyText = bodyResult.text
 
   let payload: unknown
   try {
@@ -90,22 +89,27 @@ export async function POST(request: Request) {
     return respond({ error: 'invalid_submission', message: 'Please check the form and try again.' }, 400)
   }
 
-  const validation = validateEnquiry(payload)
-  if (!validation.success) {
-    return respond({
-      error: 'invalid_submission',
-      message: 'Please check the enquiry details and try again.',
-      fieldErrors: validation.fieldErrors,
-    }, 422)
-  }
-
   try {
-    const result = await saveEnquiry(
-      { ...validation.value, sourcePage: getSourcePage(request) },
-      getClientIdentifier(request),
+    const outcome = await processEnquirySubmission(
+      payload,
+      getTrustedClientIdentifier(request.headers),
+      getSourcePage(request),
+      {
+        persist: saveEnquiry,
+        notify: sendEnquiryNotification,
+        updateNotificationStatus: updateEnquiryNotificationStatus,
+      },
     )
 
-    if (result.status === 'rate_limited') {
+    if (outcome.status === 'invalid') {
+      return respond({
+        error: 'invalid_submission',
+        message: 'Please check the enquiry details and try again.',
+        fieldErrors: outcome.fieldErrors,
+      }, 422)
+    }
+
+    if (outcome.status === 'rate_limited') {
       return respond(
         { error: 'rate_limited', message: 'Please wait a little before sending another enquiry.' },
         429,
@@ -113,12 +117,40 @@ export async function POST(request: Request) {
       )
     }
 
-    return respond({ status: 'received', reference: result.reference }, 201)
+    if (outcome.status === 'notification_pending') {
+      return respond({
+        error: 'notification_pending',
+        saved: true,
+        reference: outcome.reference,
+        message: 'Your enquiry is saved, but its email notification is still being processed. Please wait a moment before retrying.',
+      }, 409)
+    }
+
+    if (outcome.status === 'notification_failed') {
+      if (outcome.statusUpdateFailed) {
+        console.error('[api/enquiries] Notification failure state could not be saved')
+      }
+      return respond({
+        error: 'notification_failed',
+        saved: true,
+        reference: outcome.reference,
+        message: 'Your enquiry is saved, but Web3Forms did not confirm the email submission. Please retry, or contact our team with the saved reference.',
+      }, 502)
+    }
+
+    if (outcome.statusUpdateFailed) {
+      console.error('[api/enquiries] Notification success state could not be saved')
+    }
+
+    return respond(
+      { status: 'received', reference: outcome.reference },
+      outcome.duplicate ? 200 : 201,
+    )
   } catch {
-    console.error('[api/enquiries] Unable to persist enquiry')
+    console.error('[api/enquiries] Unable to complete enquiry submission')
     return respond({
-      error: 'persistence_unavailable',
-      message: 'We could not save your enquiry. Please try again shortly or contact our team directly.',
+      error: 'submission_unavailable',
+      message: 'We could not complete your enquiry. Please retry with the same details or contact our team directly.',
     }, 503)
   }
 }
