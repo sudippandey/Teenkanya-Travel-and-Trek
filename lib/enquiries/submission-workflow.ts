@@ -1,4 +1,4 @@
-import { validateEnquiry, type ValidatedEnquiry } from './validation.ts'
+import { validateEnquiry, type CatalogueLookup, type ValidatedEnquiry } from './validation.ts'
 
 export type EnquiryNotificationStatus = 'not_configured' | 'pending' | 'sent' | 'failed'
 
@@ -42,6 +42,7 @@ export interface SubmissionDependencies {
     submissionId: string,
     status: 'sent' | 'failed',
   ) => Promise<void>
+  isKnownCatalogueItem?: CatalogueLookup
 }
 
 export async function processEnquirySubmission(
@@ -50,7 +51,9 @@ export async function processEnquirySubmission(
   sourcePage: string,
   dependencies: SubmissionDependencies,
 ): Promise<SubmissionOutcome> {
-  const validation = validateEnquiry(input)
+  const validation = validateEnquiry(input, {
+    isKnownCatalogueItem: dependencies.isKnownCatalogueItem,
+  })
   if (!validation.success) {
     return { status: 'invalid', fieldErrors: validation.fieldErrors }
   }

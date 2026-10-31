@@ -3,6 +3,7 @@ import { saveEnquiry, updateEnquiryNotificationStatus } from '@/lib/enquiries/se
 import { getTrustedClientIdentifier } from '@/lib/enquiries/client-identifier'
 import { maxEnquiryRequestBodyBytes, readRequestBodyBounded } from '@/lib/enquiries/request-body'
 import { processEnquirySubmission } from '@/lib/enquiries/submission-workflow'
+import { isKnownCatalogueItem } from '@/lib/enquiries/catalogue'
 
 export const runtime = 'nodejs'
 export const maxDuration = 15
@@ -98,6 +99,7 @@ export async function POST(request: Request) {
         persist: saveEnquiry,
         notify: sendEnquiryNotification,
         updateNotificationStatus: updateEnquiryNotificationStatus,
+        isKnownCatalogueItem,
       },
     )
 

@@ -38,6 +38,9 @@ export function createWeb3FormsNotifier({
       enquiry.countryOfResidence ? `Country of residence: ${enquiry.countryOfResidence}` : null,
       `Preferred contact: ${enquiry.preferredContactChannel}`,
       `Interest: ${enquiry.interest}`,
+      enquiry.catalogueItemType && enquiry.catalogueItemSlug
+        ? `Trip: ${enquiry.catalogueItemType} / ${enquiry.catalogueItemSlug}`
+        : null,
       enquiry.travelStartDate ? `Travel date: ${enquiry.travelStartDate}` : null,
       `Dates flexible: ${enquiry.datesFlexible ? 'Yes' : 'No'}`,
       enquiry.travellerCount ? `Travellers: ${enquiry.travellerCount}` : null,
@@ -45,6 +48,7 @@ export function createWeb3FormsNotifier({
       '',
       'Message:',
       enquiry.message,
+      ...(enquiry.specialRequirements ? ['', 'Special requirements:', enquiry.specialRequirements] : []),
     ].filter((line): line is string => line !== null).join('\n')
 
     const payload: Record<string, string> = {

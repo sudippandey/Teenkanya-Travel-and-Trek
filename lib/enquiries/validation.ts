@@ -1,8 +1,16 @@
 export const enquiryInterests = ['tour', 'trekking', 'travel_service', 'other'] as const
 export const contactChannels = ['email', 'phone', 'whatsapp'] as const
+export const catalogueItemTypes = ['destination', 'package', 'trek'] as const
 
 export type EnquiryInterest = (typeof enquiryInterests)[number]
 export type ContactChannel = (typeof contactChannels)[number]
+export type CatalogueItemType = (typeof catalogueItemTypes)[number]
+export type CatalogueLookup = (type: CatalogueItemType, slug: string) => boolean
+
+export interface EnquiryValidationOptions {
+  /** When provided, unknown catalogue items are dropped (stored as null) rather than rejected. */
+  isKnownCatalogueItem?: CatalogueLookup
+}
 
 export interface ValidatedEnquiry {
   submissionId: string
@@ -16,6 +24,9 @@ export interface ValidatedEnquiry {
   travelStartDate: string | null
   datesFlexible: boolean
   travellerCount: number | null
+  catalogueItemType: CatalogueItemType | null
+  catalogueItemSlug: string | null
+  specialRequirements: string | null
 }
 
 export type EnquiryValidationResult =
@@ -25,6 +36,11 @@ export type EnquiryValidationResult =
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/u
 const phonePattern = /^[+0-9().\-\s]+$/u
+const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u
+
+function isPresent(value: unknown) {
+  return value !== undefined && value !== null && value !== ''
+}
 
 function normalizeSingleLine(value: string) {
   return value
@@ -71,7 +87,10 @@ function isValidDate(value: string) {
   return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day
 }
 
-export function validateEnquiry(input: unknown): EnquiryValidationResult {
+export function validateEnquiry(
+  input: unknown,
+  options: EnquiryValidationOptions = {},
+): EnquiryValidationResult {
   const fieldErrors: Record<string, string> = {}
   const source = typeof input === 'object' && input !== null ? (input as Record<string, unknown>) : {}
 
@@ -158,6 +177,36 @@ export function validateEnquiry(input: unknown): EnquiryValidationResult {
     }
   }
 
+  let catalogueItemType: CatalogueItemType | null = null
+  let catalogueItemSlug: string | null = null
+  if (isPresent(source.catalogueItemType) || isPresent(source.catalogueItemSlug)) {
+    const rawType = source.catalogueItemType
+    const rawSlug = source.catalogueItemSlug
+    const wellFormed = catalogueItemTypes.includes(rawType as CatalogueItemType)
+      && typeof rawSlug === 'string'
+      && rawSlug.length <= 120
+      && slugPattern.test(rawSlug)
+
+    if (!wellFormed) {
+      fieldErrors.catalogueItem = 'The selected trip could not be read. Refresh the page and try again.'
+    } else if (!options.isKnownCatalogueItem || options.isKnownCatalogueItem(rawType as CatalogueItemType, rawSlug)) {
+      catalogueItemType = rawType as CatalogueItemType
+      catalogueItemSlug = rawSlug
+    }
+  }
+
+  let specialRequirements: string | null = null
+  if (isPresent(source.specialRequirements)) {
+    if (typeof source.specialRequirements !== 'string') {
+      fieldErrors.specialRequirements = 'Enter valid text.'
+    } else {
+      specialRequirements = normalizeMessage(source.specialRequirements) || null
+      if (specialRequirements && specialRequirements.length > 1000) {
+        fieldErrors.specialRequirements = 'Keep special requirements under 1,000 characters.'
+      }
+    }
+  }
+
   if (Object.keys(fieldErrors).length > 0) return { success: false, fieldErrors }
 
   return {
@@ -174,6 +223,9 @@ export function validateEnquiry(input: unknown): EnquiryValidationResult {
       travelStartDate,
       datesFlexible,
       travellerCount,
+      catalogueItemType,
+      catalogueItemSlug,
+      specialRequirements,
     },
   }
 }
