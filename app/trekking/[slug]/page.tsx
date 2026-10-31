@@ -8,7 +8,12 @@ export async function generateStaticParams() { return (await travelCatalog.listT
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
   const trek = await travelCatalog.getTrek(slug)
-  return trek ? { title: trek.title, description: trek.description } : { title: 'Trek not found' }
+  return trek ? {
+    title: trek.title,
+    description: trek.description,
+    alternates: { canonical: `/trekking/${trek.slug}` },
+    openGraph: { title: `${trek.title} | Teenkanya Travel & Trek`, description: trek.description, images: [trek.image] },
+  } : { title: 'Trek not found' }
 }
 
 export default async function TrekPage({ params }: { params: Promise<{ slug: string }> }) {

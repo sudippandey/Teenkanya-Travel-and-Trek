@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import { Search, SlidersHorizontal } from 'lucide-react'
 import type { BrowseItem } from '@/lib/travel-data'
 import { DestinationCard, PackageCard } from '@/components/travel-cards'
+import { ScrollReveal } from '@/components/scroll-reveal'
 
 type CollectionKind = 'destinations' | 'packages' | 'treks'
 
@@ -35,7 +36,7 @@ export function CollectionBrowser({ kind, items, filters }: { kind: CollectionKi
       {['All', ...filters].map((filter) => <button type="button" key={filter} className={`filter-chip ${activeFilter === filter ? 'is-active' : ''}`} aria-pressed={activeFilter === filter} onClick={() => setActiveFilter(filter)}>{filter}</button>)}
     </div>
     {filtered.length ? <div className={kind === 'destinations' ? 'destination-grid' : 'package-grid'}>
-      {filtered.map((item, index) => kind === 'destinations' ? <DestinationCard key={item.slug} item={item} index={index} /> : <PackageCard key={item.slug} item={item} index={index} />)}
+      {filtered.map((item, index) => <ScrollReveal key={item.slug} delay={(index % 4) * 70}>{kind === 'destinations' ? <DestinationCard item={item} /> : <PackageCard item={item} />}</ScrollReveal>)}
     </div> : <div className="empty-state"><span className="eyebrow">NO MATCHES JUST YET</span><h3>Try a different search.</h3><p>Adjust your filters to explore more of Nepal.</p><button className="text-link" type="button" onClick={() => { setQuery(''); setActiveFilter('All'); setPlaceFilter('All places'); setDurationFilter('Any duration') }}>Clear filters</button></div>}
   </div>
 }

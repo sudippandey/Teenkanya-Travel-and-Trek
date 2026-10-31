@@ -1,9 +1,28 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowLeft, ArrowUpRight, Clock3, MapPin } from 'lucide-react'
-import type { Article, Destination, TravelPackage, BrowseItem } from '@/lib/travel-data'
+import { PhotoCredit } from '@/components/photo-credit'
+import { TravelGallery } from '@/components/travel-gallery'
+import { PackageCard } from '@/components/travel-cards'
+import type { Article, BrowseItem, Destination, DestinationImage, TravelPackage } from '@/lib/travel-data'
 
-export function PageHero({ eyebrow, title, description, image, crumbs = [] }: { eyebrow: string; title: string; description: string; image: string; crumbs?: { label: string; href: string }[] }) {
-  return <section className="page-hero"><img src={image} alt="" fetchPriority="high" /><div className="page-hero-content"><div className="breadcrumb"><Link href="/">Home</Link><span>/</span>{crumbs.map((item) => <span key={item.href}><Link href={item.href}>{item.label}</Link><span> / </span></span>)}<span>{eyebrow}</span></div><span className="hero-kicker">{eyebrow}</span><h1>{title}</h1><p>{description}</p></div></section>
+export function PageHero({ eyebrow, title, description, image, crumbs = [] }: { eyebrow: string; title: string; description: string; image: DestinationImage; crumbs?: { label: string; href: string }[] }) {
+  return (
+    <section className="page-hero">
+      <Image src={image.src} alt={image.alt} fill priority sizes="100vw" quality={85} />
+      <div className="page-hero-content">
+        <nav className="breadcrumb" aria-label="Breadcrumb">
+          <Link href="/">Home</Link><span aria-hidden="true">/</span>
+          {crumbs.map((item) => <span className="breadcrumb-item" key={item.href}><Link href={item.href}>{item.label}</Link><span aria-hidden="true">/</span></span>)}
+          <span aria-current="page">{eyebrow}</span>
+        </nav>
+        <span className="hero-kicker">{eyebrow}</span>
+        <h1>{title}</h1>
+        <p>{description}</p>
+        <div className="page-hero-credit"><PhotoCredit credit={image.credit} license={image.license} sourceUrl={image.sourceUrl} /></div>
+      </div>
+    </section>
+  )
 }
 
 export function PageIntro({ label, title, children }: { label: string; title: string; children: React.ReactNode }) {
@@ -11,37 +30,134 @@ export function PageIntro({ label, title, children }: { label: string; title: st
 }
 
 export function JourneyCta({ title = 'Your journey can start with a conversation.' }: { title?: string }) {
-  return <section className="section"><div className="container"><div className="cta-band"><div><span className="eyebrow">LET’S PLAN TOGETHER</span><h2>{title}</h2></div><Link className="button" href="/contact">Make an enquiry <ArrowUpRight aria-hidden="true" /></Link></div></div></section>
+  return <section className="section"><div className="container"><div className="cta-band"><div><span className="eyebrow">Let&apos;s plan together</span><h2>{title}</h2></div><Link className="button button-dark" href="/contact">Make an enquiry <ArrowUpRight aria-hidden="true" /></Link></div></div></section>
 }
 
-export function DestinationDetail({ destination }: { destination: Destination }) {
-  return <>
-    <PageHero eyebrow={destination.region} title={destination.title} description={destination.description} image={destination.image} crumbs={[{ label: 'Destinations', href: '/destinations' }]} />
-    <section className="section"><div className="container detail-layout"><div className="detail-main"><section><span className="eyebrow">GET TO KNOW THE REGION</span><h2>A place to experience at your own pace.</h2><p>{destination.overview}</p></section><section><h2>Highlights</h2><ul className="detail-list">{destination.highlights.map((item) => <li key={item}>{item}</li>)}</ul></section><section><h2>Ways to explore</h2><ul className="detail-list">{destination.activities.map((item) => <li key={item}>{item}</li>)}</ul></section></div><aside className="detail-aside"><h3>Plan your visit</h3><div className="detail-facts"><span>Region <strong>{destination.region}</strong></span><span>Best time <strong>{destination.bestTime}</strong></span><span>Experience <strong>{destination.category}</strong></span></div><p>Timing and conditions vary by route and season. Ask our team about a journey that fits your plans.</p><Link className="button" href={`/contact?destination=${destination.slug}`}>Ask about this place <ArrowUpRight aria-hidden="true" /></Link></aside></div></section>
-    <JourneyCta title={`Let’s make ${destination.title} part of your journey.`} />
-  </>
+export function DestinationDetail({ destination, relatedPackages = [], relatedTreks = [] }: { destination: Destination; relatedPackages?: BrowseItem[]; relatedTreks?: BrowseItem[] }) {
+  return (
+    <>
+      <PageHero eyebrow={destination.region} title={destination.title} description={destination.description} image={destination.heroImage} crumbs={[{ label: 'Destinations', href: '/destinations' }]} />
+
+      <section className="section destination-gallery-section">
+        <div className="container">
+          <div className="section-heading">
+            <div><span className="eyebrow">A closer look</span><h2>Explore <em>{destination.title}.</em></h2></div>
+            <p>Photographs are location-specific and credited to their photographers. Open an image to view the caption and licence.</p>
+          </div>
+          <TravelGallery images={destination.gallery} label={`${destination.title} photo gallery`} />
+        </div>
+      </section>
+
+      <section className="section section-soft">
+        <div className="container detail-layout">
+          <div className="detail-main">
+            <section>
+              <span className="eyebrow">Get to know the place</span>
+              <h2>A region to experience at your own pace.</h2>
+              <p>{destination.overview}</p>
+            </section>
+            <section>
+              <h2>Places to explore</h2>
+              <div className="attraction-grid">
+                {destination.attractions.map((attraction) => (
+                  <article className="attraction-card" key={attraction.name}>
+                    <div className="attraction-image"><Image src={attraction.image.src} alt={attraction.image.alt} fill sizes="(max-width: 520px) 100vw, (max-width: 780px) 50vw, 33vw" loading="lazy" /><PhotoCredit credit={attraction.image.credit} license={attraction.image.license} sourceUrl={attraction.image.sourceUrl} /></div>
+                    <div className="attraction-body"><h3>{attraction.name}</h3><p>{attraction.description}</p></div>
+                  </article>
+                ))}
+              </div>
+            </section>
+            <section>
+              <h2>Ways to explore</h2>
+              <ul className="detail-list">{destination.activities.map((activity) => <li key={activity}>{activity}</li>)}</ul>
+            </section>
+            <section aria-labelledby="destination-notes-heading">
+              <h2 className="sr-only" id="destination-notes-heading">Destination notes</h2>
+              <div className="destination-notes-grid">
+                <article className="destination-notes"><h3>Highlights to explore</h3><ul>{destination.highlights.map((highlight) => <li key={highlight}>{highlight}</li>)}</ul></article>
+                <article className="destination-notes"><h3>Practical notes</h3><ul>{destination.practicalTips.map((tip) => <li key={tip}>{tip}</li>)}</ul></article>
+              </div>
+            </section>
+            {destination.contentSources && <section>
+              <h2>Further reading</h2>
+              <p>Use current local guidance for opening hours, access and seasonal conditions.</p>
+              <div className="content-source-links">{destination.contentSources.map((source) => <a href={source.url} key={source.url} target="_blank" rel="noreferrer">{source.label} <ArrowUpRight aria-hidden="true" /></a>)}</div>
+            </section>}
+          </div>
+          <aside className="detail-aside">
+            <span className="eyebrow">Plan your visit</span>
+            <h3>{destination.title}</h3>
+            <div className="detail-facts">
+              <span>Region <strong>{destination.region}</strong></span>
+              <span>Experience <strong>{destination.category}</strong></span>
+              <span>Best time <strong>{destination.bestTime}</strong></span>
+            </div>
+            <p>Conditions, access and opening details change. Ask the team for current information before confirming travel.</p>
+            <Link className="button button-dark" href={`/contact?destination=${destination.slug}`}>Ask about this place <ArrowUpRight aria-hidden="true" /></Link>
+          </aside>
+        </div>
+      </section>
+
+      {(relatedPackages.length > 0 || relatedTreks.length > 0) && <section className="section">
+        <div className="container">
+          <div className="section-heading"><div><span className="eyebrow">Continue planning</span><h2>Journeys that include<br /><em>{destination.title}.</em></h2></div><p>Sample routes are starting points only. Confirm current availability, details and conditions directly with the team.</p></div>
+          {relatedPackages.length > 0 && <div className="package-grid">{relatedPackages.slice(0, 3).map((item) => <PackageCard item={item} key={item.slug} />)}</div>}
+          {relatedTreks.length > 0 && <div className="related-treks">{relatedTreks.map((trek) => <Link className="related-trek-link" href={trek.href} key={trek.slug}><span><small>{trek.location} · {trek.duration}</small><strong>{trek.title}</strong></span><ArrowUpRight aria-hidden="true" /></Link>)}</div>}
+        </div>
+      </section>}
+
+      <JourneyCta title={`Let’s make ${destination.title} part of your journey.`} />
+    </>
+  )
+}
+
+function packageHeroImage(travelPackage: TravelPackage): DestinationImage {
+  return { src: travelPackage.image, alt: travelPackage.imageAlt, downloadUrl: '', caption: travelPackage.title, credit: travelPackage.imageCredit, license: travelPackage.imageLicense, sourceUrl: travelPackage.imageSource }
+}
+
+function browseHeroImage(item: BrowseItem): DestinationImage {
+  return { src: item.image, alt: item.imageAlt, downloadUrl: '', caption: item.title, credit: item.imageCredit, license: item.imageLicense, sourceUrl: item.imageSource }
 }
 
 export function PackageDetail({ travelPackage }: { travelPackage: TravelPackage }) {
-  return <>
-    <PageHero eyebrow={travelPackage.category} title={travelPackage.title} description={travelPackage.description} image={travelPackage.image} crumbs={[{ label: 'Tours & packages', href: '/tours' }]} />
-    <section className="section"><div className="container detail-layout"><div className="detail-main"><section><span className="eyebrow">A SAMPLE JOURNEY</span><h2>Thoughtfully paced, ready to make your own.</h2><p>{travelPackage.description} This itinerary is an editable sample and can be discussed with our team. Route details, timing and inclusions should be confirmed before travel.</p></section><section><h2>Journey highlights</h2><ul className="detail-list">{travelPackage.highlights.map((item) => <li key={item}>{item}</li>)}</ul></section><section><h2>Itinerary overview</h2><div className="itinerary">{travelPackage.itinerary.map((item) => <div className="itinerary-row" key={item.day}><span>{item.day}</span><div><h3>{item.title}</h3><p>{item.detail}</p></div></div>)}</div></section><section><h2>What’s included in this outline</h2><ul className="detail-list">{travelPackage.inclusions.map((item) => <li key={item}>{item}</li>)}</ul></section><section><h2>Not included</h2><ul className="detail-list">{travelPackage.exclusions.map((item) => <li key={item}>{item}</li>)}</ul></section></div><aside className="detail-aside"><h3>Journey details</h3><div className="detail-facts"><span><MapPin aria-hidden="true" />Places <strong>{travelPackage.destination}</strong></span><span><Clock3 aria-hidden="true" />Duration <strong>{travelPackage.duration}</strong></span><span>Activity <strong>{travelPackage.category}</strong></span><span>Price <strong>On request</strong></span></div><p>No live availability or fixed pricing is shown. Send us your preferred dates and we’ll discuss the options.</p><Link className="button" href={`/contact?tour=${travelPackage.slug}`}>Enquire about this tour <ArrowUpRight aria-hidden="true" /></Link></aside></div></section>
-    <JourneyCta title="Have a different route in mind? Let’s talk." />
-  </>
+  return (
+    <>
+      <PageHero eyebrow={travelPackage.category} title={travelPackage.title} description={travelPackage.description} image={packageHeroImage(travelPackage)} crumbs={[{ label: 'Journeys', href: '/tours' }]} />
+      <section className="section section-soft"><div className="container detail-layout">
+        <div className="detail-main">
+          <section><span className="eyebrow">A sample journey</span><h2>Thoughtfully paced, ready to make your own.</h2><p>{travelPackage.description} This itinerary is an editable sample, not a confirmed departure. Route details, timing and inclusions should be confirmed before travel.</p></section>
+          <section><h2>Journey highlights</h2><ul className="detail-list">{travelPackage.highlights.map((item) => <li key={item}>{item}</li>)}</ul></section>
+          <section><h2>Itinerary overview</h2><div className="itinerary">{travelPackage.itinerary.map((item) => <div className="itinerary-row" key={item.day}><span>{item.day}</span><div><h3>{item.title}</h3><p>{item.detail}</p></div></div>)}</div></section>
+          <section><h2>Included in this outline</h2><ul className="detail-list">{travelPackage.inclusions.map((item) => <li key={item}>{item}</li>)}</ul></section>
+          <section><h2>Not included</h2><ul className="detail-list">{travelPackage.exclusions.map((item) => <li key={item}>{item}</li>)}</ul></section>
+        </div>
+        <aside className="detail-aside"><span className="eyebrow">Journey details</span><h3>{travelPackage.title}</h3><div className="detail-facts"><span><MapPin aria-hidden="true" />Places <strong>{travelPackage.destination}</strong></span><span><Clock3 aria-hidden="true" />Duration <strong>{travelPackage.duration}</strong></span><span>Experience <strong>{travelPackage.category}</strong></span><span>Price <strong>On request</strong></span></div><p>No live availability or fixed pricing is shown. Send preferred dates to discuss the options.</p><Link className="button button-dark" href={`/contact?tour=${travelPackage.slug}`}>Enquire about this journey <ArrowUpRight aria-hidden="true" /></Link></aside>
+      </div></section>
+      <JourneyCta title="Have a different route in mind? Let’s talk." />
+    </>
+  )
 }
 
 export function TrekDetail({ trek }: { trek: BrowseItem }) {
-  return <>
-    <PageHero eyebrow={`${trek.category} · Trekking`} title={trek.title} description={trek.description} image={trek.image} crumbs={[{ label: 'Trekking', href: '/trekking' }]} />
-    <section className="section"><div className="container detail-layout"><div className="detail-main"><section><span className="eyebrow">ON THE TRAIL</span><h2>A trek shaped by the landscape.</h2><p>{trek.description} Trekking routes are subject to local conditions, weather and individual pace. We’ll help you understand the route and plan the right level of support.</p></section><section><h2>What to expect</h2><ul className="detail-list"><li>Route planning with acclimatization and rest in mind</li><li>Local guide and ground support coordination</li><li>Flexible timing based on season and conditions</li><li>Pre-trek conversation about fitness, packing and preparation</li></ul></section><section><h2>Travel notes</h2><p>Difficulty descriptions are indicative only. Fitness, altitude and weather affect every trek differently. Ask for current route information and discuss your experience with the team before confirming travel.</p></section></div><aside className="detail-aside"><h3>Trek overview</h3><div className="detail-facts"><span>Region <strong>{trek.location}</strong></span><span>Duration <strong>{trek.duration}</strong></span><span>Difficulty <strong>{trek.category}</strong></span><span>Pricing <strong>On request</strong></span></div><p>Route, services and availability are discussed directly with our team.</p><Link className="button" href={`/contact?trek=${trek.slug}`}>Enquire about this trek <ArrowUpRight aria-hidden="true" /></Link></aside></div></section>
-    <JourneyCta title="Let’s find the right trail for you." />
-  </>
+  return (
+    <>
+      <PageHero eyebrow={`${trek.category} · Trekking`} title={trek.title} description={trek.description} image={browseHeroImage(trek)} crumbs={[{ label: 'Trekking', href: '/trekking' }]} />
+      <section className="section section-soft"><div className="container detail-layout">
+        <div className="detail-main"><section><span className="eyebrow">On the trail</span><h2>A trek shaped by the landscape.</h2><p>{trek.description} Routes are subject to local conditions, weather and individual pace. Discuss the route and level of support with the team before making plans.</p></section><section><h2>What to expect</h2><ul className="detail-list"><li>Route planning with acclimatization and rest in mind</li><li>Local guide and ground support coordination</li><li>Flexible timing based on season and conditions</li><li>Pre-trek conversation about fitness and preparation</li></ul></section><section><h2>Travel notes</h2><p>Difficulty descriptions are indicative only. Fitness, altitude and weather affect every trek differently. Ask for current route information and discuss your experience before confirming travel.</p></section></div>
+        <aside className="detail-aside"><span className="eyebrow">Trek overview</span><h3>{trek.title}</h3><div className="detail-facts"><span>Region <strong>{trek.location}</strong></span><span>Duration <strong>{trek.duration}</strong></span><span>Difficulty <strong>{trek.category}</strong></span><span>Pricing <strong>On request</strong></span></div><p>Route, services and availability are discussed directly with the team.</p><Link className="button button-dark" href={`/contact?trek=${trek.slug}`}>Enquire about this trek <ArrowUpRight aria-hidden="true" /></Link></aside>
+      </div></section>
+      <JourneyCta title="Let’s find the right trail for you." />
+    </>
+  )
 }
 
 export function ArticleDetail({ article }: { article: Article }) {
-  return <>
-    <PageHero eyebrow={`${article.category} · ${article.readingTime}`} title={article.title} description={article.excerpt} image={article.image} crumbs={[{ label: 'Travel journal', href: '/blog' }]} />
-    <article className="section"><div className="container article-reading"><Link className="text-link" href="/blog"><ArrowLeft aria-hidden="true" /> Back to the journal</Link><div className="article-content">{article.content.map((paragraph, index) => <p key={index}>{paragraph}</p>)}</div><p className="article-note">This guide is sample editorial content and should be reviewed and updated by Teenkanya before publication.</p></div></article>
-    <JourneyCta title="Need help planning your Nepal trip?" />
-  </>
+  const image = { src: article.image, alt: article.imageAlt, downloadUrl: '', caption: article.title, credit: article.imageCredit, license: article.imageLicense, sourceUrl: article.imageSource }
+  return (
+    <>
+      <PageHero eyebrow={`${article.category} · ${article.readingTime}`} title={article.title} description={article.excerpt} image={image} crumbs={[{ label: 'Travel journal', href: '/blog' }]} />
+      <article className="section section-soft"><div className="container article-reading"><Link className="text-link" href="/blog"><ArrowLeft aria-hidden="true" /> Back to the journal</Link><div className="article-content">{article.content.map((paragraph, index) => <p key={index}>{paragraph}</p>)}</div><p className="article-note">This is sample editorial content. Teenkanya should review it against current local guidance before publication.</p></div></article>
+      <JourneyCta title="Need help planning your Nepal trip?" />
+    </>
+  )
 }

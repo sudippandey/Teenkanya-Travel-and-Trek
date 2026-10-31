@@ -1,23 +1,60 @@
-import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowUpRight } from 'lucide-react'
-import { JourneyCta, PageHero, PageIntro } from '@/components/page-templates'
+import type { Metadata } from 'next'
+import { JourneyCta, PageHero } from '@/components/page-templates'
+import { PhotoCredit } from '@/components/photo-credit'
+import { destinationPhotos } from '@/lib/travel-data'
 
-export const metadata: Metadata = { title: 'About Us', description: 'Meet Teenkanya Travel & Trek, a Kathmandu-based company helping travelers plan thoughtful journeys through Nepal.' }
+export const metadata: Metadata = {
+  title: 'About Teenkanya',
+  description: 'Teenkanya Travel & Trek is based in Kathmandu and helps travelers plan thoughtful journeys through Nepal.',
+  alternates: { canonical: '/about' },
+  openGraph: {
+    title: 'About Teenkanya Travel & Trek',
+    description: 'A Kathmandu-based starting point for thoughtful journeys through Nepal.',
+    images: [destinationPhotos.kathmandu[7].src],
+  },
+}
 
-const values = [
-  ['01', 'Personal planning', 'Journeys shaped around your interests, time and travel style.'],
-  ['02', 'Local perspective', 'Practical context and place knowledge rooted in Kathmandu.'],
-  ['03', 'Clear communication', 'Helpful guidance, realistic expectations and room for questions.'],
-  ['04', 'Respectful travel', 'A considered approach to the places and communities that welcome visitors.'],
+const approach = [
+  ['01', 'Start with your interests', 'Choose the places, pace and experiences that matter most to you.'],
+  ['02', 'Plan with local context', 'Talk through routes and practical details with a team based in Kathmandu.'],
+  ['03', 'Leave room for the journey', 'Keep plans flexible where weather, access and local conditions can change.'],
 ]
 
 export default function AboutPage() {
+  const storyImage = destinationPhotos.kathmandu[6]
+
   return <>
-    <PageHero eyebrow="ABOUT TEENKANYA" title="Travel, with a little more meaning." description="A Kathmandu-based travel company helping you discover Nepal at your own pace." image="https://images.unsplash.com/photo-1605640840605-14ac1855827b?auto=format&fit=crop&w=1800&q=85" />
-    <section className="section"><div className="container editorial-section"><div className="editorial-image"><img src="https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1200&q=85" alt="Intricate traditional architecture in Nepal" loading="lazy" /></div><div className="editorial-copy"><span className="eyebrow">OUR INTRODUCTION</span><h2>Rooted in Kathmandu. <em>Open to the world.</em></h2><p>Teenkanya Travel &amp; Trek Pvt. Ltd. is based in Kathmandu, Nepal. We help travelers explore the country through cultural visits, thoughtfully planned holidays and trekking journeys.</p><p>This page is the beginning of our digital story. As the company shares more about its origins and team, this introduction can grow with verified details.</p><Link className="text-link" href="/contact">Start a conversation</Link></div></div></section>
-    <section className="section section-soft"><div className="container"><PageIntro label="WHAT WE BELIEVE" title="Travel should feel considered, from the first question to the last day." >We want every journey to begin with a good conversation: what matters to you, how you like to travel, and what you hope to discover.</PageIntro><div className="value-grid">{values.map(([number, title, description]) => <article className="value-card" key={number}><span>{number}</span><h3>{title}</h3><p>{description}</p></article>)}</div></div></section>
-    <section className="section"><div className="container"><div className="section-heading"><div><span className="eyebrow">OUR VISION &amp; MISSION</span><h2>A better way to <em>begin.</em></h2></div><p>These guiding statements are a working introduction, ready to be refined by the Teenkanya team.</p></div><div className="experience-grid about-purpose"><article className="experience-card"><span className="experience-number">OUR VISION</span><h3>Make Nepal feel closer.</h3><p>Help travelers connect with Nepal’s places and people through journeys that feel welcoming, thoughtful and personal.</p></article><article className="experience-card"><span className="experience-number">OUR MISSION</span><h3>Make planning simpler.</h3><p>Offer clear guidance and flexible travel ideas so visitors can explore Nepal with confidence and curiosity.</p></article><article className="experience-card"><span className="experience-number">OUR TEAM</span><h3>People behind the plans.</h3><p>Team profiles will be added here when Teenkanya provides verified names, roles and photographs.</p><Link className="text-link" href="/contact">Meet us through a conversation</Link></article></div></div></section>
-    <section className="section"><div className="container"><div className="cta-band"><div><span className="eyebrow">KATHMANDU, NEPAL</span><h2>Tell us what brings you here.</h2></div><Link className="button" href="/contact">Get in touch <ArrowUpRight aria-hidden="true" /></Link></div></div></section>
+    <PageHero eyebrow="ABOUT TEENKANYA" title="Travel, with a little more meaning." description="A Kathmandu-based travel company helping you discover Nepal at your own pace." image={destinationPhotos.kathmandu[7]} />
+    <section className="section">
+      <div className="container editorial-section">
+        <figure className="editorial-image">
+          <Image src={storyImage.src} alt={storyImage.alt} fill sizes="(max-width: 780px) 100vw, 52vw" />
+          <figcaption><PhotoCredit credit={storyImage.credit} license={storyImage.license} sourceUrl={storyImage.sourceUrl} /></figcaption>
+        </figure>
+        <div className="editorial-copy">
+          <span className="eyebrow">A Kathmandu starting point</span>
+          <h2>Rooted in Nepal. <em>Open to your way.</em></h2>
+          <p>Teenkanya Travel &amp; Trek Pvt. Ltd. is based in Kathmandu, Nepal. We help travelers explore the country through cultural visits, holiday itineraries and trekking journeys.</p>
+          <p>Every good plan begins with a conversation about what you hope to see, the time you have and how you like to travel.</p>
+          <div className="editorial-points"><span>Thoughtful route ideas</span><span>Clear practical details</span><span>Room to ask questions</span><span>Flexible travel planning</span></div>
+          <Link className="text-link" href="/contact">Start a conversation</Link>
+        </div>
+      </div>
+    </section>
+    <section className="section section-forest">
+      <div className="container">
+        <div className="section-heading section-heading-inverse"><div><span className="eyebrow eyebrow-light">OUR APPROACH</span><h2>A journey shaped<br /><em>around you.</em></h2></div><p>We want planning to feel as thoughtful as the journey itself: grounded in real places, clear about practical details and open to what matters most to you.</p></div>
+        <div className="principles-grid">
+          {approach.map(([number, title, description]) => <article className="principle-item" key={number}>
+            <span className="principle-number">{number}</span>
+            <h3>{title}</h3>
+            <p>{description}</p>
+          </article>)}
+        </div>
+      </div>
+    </section>
+    <JourneyCta title="Tell us what brings you to Nepal." />
   </>
 }
