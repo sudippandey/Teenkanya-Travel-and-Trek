@@ -11,11 +11,12 @@ export const metadata: Metadata = {
 }
 
 export default async function Page() {
-  const [destinationItems, packageItems, articles, packages] = await Promise.all([
+  const [destinationItems, packageItems, articles, packages, treks] = await Promise.all([
     travelCatalog.listDestinationCards(),
     travelCatalog.listPackageCards(),
     travelCatalog.listArticles(),
     travelCatalog.listPackages(),
+    travelCatalog.listTreks(),
   ])
-  return <HomePage destinationItems={destinationItems} packageItems={packageItems} articles={articles} packages={packages} />
+  return <HomePage destinationItems={destinationItems} packageItems={packageItems} articles={articles} packages={packages} treks={treks} />
 }
