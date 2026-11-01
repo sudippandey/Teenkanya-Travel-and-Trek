@@ -141,7 +141,7 @@ export function HomePage({ destinationItems, packageItems, articles, packages, t
             <h1>Find your way<br />into <em>Nepal.</em></h1>
             <p className="hero-copy">From Kathmandu&apos;s living courtyards to the high trails of the Khumbu, plan a journey at your own pace.</p>
             <div className="hero-actions">
-              <Magnetic><Link className="button button-light" href="/destinations" data-cursor-label="MOVE">Explore destinations <ArrowUpRight aria-hidden="true" /></Link></Magnetic>
+              <Magnetic><Link className="button button-dark" href="/destinations" data-cursor-label="MOVE">Explore destinations <ArrowUpRight aria-hidden="true" /></Link></Magnetic>
               <Magnetic><Link className="button button-outline-light" href="/contact" data-cursor-label="MOVE">Plan with us <ArrowUpRight aria-hidden="true" /></Link></Magnetic>
             </div>
           </div>
@@ -248,7 +248,7 @@ export function HomePage({ destinationItems, packageItems, articles, packages, t
         <div className="container">
           <div className="cta-band">
             <Image className="cta-band-image" src={destinationPhotos.pokhara[2].src} alt="" fill sizes="(max-width: 780px) 100vw, 1240px" loading="lazy" />
-            <div className="cta-band-content"><span className="eyebrow">Your Nepal story starts here</span><h2>Let&apos;s plan your next journey.</h2></div>
+            <div className="cta-band-content"><span className="eyebrow">Your Nepal story starts here</span><h2>Let&apos;s plan <em>your next journey.</em></h2></div>
             <Magnetic><Link className="button button-dark" href="/contact" data-cursor-label="MOVE">Talk to our team <ArrowUpRight aria-hidden="true" /></Link></Magnetic>
             <PhotoCredit className="cta-photo-credit" credit={destinationPhotos.pokhara[2].credit} license={destinationPhotos.pokhara[2].license} sourceUrl={destinationPhotos.pokhara[2].sourceUrl} />
           </div>

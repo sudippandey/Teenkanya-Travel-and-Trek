@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowUpRight, Menu, X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const links = [
   { label: 'About', href: '/about' },
@@ -16,6 +16,14 @@ const links = [
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const updateScrolled = () => setScrolled(window.scrollY > 12)
+    updateScrolled()
+    window.addEventListener('scroll', updateScrolled, { passive: true })
+    return () => window.removeEventListener('scroll', updateScrolled)
+  }, [])
 
   return (
     <>
@@ -25,11 +33,10 @@ export function SiteHeader() {
           <a href="tel:+9779851248173">Kathmandu · +977 985 124 8173</a>
         </div>
       </div>
-      <header className="site-header">
+      <header className={scrolled ? 'site-header is-scrolled' : 'site-header'}>
         <div className="container header-inner">
           <Link className="brand" href="/" aria-label="Teenkanya Travel & Trek home" onClick={() => setOpen(false)}>
-            <Image src="/teenkanya-logo.jpg" width={64} height={64} alt="" priority className="brand-image" />
-            <span className="brand-copy"><strong>Teenkanya</strong><small>Travel &amp; Trek</small></span>
+            <Image src="/teenkanya-logo.png" width={1613} height={924} alt="" priority className="brand-image" />
           </Link>
           <nav className="desktop-nav" aria-label="Main navigation">
             {links.map((link) => <Link key={link.href} href={link.href}>{link.label}</Link>)}
