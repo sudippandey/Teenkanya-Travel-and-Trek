@@ -1,5 +1,5 @@
 import type { EnquiryDeliverySnapshot } from './submission-workflow'
-import { getEnquiryCatalogueContext } from './catalogue-context'
+import { getEnquiryCatalogueContext } from './catalogue-context.ts'
 
 const web3FormsEndpoint = 'https://api.web3forms.com/submit'
 
