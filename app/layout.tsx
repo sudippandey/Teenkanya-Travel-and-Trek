@@ -2,6 +2,7 @@ import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
+import { LenisProvider } from '@/components/layout/lenis-provider';
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -33,9 +34,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className="antialiased">
         <a className="skip-link" href="#main-content">Skip to content</a>
         <SiteHeader />
-        <main id="main-content">{children}</main>
-        <SiteFooter />
-        {process.env.NODE_ENV === 'production' && <Analytics />}
+        <LenisProvider>
+          <main id="main-content">{children}</main>
+          <SiteFooter />
+          {process.env.NODE_ENV === 'production' && <Analytics />}
+        </LenisProvider>
       </body>
     </html>
   )
