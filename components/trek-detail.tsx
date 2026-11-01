@@ -55,6 +55,20 @@ export function TrekDetail({ trek }: { trek: Trek }) {
             </section>
 
             <section>
+              <h2>When to consider this route</h2>
+              <p>{trek.bestSeason}</p>
+              <div className="trek-season-calendar">
+                {trek.seasonCalendar.map((period) => (
+                  <article key={period.season}>
+                    <h3>{period.season}</h3>
+                    <p>{period.conditions}</p>
+                    <small>{period.planning}</small>
+                  </article>
+                ))}
+              </div>
+            </section>
+
+            <section>
               <h2>Accommodation on the trail</h2>
               <ul className="detail-list">{trek.accommodation.map((item) => <li key={item}>{item}</li>)}</ul>
             </section>
@@ -68,6 +82,18 @@ export function TrekDetail({ trek }: { trek: Trek }) {
               <h2>Altitude and safety</h2>
               <p>{trek.altitudeNote}</p>
               <ul className="detail-list">{trek.safetyNotes.map((item) => <li key={item}>{item}</li>)}</ul>
+            </section>
+
+            <section>
+              <h2>Common questions</h2>
+              <div className="trek-faq-list">
+                {trek.faqs.map((faq) => (
+                  <article key={faq.question}>
+                    <h3>{faq.question}</h3>
+                    <p>{faq.answer}</p>
+                  </article>
+                ))}
+              </div>
             </section>
 
             <section>
