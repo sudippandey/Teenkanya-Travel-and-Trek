@@ -3,7 +3,7 @@
 import { useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowDownRight, ArrowUpRight, Compass, HeartHandshake, MapPinned } from 'lucide-react';
+import { ArrowDownRight, ArrowUpRight } from 'lucide-react';
 import { JourneyFinder } from '@/components/journey-finder';
 import { TravelGallery } from '@/components/travel-gallery';
 import { ArticleCard, DestinationCard, PackageCard } from '@/components/travel-cards';
@@ -12,12 +12,6 @@ import { ScrollReveal } from '@/components/scroll-reveal';
 import { destinationPhotos, galleryImages } from '@/lib/travel-data';
 import { gsap, ScrollTrigger, useGSAP } from '@/lib/gsap';
 import type { Article, BrowseItem, TravelPackage } from '@/lib/travel-data';
-
-const principles = [
-  { icon: Compass, title: 'Made around your pace', text: 'Start with the places and experiences that matter to you.' },
-  { icon: MapPinned, title: 'Grounded in place', text: 'Plan from Kathmandu with local context and practical detail.' },
-  { icon: HeartHandshake, title: 'Thought through together', text: 'Use each conversation to shape a route that feels right.' },
-];
 
 export function HomePage({ destinationItems, packageItems, articles, packages, treks }: { destinationItems: BrowseItem[]; packageItems: BrowseItem[]; articles: Article[]; packages: TravelPackage[]; treks: BrowseItem[] }) {
   const heroRef = useRef<HTMLElement>(null);
@@ -29,27 +23,21 @@ export function HomePage({ destinationItems, packageItems, articles, packages, t
       const trigger = heroRef.current;
       if (!trigger) return;
 
-      const q = (sel: string) => Array.from(trigger.querySelectorAll(sel));
+      const q = (selector: string) => Array.from(trigger.querySelectorAll(selector));
+      const entrance = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: trigger,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: 1.2,
-        },
-      });
+      entrance
+        .from(q('.hero-kicker'), { y: 18, autoAlpha: 0, duration: 0.55 })
+        .from(q('.hero h1'), { y: 34, autoAlpha: 0, duration: 0.8 }, '-=0.3')
+        .from(q('.hero-copy'), { y: 22, autoAlpha: 0, duration: 0.65 }, '-=0.4')
+        .from(q('.hero-actions'), { y: 18, autoAlpha: 0, duration: 0.6 }, '-=0.35')
+        .from(q('.hero-bottomline'), { y: 14, autoAlpha: 0, duration: 0.55 }, '-=0.3');
 
-      tl.from(q('.hero-kicker'), { yPercent: 70, autoAlpha: 0, duration: 0.6, ease: 'power3.out' }, '<');
-      tl.from(q('.hero h1'), { yPercent: 60, autoAlpha: 0, duration: 0.8, ease: 'power3.out' }, '<');
-      tl.from(q('.hero h1 em'), { scale: 0.86, autoAlpha: 0, duration: 0.6, ease: 'back.out(1.6)' }, '<');
-      tl.from(q('.hero-copy'), { y: 26, autoAlpha: 0, duration: 0.7, ease: 'power3.out' }, '<');
-      tl.from(q('.hero-actions'), { y: 26, autoAlpha: 0, duration: 0.7, ease: 'power3.out' }, '<');
-      tl.from(q('.hero-bottomline'), { y: 18, autoAlpha: 0, duration: 0.7, ease: 'power3.out' }, '<');
+      return () => entrance.revert();
     });
 
     return () => mm.revert();
-  });
+  }, { scope: heroRef });
 
   const heroImage = destinationPhotos['everest-region'][0];
   const featuredDestination = destinationItems.find((item) => item.slug === 'pokhara');
@@ -68,7 +56,7 @@ export function HomePage({ destinationItems, packageItems, articles, packages, t
             <h1>Find your way<br />into <em>Nepal.</em></h1>
             <p className="hero-copy">From Kathmandu&apos;s living courtyards to the high trails of the Khumbu, plan a journey at your own pace.</p>
             <div className="hero-actions">
-              <Link className="button button-light" href="/destinations"><ArrowUpRight aria-hidden="true" /></Link>
+              <Link className="button button-light" href="/destinations">Explore destinations <ArrowUpRight aria-hidden="true" /></Link>
               <Link className="button button-outline-light" href="/contact">Plan with us <ArrowUpRight aria-hidden="true" /></Link>
             </div>
           </div>
