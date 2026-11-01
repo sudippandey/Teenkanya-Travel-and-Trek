@@ -85,10 +85,14 @@ export async function processEnquirySubmission(
     notificationSucceeded = false
   }
 
+  // The persisted row is authoritative: content-deduplicated submissions can
+  // have a different submissionId from the request that originally created it.
+  const persistedSubmissionId = persisted.deliverySnapshot.submissionId
+
   if (!notificationSucceeded) {
     let statusUpdateFailed = false
     try {
-      await dependencies.updateNotificationStatus(validation.value.submissionId, 'failed')
+      await dependencies.updateNotificationStatus(persistedSubmissionId, 'failed')
     } catch {
       statusUpdateFailed = true
     }
@@ -102,7 +106,7 @@ export async function processEnquirySubmission(
 
   let statusUpdateFailed = false
   try {
-    await dependencies.updateNotificationStatus(validation.value.submissionId, 'sent')
+    await dependencies.updateNotificationStatus(persistedSubmissionId, 'sent')
   } catch {
     statusUpdateFailed = true
   }
