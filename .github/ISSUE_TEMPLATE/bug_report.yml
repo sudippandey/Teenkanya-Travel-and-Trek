@@ -1,0 +1,50 @@
+name: Bug report
+description: Report a reproducible problem with the website or enquiry flow.
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "Please do not include passwords, API keys, customer details or other private information."
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the issue clearly.
+      placeholder: The contact form shows an error after submitting valid details.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: List the steps needed to see the issue.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - Home page
+        - Destinations
+        - Tours and packages
+        - Trekking
+        - Journey finder
+        - Travel services
+        - Travel journal
+        - Contact and enquiries
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      placeholder: Safari on macOS, Chrome on Android, etc.
