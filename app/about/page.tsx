@@ -38,7 +38,7 @@ export default function AboutPage() {
           <h2>Rooted in Nepal. <em>Open to your way.</em></h2>
           <p>Teenkanya Travel &amp; Trek Pvt. Ltd. is based in Kathmandu, Nepal. We help travelers explore the country through cultural visits, holiday itineraries and trekking journeys.</p>
           <p>Every good plan begins with a conversation about what you hope to see, the time you have and how you like to travel.</p>
-          <div className="editorial-points"><span>Thoughtful route ideas</span><span>Clear practical details</span><span>Room to ask questions</span><span>Flexible travel planning</span></div>
+          <Magnetic className="editorial-points-magnetic"><div className="editorial-points"><span>Thoughtful route ideas</span><span>Clear practical details</span><span>Room to ask questions</span><span>Flexible travel planning</span></div></Magnetic>
           <Link className="text-link" href="/contact">Start a conversation</Link>
         </div>
       </div>

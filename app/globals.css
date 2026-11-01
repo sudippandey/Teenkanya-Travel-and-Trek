@@ -818,3 +818,11 @@ figure { margin: 0; }
   }
 }
 
+
+/* About page editorial points magnetic */
+.editorial-points-magnetic {
+  cursor: pointer;
+}
+.editorial-points-magnetic :active {
+  transform: scale(0.98) !important;
+}
