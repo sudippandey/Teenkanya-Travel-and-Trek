@@ -23,17 +23,16 @@ export function LenisProvider({ children }: { children: React.ReactNode }) {
     });
 
     const ticker = gsap.ticker;
-    ticker.lagSmoothing(0);
-
     const tick = (time: number) => {
-      lenis.raf(time);
+      // GSAP ticker time is seconds; Lenis.raf expects milliseconds.
+      lenis.raf(time * 1000);
       ScrollTrigger.update();
     };
 
-    const subId = ticker.add(tick);
+    ticker.add(tick);
 
     return () => {
-      ticker.remove(subId);
+      ticker.remove(tick);
       lenis.destroy();
     };
   }, []);
