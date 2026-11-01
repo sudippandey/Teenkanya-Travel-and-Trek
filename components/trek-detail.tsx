@@ -1,7 +1,5 @@
-import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowUpRight, Clock3, MapPin, ShieldCheck, Mountain, CalendarDays, BedDouble, Backpack } from 'lucide-react'
-import { PhotoCredit } from '@/components/photo-credit'
+import { ArrowUpRight, Clock3, MapPin, ShieldCheck, Mountain, CalendarDays, BedDouble } from 'lucide-react'
 import { JourneyCta, PageHero } from '@/components/page-templates'
 import type { BrowseItem, DestinationImage } from '@/lib/travel-data'
 import type { TrekProfile } from '@/lib/trekking-data'
