@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { ArrowUpRight, Check } from 'lucide-react'
+import type { EnquiryCatalogueContext } from '@/lib/enquiries/catalogue-context'
 
 interface EnquiryResponse {
   status?: unknown
@@ -24,7 +25,7 @@ function getFieldErrors(value: unknown) {
   )
 }
 
-export function ContactForm() {
+export function ContactForm({ catalogueContext }: { catalogueContext: EnquiryCatalogueContext | null }) {
   const submissionId = useRef<string | null>(null)
   const successRef = useRef<HTMLDivElement>(null)
   const [submitted, setSubmitted] = useState(false)
@@ -65,6 +66,8 @@ export function ContactForm() {
       travelStartDate: formData.get('travelStartDate'),
       datesFlexible: formData.get('datesFlexible') === 'on',
       travellerCount: formData.get('travellerCount') || null,
+      catalogueItemType: catalogueContext?.catalogueItemType ?? null,
+      catalogueItemSlug: catalogueContext?.slug ?? null,
       website: formData.get('website'),
     }
 
@@ -162,7 +165,7 @@ export function ContactForm() {
           {fieldErrors.preferredContactChannel && <span className="field-error" id="enquiry-contact-channel-error">{fieldErrors.preferredContactChannel}</span>}
         </label>
         <label htmlFor="enquiry-interest">What are you planning?
-          <select id="enquiry-interest" name="interest" defaultValue="" required disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.interest)} aria-describedby={fieldErrors.interest ? 'enquiry-interest-error' : undefined}>
+          <select id="enquiry-interest" name="interest" defaultValue={catalogueContext?.interest ?? ''} required disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.interest)} aria-describedby={fieldErrors.interest ? 'enquiry-interest-error' : undefined}>
             <option value="" disabled>Select an interest</option><option value="tour">Tour or holiday</option><option value="trekking">Trekking</option><option value="travel_service">Travel service</option><option value="other">Something else</option>
           </select>
           {fieldErrors.interest && <span className="field-error" id="enquiry-interest-error">{fieldErrors.interest}</span>}
@@ -192,6 +195,8 @@ export function ContactForm() {
       </div>}
       <div className="form-submit-row"><p>Sending an enquiry does not confirm a booking. Our team will follow up using your preferred contact method.</p><button className="button button-primary" type="submit" disabled={isSubmitting}>{isSubmitting ? 'Sending…' : submissionLocked ? 'Retry submission' : 'Send an enquiry'} <ArrowUpRight aria-hidden="true" /></button></div>
       <p className="form-disclaimer">Your details are used to respond to this enquiry. If a saved enquiry cannot be emailed, retrying uses the same reference and does not create a duplicate.</p>
+      {catalogueContext && <input type="hidden" name="catalogueItemType" value={catalogueContext.catalogueItemType} />}
+      {catalogueContext && <input type="hidden" name="catalogueItemSlug" value={catalogueContext.slug} />}
     </form>}
   </div>
 }
