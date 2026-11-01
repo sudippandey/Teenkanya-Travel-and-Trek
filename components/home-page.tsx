@@ -85,7 +85,7 @@ export function HomePage({ destinationItems, packageItems, articles, packages, t
             {featuredDestination && <ScrollReveal className="home-destination-feature"><DestinationCard item={featuredDestination} featured /></ScrollReveal>}
             <div className="home-destination-list">
               {supportingDestinations.map((item, index) => (
-                <ScrollReveal key={item.slug} delay={index * 80}><DestinationCard item={item} /></ScrollReveal>
+                <ScrollReveal key={item.slug} delay={index * 80}><DestinationCard item={item} compact /></ScrollReveal>
               ))}
             </div>
           </div>
