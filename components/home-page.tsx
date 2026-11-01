@@ -15,7 +15,7 @@ const principles = [
   { icon: HeartHandshake, title: 'Thought through together', text: 'Use each conversation to shape a route that feels right.' },
 ]
 
-export function HomePage({ destinationItems, packageItems, articles, packages }: { destinationItems: BrowseItem[]; packageItems: BrowseItem[]; articles: Article[]; packages: TravelPackage[] }) {
+export function HomePage({ destinationItems, packageItems, articles, packages, treks }: { destinationItems: BrowseItem[]; packageItems: BrowseItem[]; articles: Article[]; packages: TravelPackage[]; treks: BrowseItem[] }) {
   const heroImage = destinationPhotos['everest-region'][0]
   const featuredDestination = destinationItems.find((item) => item.slug === 'pokhara')
   const supportingDestinations = destinationItems.filter((item) => ['kathmandu', 'mustang', 'chitwan'].includes(item.slug))
@@ -44,7 +44,7 @@ export function HomePage({ destinationItems, packageItems, articles, packages }:
       </section>
 
       <section className="discovery-wrap container" id="discover" aria-label="Find a journey">
-        <JourneyFinder packages={packages} />
+        <JourneyFinder packages={packages} destinations={destinationItems} treks={treks} />
       </section>
 
       <section className="section section-destinations">
