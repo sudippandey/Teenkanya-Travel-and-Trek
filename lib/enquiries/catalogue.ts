@@ -1,12 +1,13 @@
-import { destinations, packages, treks } from '@/lib/travel-data'
 import type { CatalogueItemType } from './validation'
+import { getEnquiryCatalogueContext, type CatalogueKind } from './catalogue-context'
 
-const catalogueSlugs: Record<CatalogueItemType, ReadonlySet<string>> = {
-  destination: new Set(destinations.map((item) => item.slug)),
-  package: new Set(packages.map((item) => item.slug)),
-  trek: new Set(treks.map((item) => item.slug)),
+const kindByType: Record<CatalogueItemType, CatalogueKind> = {
+  destination: 'destination',
+  package: 'tour',
+  trek: 'trek',
 }
 
+/** Compatibility adapter for the existing server-side validation contract. */
 export function isKnownCatalogueItem(type: CatalogueItemType, slug: string) {
-  return catalogueSlugs[type].has(slug)
+  return getEnquiryCatalogueContext(kindByType[type], slug) !== null
 }
