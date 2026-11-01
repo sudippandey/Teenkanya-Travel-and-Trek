@@ -1,4 +1,5 @@
 import type { EnquiryDeliverySnapshot } from './submission-workflow'
+import { getEnquiryCatalogueContext } from './catalogue-context'
 
 const web3FormsEndpoint = 'https://api.web3forms.com/submit'
 
@@ -30,6 +31,10 @@ export function createWeb3FormsNotifier({
       return { success: false, reason: 'configuration' }
     }
 
+    const catalogueContext = enquiry.catalogueItemType && enquiry.catalogueItemSlug
+      ? getEnquiryCatalogueContext(enquiry.catalogueItemType === 'package' ? 'tour' : enquiry.catalogueItemType, enquiry.catalogueItemSlug)
+      : null
+
     const message = [
       `Reference: ${enquiry.reference}`,
       `Name: ${enquiry.fullName}`,
@@ -38,9 +43,7 @@ export function createWeb3FormsNotifier({
       enquiry.countryOfResidence ? `Country of residence: ${enquiry.countryOfResidence}` : null,
       `Preferred contact: ${enquiry.preferredContactChannel}`,
       `Interest: ${enquiry.interest}`,
-      enquiry.catalogueItemType && enquiry.catalogueItemSlug
-        ? `Trip: ${enquiry.catalogueItemType} / ${enquiry.catalogueItemSlug}`
-        : null,
+      catalogueContext ? `Selected ${catalogueContext.kind}: ${catalogueContext.title} (${catalogueContext.href})` : null,
       enquiry.travelStartDate ? `Travel date: ${enquiry.travelStartDate}` : null,
       `Dates flexible: ${enquiry.datesFlexible ? 'Yes' : 'No'}`,
       enquiry.travellerCount ? `Travellers: ${enquiry.travellerCount}` : null,
