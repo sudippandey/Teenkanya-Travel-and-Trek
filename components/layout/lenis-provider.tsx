@@ -6,15 +6,12 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 /**
- * Lenis smooth-scroll provider, mounted in the root layout.
- * Drives Lenis from the GSAP ticker so ScrollTrigger and Lenis share one clock.
- * Disabled automatically for visitors who set prefers-reduced-motion.
+ * Keeps Lenis and ScrollTrigger on the same animation clock.
+ * Native scrolling remains available when reduced motion is requested.
  */
 export function LenisProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    const prefersReducedMotion =
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const lenis = new Lenis({
       duration: 1.2,
@@ -22,18 +19,17 @@ export function LenisProvider({ children }: { children: React.ReactNode }) {
       smoothWheel: true,
     });
 
-    const ticker = gsap.ticker;
-    ticker.lagSmoothing(0);
-
     const tick = (time: number) => {
-      lenis.raf(time);
-      ScrollTrigger.update();
+      // GSAP ticker time is seconds; Lenis.raf expects milliseconds.
+      lenis.raf(time * 1000);
     };
 
-    const subId = ticker.add(tick);
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add(tick);
 
     return () => {
-      ticker.remove(subId);
+      gsap.ticker.remove(tick);
+      lenis.off('scroll', ScrollTrigger.update);
       lenis.destroy();
     };
   }, []);
