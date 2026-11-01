@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { ArrowLeft, ArrowUpRight, Clock3, MapPin } from 'lucide-react'
 import { PhotoCredit } from '@/components/photo-credit'
 import { TravelGallery } from '@/components/travel-gallery'
+import { DestinationHero } from '@/components/cinematic/DestinationHero'
 import { DestinationCard, PackageCard } from '@/components/travel-cards'
 import type { Article, BrowseItem, Destination, DestinationImage, TravelPackage } from '@/lib/travel-data'
 
@@ -56,7 +57,7 @@ export function DestinationDetail({ destination, relatedPackages = [], relatedTr
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(destinationJsonLd).replace(/</g, '\\u003c') }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd).replace(/</g, '\\u003c') }} />
-      <PageHero eyebrow={destination.region} title={destination.title} description={destination.description} image={destination.heroImage} crumbs={[{ label: 'Destinations', href: '/destinations' }]} />
+      <DestinationHero destination={destination} image={destination.heroImage} />
 
       <section className="section destination-gallery-section">
         <div className="container">
