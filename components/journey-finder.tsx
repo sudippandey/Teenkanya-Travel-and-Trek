@@ -13,6 +13,7 @@ type FinderResult = {
   location: string
   duration?: string
   description: string
+  category: string
   href: string
 }
 
@@ -66,14 +67,14 @@ export function JourneyFinder({ packages, destinations, treks }: { packages: Tra
       ? [selectedDestination.slug.replaceAll('-', ' '), selectedDestination.title, selectedDestination.title.split(' ')[0]]
       : []
     const searchable = [
-      ...destinations.map((item): FinderResult => ({ kind: 'destination', slug: item.slug, title: item.title, location: item.location, description: item.description, href: resultHref('destination', item.slug) })),
-      ...packages.map((item): FinderResult => ({ kind: 'tour', slug: item.slug, title: item.title, location: item.destination, duration: item.duration, description: item.description, href: resultHref('tour', item.slug) })),
-      ...treks.map((item): FinderResult => ({ kind: 'trek', slug: item.slug, title: item.title, location: item.location, duration: item.duration, description: item.description, href: resultHref('trek', item.slug) })),
+      ...destinations.map((item): FinderResult => ({ kind: 'destination', slug: item.slug, title: item.title, location: item.location, description: item.description, category: item.category, href: resultHref('destination', item.slug) })),
+      ...packages.map((item): FinderResult => ({ kind: 'tour', slug: item.slug, title: item.title, location: item.destination, duration: item.duration, description: item.description, category: item.category, href: resultHref('tour', item.slug) })),
+      ...treks.map((item): FinderResult => ({ kind: 'trek', slug: item.slug, title: item.title, location: item.location, duration: item.duration, description: item.description, category: item.category, href: resultHref('trek', item.slug) })),
     ]
     return searchable.filter((item) => {
-      const searchableText = `${item.title} ${item.location} ${item.description} ${item.slug}`.toLowerCase()
+      const searchableText = `${item.title} ${item.location} ${item.description} ${item.category} ${item.slug}`.toLowerCase()
       const matchesDestination = destination === ANY_DESTINATION || placeTokens.some((token) => searchableText.includes(token.toLowerCase()))
-      const matchesCategory = category === ANY_EXPERIENCE || (category === 'Trekking' ? item.kind === 'trek' || searchableText.includes('trekking') : searchableText.toLowerCase().includes(category.toLowerCase()))
+      const matchesCategory = category === ANY_EXPERIENCE || (category === 'Trekking' ? item.kind === 'trek' || item.category === 'Trekking' : item.category === category)
       const days = Number(item.duration?.match(/\d+/)?.[0] ?? 0) || undefined
       return matchesDestination && matchesCategory && matchesDuration(days, duration)
     })
