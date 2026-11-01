@@ -64,7 +64,6 @@ export const trekProfiles: Record<string, TrekProfile> = {
       { question: 'What permits should I expect?', answer: 'The route enters Sagarmatha National Park. Nepal Tourism Board currently lists Everest Base Camp routes among those requiring a licensed guide and agency-issued TIMS card. The team should confirm current requirements for the exact route and traveller.' },
       { question: 'Can the itinerary be changed?', answer: 'The published outline is a starting point. Ask the team to confirm the walking stages, acclimatisation days, overnight stops and services before treating it as an operating itinerary.' },
     ],
-    ],
     preparation: [
       'Build a conservative acclimatisation schedule into the agreed itinerary.',
       'Use broken-in trekking footwear and layered clothing suitable for changing temperatures.',
@@ -108,7 +107,6 @@ export const trekProfiles: Record<string, TrekProfile> = {
       { question: 'What is the highest altitude?', answer: 'A maximum altitude is not published for this sample walk because the exact route has not been selected. The team should confirm the highest point and sleeping elevations in the proposed itinerary.' },
       { question: 'Which permits are needed?', answer: 'Routes entering the Annapurna Conservation Area require the relevant conservation-area entry permit. Other requirements depend on the precise route and current government rules; confirm before departure.' },
       { question: 'Is this suitable for first-time trekkers?', answer: 'The current “Moderate” label is indicative only. Suitability depends on the actual route, daily walking, elevation, health and previous experience, so discuss these with the team before choosing.' },
-    ],
     ],
     preparation: [
       'Choose the exact trail and daily walking plan before finalising a packing list.',
@@ -156,7 +154,6 @@ export const trekProfiles: Record<string, TrekProfile> = {
       { question: 'How high is Kyanjin Gompa?', answer: 'Nepal Tourism Board material places Kyanjin at approximately 3,800 m. Optional walks to nearby viewpoints go higher, so the proposed high point should be clearly stated.' },
       { question: 'Are permits required?', answer: 'Langtang National Park entry requirements apply. Nepal Tourism Board also lists Langtang routes in its revised TIMS provision. Confirm the latest permit and guide requirements for the exact itinerary.' },
       { question: 'Can I add a viewpoint hike?', answer: 'Optional viewpoints can add elevation and difficulty. They should be discussed with the guide and included only when the conditions, acclimatisation and traveller’s pace make them appropriate.' },
-    ],
     ],
     preparation: [
       'Allow time for gradual ascent and acclimatisation before optional high viewpoint walks.',
