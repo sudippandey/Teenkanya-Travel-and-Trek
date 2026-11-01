@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { ArrowUpRight, Check } from 'lucide-react'
 import { Magnetic } from '@/components/cinematic'
+import { gsap } from '@/lib/gsap'
 
 interface EnquiryResponse {
   status?: unknown
@@ -40,6 +41,16 @@ export function ContactForm() {
     if (!submitted || !successRef.current) return
     successRef.current.focus()
     successRef.current.scrollIntoView({ block: 'start' })
+
+    const icon = successRef.current.querySelector('.success-icon')
+    if (icon) {
+      gsap.fromTo(icon, { scale: 0, rotation: -45 }, {
+        scale: 1,
+        rotation: 0,
+        duration: 0.5,
+        ease: 'back.out(1.7)',
+      })
+    }
   }, [submitted])
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
