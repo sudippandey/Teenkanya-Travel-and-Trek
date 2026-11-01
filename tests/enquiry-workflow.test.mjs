@@ -16,7 +16,11 @@ const validSubmission = {
   travellerCount: 2,
 }
 
-function createDependencies({ notificationSuccess = true, savedStatus = 'pending' } = {}) {
+function createDependencies({
+  notificationSuccess = true,
+  savedStatus = 'pending',
+  persistedSubmissionId = validSubmission.submissionId,
+} = {}) {
   const calls = { persist: 0, notify: 0, updates: [] }
   const dependencies = {
     async persist(enquiry) {
@@ -26,9 +30,10 @@ function createDependencies({ notificationSuccess = true, savedStatus = 'pending
         reference: 'TTT-270101-0123456789ABCDEF',
         notificationStatus: savedStatus,
         shouldNotify: savedStatus !== 'sent',
-        duplicate: savedStatus === 'sent',
+        duplicate: savedStatus === 'sent' || persistedSubmissionId !== validSubmission.submissionId,
         deliverySnapshot: {
           ...enquiry,
+          submissionId: persistedSubmissionId,
           reference: 'TTT-270101-0123456789ABCDEF',
         },
       }
@@ -37,8 +42,8 @@ function createDependencies({ notificationSuccess = true, savedStatus = 'pending
       calls.notify += 1
       return { success: notificationSuccess }
     },
-    async updateNotificationStatus(_submissionId, status) {
-      calls.updates.push(status)
+    async updateNotificationStatus(submissionId, status) {
+      calls.updates.push({ submissionId, status })
     },
   }
   return { calls, dependencies }
@@ -55,7 +60,7 @@ test('a provider-confirmed enquiry is marked sent and receives a reference', asy
 
   assert.equal(result.status, 'sent')
   assert.equal(result.reference, 'TTT-270101-0123456789ABCDEF')
-  assert.deepEqual(calls.updates, ['sent'])
+  assert.deepEqual(calls.updates, [{ submissionId: validSubmission.submissionId, status: 'sent' }])
   assert.equal(calls.notify, 1)
 })
 
@@ -86,7 +91,7 @@ test('provider failure keeps the saved reference and marks notification failed',
 
   assert.equal(result.status, 'notification_failed')
   assert.equal(result.reference, 'TTT-270101-0123456789ABCDEF')
-  assert.deepEqual(calls.updates, ['failed'])
+  assert.deepEqual(calls.updates, [{ submissionId: validSubmission.submissionId, status: 'failed' }])
 })
 
 test('an already-notified duplicate does not send another email', async () => {
@@ -102,4 +107,26 @@ test('an already-notified duplicate does not send another email', async () => {
   assert.equal(result.duplicate, true)
   assert.equal(calls.notify, 0)
   assert.deepEqual(calls.updates, [])
+})
+
+test('content duplicate notification success updates the canonical persisted submission ID', async () => {
+  const canonicalId = '123e4567-e89b-42d3-a456-426614174001'
+  const { calls, dependencies } = createDependencies({ persistedSubmissionId: canonicalId })
+  const result = await processEnquirySubmission(validSubmission, 'client-hash', '/contact', dependencies)
+
+  assert.equal(result.status, 'sent')
+  assert.equal(result.duplicate, true)
+  assert.deepEqual(calls.updates, [{ submissionId: canonicalId, status: 'sent' }])
+})
+
+test('content duplicate notification failure updates the canonical persisted submission ID', async () => {
+  const canonicalId = '123e4567-e89b-42d3-a456-426614174001'
+  const { calls, dependencies } = createDependencies({
+    notificationSuccess: false,
+    persistedSubmissionId: canonicalId,
+  })
+  const result = await processEnquirySubmission(validSubmission, 'client-hash', '/contact', dependencies)
+
+  assert.equal(result.status, 'notification_failed')
+  assert.deepEqual(calls.updates, [{ submissionId: canonicalId, status: 'failed' }])
 })
