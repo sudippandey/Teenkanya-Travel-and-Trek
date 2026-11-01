@@ -51,7 +51,7 @@ export const trekProfiles: Record<string, TrekProfile> = {
       'Carry the required permits and follow current checkpoint instructions. Confirm the latest rules before departure.',
     ],
     accommodation: ['Teahouses and lodges are established along the main route; availability and facilities vary by village and season.'],
-    bestSeason:
+    bestSeason: 'Nepal Tourism Board identifies October–November and March–May as the main trekking seasons for Sagarmatha National Park. Weather, flights and trail conditions remain variable.',
     seasonCalendar: [
       { season: 'Spring · March–May', conditions: 'A commonly chosen trekking window in Sagarmatha National Park. Conditions still change with altitude and weather.', planning: 'Confirm flight operations, trail conditions and the final acclimatisation schedule.' },
       { season: 'Autumn · October–November', conditions: 'Another main trekking window identified by Nepal Tourism Board for Sagarmatha National Park.', planning: 'Book and confirm logistics with flexibility for weather-related changes.' },
@@ -64,7 +64,7 @@ export const trekProfiles: Record<string, TrekProfile> = {
       { question: 'What permits should I expect?', answer: 'The route enters Sagarmatha National Park. Nepal Tourism Board currently lists Everest Base Camp routes among those requiring a licensed guide and agency-issued TIMS card. The team should confirm current requirements for the exact route and traveller.' },
       { question: 'Can the itinerary be changed?', answer: 'The published outline is a starting point. Ask the team to confirm the walking stages, acclimatisation days, overnight stops and services before treating it as an operating itinerary.' },
     ],
-      'Nepal Tourism Board identifies October–November and March–May as the main trekking seasons for Sagarmatha National Park. Weather, flights and trail conditions remain variable.',
+    ],
     preparation: [
       'Build a conservative acclimatisation schedule into the agreed itinerary.',
       'Use broken-in trekking footwear and layered clothing suitable for changing temperatures.',
@@ -96,7 +96,7 @@ export const trekProfiles: Record<string, TrekProfile> = {
     accommodation: [
       'Lodges, teahouses and camping options exist in the wider Annapurna region. The actual overnight style must be confirmed for the selected trail.',
     ],
-    bestSeason:
+    bestSeason: 'Nepal Tourism Board identifies March–May and September–November as the main trekking seasons for the Annapurna Conservation Area. Conditions vary by elevation and route.',
     seasonCalendar: [
       { season: 'Spring · March–May', conditions: 'Nepal Tourism Board identifies this as one of the main trekking seasons in the Annapurna Conservation Area.', planning: 'The exact route and elevation determine temperatures, trail conditions and visibility.' },
       { season: 'Autumn · September–November', conditions: 'A main trekking window for the Annapurna Conservation Area, with local conditions varying by valley.', planning: 'Confirm the chosen trail, accommodation and current access with the local team.' },
@@ -109,7 +109,7 @@ export const trekProfiles: Record<string, TrekProfile> = {
       { question: 'Which permits are needed?', answer: 'Routes entering the Annapurna Conservation Area require the relevant conservation-area entry permit. Other requirements depend on the precise route and current government rules; confirm before departure.' },
       { question: 'Is this suitable for first-time trekkers?', answer: 'The current “Moderate” label is indicative only. Suitability depends on the actual route, daily walking, elevation, health and previous experience, so discuss these with the team before choosing.' },
     ],
-      'Nepal Tourism Board identifies March–May and September–November as the main trekking seasons for the Annapurna Conservation Area. Conditions vary by elevation and route.',
+    ],
     preparation: [
       'Choose the exact trail and daily walking plan before finalising a packing list.',
       'Use comfortable, broken-in footwear and clothing suited to the selected elevation and season.',
@@ -144,7 +144,7 @@ export const trekProfiles: Record<string, TrekProfile> = {
     accommodation: [
       'Nepal Tourism Board describes teahouses and lodges along the main Langtang routes, with camping also available in the region. Facilities vary by settlement.',
     ],
-    bestSeason:
+    bestSeason: 'Nepal Tourism Board identifies October–November and March–May as the main seasons for Langtang National Park. Higher elevations can be cold; monsoon and winter conditions need separate planning.',
     seasonCalendar: [
       { season: 'Spring · March–May', conditions: 'A main trekking season identified by Nepal Tourism Board for Langtang National Park.', planning: 'Expect colder conditions as the route gains elevation and confirm current trail access.' },
       { season: 'Autumn · October–November', conditions: 'A main trekking season for Langtang National Park; visibility and weather remain variable.', planning: 'Confirm road access to the trailhead and overnight stops before travel.' },
@@ -157,7 +157,7 @@ export const trekProfiles: Record<string, TrekProfile> = {
       { question: 'Are permits required?', answer: 'Langtang National Park entry requirements apply. Nepal Tourism Board also lists Langtang routes in its revised TIMS provision. Confirm the latest permit and guide requirements for the exact itinerary.' },
       { question: 'Can I add a viewpoint hike?', answer: 'Optional viewpoints can add elevation and difficulty. They should be discussed with the guide and included only when the conditions, acclimatisation and traveller’s pace make them appropriate.' },
     ],
-      'Nepal Tourism Board identifies October–November and March–May as the main seasons for Langtang National Park. Higher elevations can be cold; monsoon and winter conditions need separate planning.',
+    ],
     preparation: [
       'Allow time for gradual ascent and acclimatisation before optional high viewpoint walks.',
       'Pack layers and weather protection for changing temperatures between forest and alpine elevations.',
