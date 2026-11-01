@@ -578,3 +578,10 @@ figure { margin: 0; }
 .destination-faq-list article { padding: 20px; border: 1px solid var(--border); background: var(--surface); }
 .destination-faq-list h3 { margin: 0 0 9px; color: var(--forest); font-family: var(--display); font-size: 19px; font-weight: 400; }
 .destination-faq-list p { margin: 0; color: var(--muted-foreground); font-size: 11px; line-height: 1.75; }
+
+
+/* V2 service enquiry actions */
+.service-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 4px; }
+.service-actions a { display: inline-flex; align-items: center; gap: 7px; color: var(--forest); font-size: 10px; }
+.service-actions a:last-child { color: var(--clay-dark); }
+.service-actions svg { width: 13px; height: 13px; }
