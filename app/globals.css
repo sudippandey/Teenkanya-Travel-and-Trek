@@ -736,3 +736,85 @@ figure { margin: 0; }
   transform: scale(0.97) !important;
 }
 
+
+/* ---------- Journey detail: scrollytelling route line ---------- */
+.itinerary-section {
+  margin-top: 44px;
+}
+.itinerary-section h2 {
+  margin: 0 0 8px;
+  color: var(--forest);
+  font-family: var(--display);
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+}
+.itinerary-section p {
+  color: var(--muted-foreground);
+  font-size: 12px;
+  line-height: 1.9;
+  margin: 0 0 22px;
+  max-width: 620px;
+}
+.itinerary-wrapper {
+  position: relative;
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+}
+.route-line {
+  flex: 0 0 auto;
+  min-width: 120px;
+}
+.itinerary-reveal-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.itinerary-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  opacity: 0;
+}
+.itinerary-day {
+  flex: 0 0 auto;
+  min-width: 56px;
+  color: var(--clay);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding-top: 6px;
+  text-align: right;
+}
+.itinerary-content h3 {
+  margin: 0 0 6px;
+  color: var(--forest);
+  font-family: var(--display);
+  font-size: 19px;
+  font-weight: 400;
+}
+.itinerary-content p {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  line-height: 1.75;
+}
+
+@media (max-width: 520px) {
+  .itinerary-wrapper {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .route-line {
+    width: 100%;
+    height: 60px;
+    min-width: auto;
+  }
+  .itinerary-day {
+    text-align: left;
+  }
+}
+

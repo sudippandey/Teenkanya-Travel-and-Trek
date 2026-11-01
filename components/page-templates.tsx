@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowUpRight, Clock3, MapPin } from 'lucide-react'
 import { PhotoCredit } from '@/components/photo-credit'
 import { TravelGallery } from '@/components/travel-gallery'
 import { DestinationHero } from '@/components/cinematic/DestinationHero';
+import { ItineraryJourney } from '@/components/cinematic/ItineraryJourney';
 import { DestinationCard, PackageCard } from '@/components/travel-cards'
 import type { Article, BrowseItem, Destination, DestinationImage, TravelPackage } from '@/lib/travel-data'
 
@@ -189,7 +190,7 @@ export function PackageDetail({ travelPackage, relatedDestinations = [], related
         <div className="detail-main">
           <section><span className="eyebrow">A sample journey</span><h2>Thoughtfully paced, ready to make your own.</h2><p>{travelPackage.description} This itinerary is an editable sample, not a confirmed departure. Route details, timing and inclusions should be confirmed before travel.</p></section>
           <section><h2>Journey highlights</h2><ul className="detail-list">{travelPackage.highlights.map((item) => <li key={item}>{item}</li>)}</ul></section>
-          <section><h2>Day-by-day outline</h2><p>The stages below are a planning outline. Exact walking times, transport schedules, overnight stops and meal arrangements are confirmed in the final proposal.</p><div className="itinerary">{travelPackage.itinerary.map((item) => <div className="itinerary-row" key={item.day}><span>{item.day}</span><div><h3>{item.title}</h3><p>{item.detail}</p></div></div>)}</div></section>
+          <ItineraryJourney itinerary={travelPackage.itinerary} />
           <section><h2>Included in this outline</h2><ul className="detail-list">{travelPackage.inclusions.map((item) => <li key={item}>{item}</li>)}</ul></section>
           <section><h2>Not included</h2><ul className="detail-list">{travelPackage.exclusions.map((item) => <li key={item}>{item}</li>)}</ul></section>
           <section><h2>What to confirm before your quote</h2><p>To make the proposal operationally clear, ask the team to confirm each of these details in writing.</p><ul className="detail-list">{travelPackage.preQuoteChecklist.map((item) => <li key={item}>{item}</li>)}</ul></section>
