@@ -5,4 +5,4 @@ import { useGSAP } from '@gsap/react';
 // the app. Safe to import from both server and client code.
 gsap.registerPlugin(useGSAP);
 
-export { gsap, ScrollTrigger, useGSAP };
+export { gsap, useGSAP };
