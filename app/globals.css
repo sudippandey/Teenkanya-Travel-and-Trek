@@ -561,3 +561,13 @@ figure { margin: 0; }
 .trek-route-stages h3 { margin: 0 0 7px; color: var(--forest); font-family: var(--display); font-size: 20px; font-weight: 400; }
 .trek-route-stages p { margin: 0; color: var(--muted-foreground); font-size: 12px; line-height: 1.75; }
 .trek-disclaimer { margin-top: 18px; padding: 14px 16px; border-left: 2px solid var(--clay); background: var(--muted); color: var(--muted-foreground); font-size: 11px; line-height: 1.7; }
+
+
+/* V2 trek planning: seasonal conditions and practical route FAQs */
+.trek-season-calendar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 22px; }
+.trek-season-calendar article, .trek-faq-list article { padding: 20px; border: 1px solid var(--border); background: var(--surface); }
+.trek-season-calendar h3, .trek-faq-list h3 { margin: 0 0 9px; color: var(--forest); font-family: var(--display); font-size: 19px; font-weight: 400; }
+.trek-season-calendar p, .trek-faq-list p { margin: 0; color: var(--muted-foreground); font-size: 11px; line-height: 1.75; }
+.trek-season-calendar small { display: block; margin-top: 12px; color: var(--clay-dark); font-size: 10px; line-height: 1.65; }
+.trek-faq-list { display: grid; gap: 10px; margin-top: 20px; }
+@media (max-width: 520px) { .trek-season-calendar { grid-template-columns: 1fr; } }
