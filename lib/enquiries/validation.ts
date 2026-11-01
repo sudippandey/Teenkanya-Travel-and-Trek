@@ -8,7 +8,7 @@ export type CatalogueItemType = (typeof catalogueItemTypes)[number]
 export type CatalogueLookup = (type: CatalogueItemType, slug: string) => boolean
 
 export interface EnquiryValidationOptions {
-  /** When provided, unknown catalogue items are dropped (stored as null) rather than rejected. */
+  /** Catalogue selections must be verified against the current catalogue. */
   isKnownCatalogueItem?: CatalogueLookup
 }
 
@@ -189,7 +189,9 @@ export function validateEnquiry(
 
     if (!wellFormed) {
       fieldErrors.catalogueItem = 'The selected trip could not be read. Refresh the page and try again.'
-    } else if (!options.isKnownCatalogueItem || options.isKnownCatalogueItem(rawType as CatalogueItemType, rawSlug)) {
+    } else if (!options.isKnownCatalogueItem || !options.isKnownCatalogueItem(rawType as CatalogueItemType, rawSlug)) {
+      fieldErrors.catalogueItem = 'The selected trip is no longer available. Choose another trip and try again.'
+    } else {
       catalogueItemType = rawType as CatalogueItemType
       catalogueItemSlug = rawSlug
     }
