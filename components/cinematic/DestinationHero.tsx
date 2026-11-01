@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight, Compass, MapPin } from 'lucide-react';
 import { gsap, ScrollTrigger, useGSAP } from '@/lib/gsap';
@@ -30,14 +30,11 @@ export function DestinationHero({
 }) {
   const heroRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
-  const [reducedMotion, setReducedMotion] = useState(false);
 
   useGSAP(() => {
     const prefersReduced =
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    setReducedMotion(prefersReduced);
-
     if (prefersReduced) return;
 
     const trigger = heroRef.current;
@@ -71,8 +68,9 @@ export function DestinationHero({
       });
     }
 
-    return () => tl.scrollTrigger?.kill();
-  });
+    // useGSAP reverts its context on unmount, including the infinite image tween
+    // and the timeline's ScrollTrigger.
+  }, []);
 
   // Cinematic character-by-character reveal of the destination name
   const nameChars = destination.title.split('').map((char, i) => (
