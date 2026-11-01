@@ -1,44 +1,3 @@
-    seasonCalendar: [
-      { season: 'Spring · March–May', conditions: 'A main trekking season identified by Nepal Tourism Board for Langtang National Park.', planning: 'Expect colder conditions as the route gains elevation and confirm current trail access.' },
-      { season: 'Autumn · October–November', conditions: 'A main trekking season for Langtang National Park; visibility and weather remain variable.', planning: 'Confirm road access to the trailhead and overnight stops before travel.' },
-      { season: 'Monsoon · June–September', conditions: 'Rain can affect trails and road access; landslide and weather disruption are possible.', planning: 'Check current local conditions rather than relying on a fixed seasonal promise.' },
-      { season: 'Winter · December–February', conditions: 'Nepal Tourism Board notes snow and cold conditions in the park during winter.', planning: 'Higher sections need a route-specific assessment and suitable equipment.' },
-    ],
-    faqs: [
-      { question: 'Where does the Langtang Valley route go?', answer: 'The common valley route starts from Syabrubesi and follows the valley through forest and mountain settlements towards Langtang Village and Kyanjin Gompa. The final daily stages and side trips must be confirmed.' },
-      { question: 'How high is Kyanjin Gompa?', answer: 'Nepal Tourism Board material places Kyanjin at approximately 3,800 m. Optional walks to nearby viewpoints go higher, so the proposed high point should be clearly stated.' },
-      { question: 'Are permits required?', answer: 'Langtang National Park entry requirements apply. Nepal Tourism Board also lists Langtang routes in its revised TIMS provision. Confirm the latest permit and guide requirements for the exact itinerary.' },
-      { question: 'Can I add a viewpoint hike?', answer: 'Optional viewpoints can add elevation and difficulty. They should be discussed with the guide and included only when the conditions, acclimatisation and traveller’s pace make them appropriate.' },
-    ],
-    seasonCalendar: [
-      { season: 'Spring · March–May', conditions: 'Nepal Tourism Board identifies this as one of the main trekking seasons in the Annapurna Conservation Area.', planning: 'The exact route and elevation determine temperatures, trail conditions and visibility.' },
-      { season: 'Autumn · September–November', conditions: 'A main trekking window for the Annapurna Conservation Area, with local conditions varying by valley.', planning: 'Confirm the chosen trail, accommodation and current access with the local team.' },
-      { season: 'Monsoon · June–August', conditions: 'Rain can affect trails, road access and visibility; conditions vary across the region.', planning: 'Do not assume all Annapurna routes have the same monsoon suitability.' },
-      { season: 'Winter · December–February', conditions: 'Higher elevations can be cold and some routes may experience snow or disruption.', planning: 'Select a lower route only after checking current conditions and access.' },
-    ],
-    faqs: [
-      { question: 'Which exact Annapurna trail is included?', answer: 'The current brochure describes foothill village and forest walking but does not yet define one operating trail. The route, overnight stops and daily stages must be confirmed before a fixed itinerary is published.' },
-      { question: 'What is the highest altitude?', answer: 'A maximum altitude is not published for this sample walk because the exact route has not been selected. The team should confirm the highest point and sleeping elevations in the proposed itinerary.' },
-      { question: 'Which permits are needed?', answer: 'Routes entering the Annapurna Conservation Area require the relevant conservation-area entry permit. Other requirements depend on the precise route and current government rules; confirm before departure.' },
-      { question: 'Is this suitable for first-time trekkers?', answer: 'The current “Moderate” label is indicative only. Suitability depends on the actual route, daily walking, elevation, health and previous experience, so discuss these with the team before choosing.' },
-    ],
-    seasonCalendar: [
-      { season: 'Spring · March–May', conditions: 'A commonly chosen trekking window in Sagarmatha National Park. Conditions still change with altitude and weather.', planning: 'Confirm flight operations, trail conditions and the final acclimatisation schedule.' },
-      { season: 'Autumn · October–November', conditions: 'Another main trekking window identified by Nepal Tourism Board for Sagarmatha National Park.', planning: 'Book and confirm logistics with flexibility for weather-related changes.' },
-      { season: 'Monsoon · June–September', conditions: 'Rain, cloud and access disruption can affect lower approaches and flights.', planning: 'Seek current local advice before considering this period.' },
-      { season: 'Winter · December–February', conditions: 'Cold and snow can affect higher sections and accommodation availability.', planning: 'A route-specific assessment is essential; no standard itinerary is assumed.' },
-    ],
-    faqs: [
-      { question: 'Is Everest Base Camp included in this sample trek?', answer: 'The current sample listing is called Everest Trail Highlights. Everest Base Camp and Kala Patthar are route options, not guaranteed inclusions. The exact endpoint and overnight plan must be stated in the written itinerary.' },
-      { question: 'What is the highest altitude?', answer: 'There is no single maximum for this sample listing. The high point depends on the agreed route, including whether it reaches Everest Base Camp, Kala Patthar or another extension.' },
-      { question: 'What permits should I expect?', answer: 'The route enters Sagarmatha National Park. Nepal Tourism Board currently lists Everest Base Camp routes among those requiring a licensed guide and agency-issued TIMS card. The team should confirm current requirements for the exact route and traveller.' },
-      { question: 'Can the itinerary be changed?', answer: 'The published outline is a starting point. Ask the team to confirm the walking stages, acclimatisation days, overnight stops and services before treating it as an operating itinerary.' },
-    ],
-export type TrekRouteStage = {
-  name: string
-  detail: string
-}
-
 export type TrekSeason = {\n  season: string\n  conditions: string\n  planning: string\n}\n\nexport type TrekFaq = {\n  question: string\n  answer: string\n}\n\nexport type TrekProfile = {
   routeSummary: string
   routeStages: TrekRouteStage[]
@@ -75,6 +34,18 @@ export const trekProfiles: Record<string, TrekProfile> = {
     ],
     accommodation: ['Teahouses and lodges are established along the main route; availability and facilities vary by village and season.'],
     bestSeason:
+    seasonCalendar: [
+      { season: 'Spring · March–May', conditions: 'A commonly chosen trekking window in Sagarmatha National Park. Conditions still change with altitude and weather.', planning: 'Confirm flight operations, trail conditions and the final acclimatisation schedule.' },
+      { season: 'Autumn · October–November', conditions: 'Another main trekking window identified by Nepal Tourism Board for Sagarmatha National Park.', planning: 'Book and confirm logistics with flexibility for weather-related changes.' },
+      { season: 'Monsoon · June–September', conditions: 'Rain, cloud and access disruption can affect lower approaches and flights.', planning: 'Seek current local advice before considering this period.' },
+      { season: 'Winter · December–February', conditions: 'Cold and snow can affect higher sections and accommodation availability.', planning: 'A route-specific assessment is essential; no standard itinerary is assumed.' },
+    ],
+    faqs: [
+      { question: 'Is Everest Base Camp included in this sample trek?', answer: 'The current sample listing is called Everest Trail Highlights. Everest Base Camp and Kala Patthar are route options, not guaranteed inclusions. The exact endpoint and overnight plan must be stated in the written itinerary.' },
+      { question: 'What is the highest altitude?', answer: 'There is no single maximum for this sample listing. The high point depends on the agreed route, including whether it reaches Everest Base Camp, Kala Patthar or another extension.' },
+      { question: 'What permits should I expect?', answer: 'The route enters Sagarmatha National Park. Nepal Tourism Board currently lists Everest Base Camp routes among those requiring a licensed guide and agency-issued TIMS card. The team should confirm current requirements for the exact route and traveller.' },
+      { question: 'Can the itinerary be changed?', answer: 'The published outline is a starting point. Ask the team to confirm the walking stages, acclimatisation days, overnight stops and services before treating it as an operating itinerary.' },
+    ],
       'Nepal Tourism Board identifies October–November and March–May as the main trekking seasons for Sagarmatha National Park. Weather, flights and trail conditions remain variable.',
     preparation: [
       'Build a conservative acclimatisation schedule into the agreed itinerary.',
@@ -108,6 +79,18 @@ export const trekProfiles: Record<string, TrekProfile> = {
       'Lodges, teahouses and camping options exist in the wider Annapurna region. The actual overnight style must be confirmed for the selected trail.',
     ],
     bestSeason:
+    seasonCalendar: [
+      { season: 'Spring · March–May', conditions: 'Nepal Tourism Board identifies this as one of the main trekking seasons in the Annapurna Conservation Area.', planning: 'The exact route and elevation determine temperatures, trail conditions and visibility.' },
+      { season: 'Autumn · September–November', conditions: 'A main trekking window for the Annapurna Conservation Area, with local conditions varying by valley.', planning: 'Confirm the chosen trail, accommodation and current access with the local team.' },
+      { season: 'Monsoon · June–August', conditions: 'Rain can affect trails, road access and visibility; conditions vary across the region.', planning: 'Do not assume all Annapurna routes have the same monsoon suitability.' },
+      { season: 'Winter · December–February', conditions: 'Higher elevations can be cold and some routes may experience snow or disruption.', planning: 'Select a lower route only after checking current conditions and access.' },
+    ],
+    faqs: [
+      { question: 'Which exact Annapurna trail is included?', answer: 'The current brochure describes foothill village and forest walking but does not yet define one operating trail. The route, overnight stops and daily stages must be confirmed before a fixed itinerary is published.' },
+      { question: 'What is the highest altitude?', answer: 'A maximum altitude is not published for this sample walk because the exact route has not been selected. The team should confirm the highest point and sleeping elevations in the proposed itinerary.' },
+      { question: 'Which permits are needed?', answer: 'Routes entering the Annapurna Conservation Area require the relevant conservation-area entry permit. Other requirements depend on the precise route and current government rules; confirm before departure.' },
+      { question: 'Is this suitable for first-time trekkers?', answer: 'The current “Moderate” label is indicative only. Suitability depends on the actual route, daily walking, elevation, health and previous experience, so discuss these with the team before choosing.' },
+    ],
       'Nepal Tourism Board identifies March–May and September–November as the main trekking seasons for the Annapurna Conservation Area. Conditions vary by elevation and route.',
     preparation: [
       'Choose the exact trail and daily walking plan before finalising a packing list.',
@@ -144,6 +127,18 @@ export const trekProfiles: Record<string, TrekProfile> = {
       'Nepal Tourism Board describes teahouses and lodges along the main Langtang routes, with camping also available in the region. Facilities vary by settlement.',
     ],
     bestSeason:
+    seasonCalendar: [
+      { season: 'Spring · March–May', conditions: 'A main trekking season identified by Nepal Tourism Board for Langtang National Park.', planning: 'Expect colder conditions as the route gains elevation and confirm current trail access.' },
+      { season: 'Autumn · October–November', conditions: 'A main trekking season for Langtang National Park; visibility and weather remain variable.', planning: 'Confirm road access to the trailhead and overnight stops before travel.' },
+      { season: 'Monsoon · June–September', conditions: 'Rain can affect trails and road access; landslide and weather disruption are possible.', planning: 'Check current local conditions rather than relying on a fixed seasonal promise.' },
+      { season: 'Winter · December–February', conditions: 'Nepal Tourism Board notes snow and cold conditions in the park during winter.', planning: 'Higher sections need a route-specific assessment and suitable equipment.' },
+    ],
+    faqs: [
+      { question: 'Where does the Langtang Valley route go?', answer: 'The common valley route starts from Syabrubesi and follows the valley through forest and mountain settlements towards Langtang Village and Kyanjin Gompa. The final daily stages and side trips must be confirmed.' },
+      { question: 'How high is Kyanjin Gompa?', answer: 'Nepal Tourism Board material places Kyanjin at approximately 3,800 m. Optional walks to nearby viewpoints go higher, so the proposed high point should be clearly stated.' },
+      { question: 'Are permits required?', answer: 'Langtang National Park entry requirements apply. Nepal Tourism Board also lists Langtang routes in its revised TIMS provision. Confirm the latest permit and guide requirements for the exact itinerary.' },
+      { question: 'Can I add a viewpoint hike?', answer: 'Optional viewpoints can add elevation and difficulty. They should be discussed with the guide and included only when the conditions, acclimatisation and traveller’s pace make them appropriate.' },
+    ],
       'Nepal Tourism Board identifies October–November and March–May as the main seasons for Langtang National Park. Higher elevations can be cold; monsoon and winter conditions need separate planning.',
     preparation: [
       'Allow time for gradual ascent and acclimatisation before optional high viewpoint walks.',
