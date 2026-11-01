@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowUpRight, Clock3, MapPin } from 'lucide-react'
 import { PhotoCredit } from '@/components/photo-credit'
+import { Magnetic } from '@/components/cinematic'
 import type { Article, BrowseItem } from '@/lib/travel-data'
 
 export function DestinationCard({ item, featured = false, compact = false }: { item: BrowseItem; featured?: boolean; compact?: boolean }) {
@@ -34,7 +35,7 @@ export function PackageCard({ item }: { item: BrowseItem }) {
         <div className="package-meta"><span><MapPin aria-hidden="true" />{item.location}</span>{item.duration && <span><Clock3 aria-hidden="true" />{item.duration}</span>}</div>
         <h3><Link href={item.href}>{item.title}</Link></h3>
         <p>{item.description}</p>
-        <div className="package-footer"><span>Price on request</span><Link href={item.href} aria-label={`View details for ${item.title}`}><ArrowUpRight aria-hidden="true" /></Link></div>
+        <div className="package-footer"><span>Price on request</span><Magnetic translateX={4} translateY={4}><Link href={item.href} aria-label={`View details for ${item.title}`} data-cursor-label="MOVE"><ArrowUpRight aria-hidden="true" /></Link></Magnetic></div>
       </div>
     </article>
   )

@@ -72,6 +72,7 @@ export function TravelGallery({ images, label = 'Travel photo gallery' }: { imag
               type="button"
               onClick={(event) => { triggerRef.current = event.currentTarget; setActiveIndex(index) }}
               aria-label={`Open photo: ${image.alt}`}
+              data-cursor-label="VIEW"
             >
               <Image src={image.src} alt={image.alt} fill sizes="(max-width: 520px) 50vw, (max-width: 780px) 40vw, 25vw" loading="lazy" />
               <span className="gallery-caption">{image.caption}</span>
