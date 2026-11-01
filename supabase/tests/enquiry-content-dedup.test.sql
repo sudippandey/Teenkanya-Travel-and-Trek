@@ -2,7 +2,6 @@ begin;
 
 select plan(4);
 
-set local role service_role;
 
 select is(
   (public.save_enquiry_with_content_dedup(
