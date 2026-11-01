@@ -25,7 +25,7 @@ export function createArticleStructuredData(article: StructuredArticle, siteUrl 
     },
     inLanguage: 'en',
     isAccessibleForFree: true,
-    wordCount: article.content.join(' ').trim().split(/\\s+/).filter(Boolean).length,
+    wordCount: article.content.join(' ').trim().split(/\s+/).filter(Boolean).length,
   }
 }
 
