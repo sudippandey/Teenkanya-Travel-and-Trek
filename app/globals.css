@@ -739,7 +739,7 @@ figure { margin: 0; }
   display: inline-flex;
   align-items: center;
   cursor: pointer;
-  transition: transform 0.15s ease;
+  will-change: transform;
 }
 
 /* Reduced motion: disable character assemble & magnetic pull */
