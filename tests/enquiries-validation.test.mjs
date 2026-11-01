@@ -80,3 +80,31 @@ test('rejects invalid travel dates and traveller counts', () => {
   assert.match(result.fieldErrors.travelStartDate, /valid travel date/u)
   assert.match(result.fieldErrors.travellerCount, /whole number/u)
 })
+
+test('accepts a catalogue selection only when the lookup confirms it exists', () => {
+  const input = { ...validEmailEnquiry, catalogueItemType: 'trek', catalogueItemSlug: 'everest-base-camp' }
+  const result = validateEnquiry(input, { isKnownCatalogueItem: (type, slug) => type === 'trek' && slug === 'everest-base-camp' })
+
+  assert.equal(result.success, true)
+  if (!result.success) return
+  assert.equal(result.value.catalogueItemType, 'trek')
+  assert.equal(result.value.catalogueItemSlug, 'everest-base-camp')
+})
+
+test('rejects unknown catalogue selections instead of silently dropping trip context', () => {
+  const input = { ...validEmailEnquiry, catalogueItemType: 'trek', catalogueItemSlug: 'not-a-real-trek' }
+  const result = validateEnquiry(input, { isKnownCatalogueItem: () => false })
+
+  assert.equal(result.success, false)
+  if (result.success) return
+  assert.match(result.fieldErrors.catalogueItem, /no longer available/u)
+})
+
+test('rejects catalogue selections when no authoritative catalogue lookup is available', () => {
+  const input = { ...validEmailEnquiry, catalogueItemType: 'package', catalogueItemSlug: 'annapurna-circuit' }
+  const result = validateEnquiry(input)
+
+  assert.equal(result.success, false)
+  if (result.success) return
+  assert.ok(result.fieldErrors.catalogueItem)
+})
