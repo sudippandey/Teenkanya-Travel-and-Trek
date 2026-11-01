@@ -1,4 +1,56 @@
 import photoRecords from '@/lib/destination-images.json'
+    relatedDestinationSlugs: ['chitwan'],
+    relatedTrekSlugs: [],
+    planningFaqs: [
+      { question: 'Will I definitely see wildlife?', answer: 'No. Wildlife sightings are never guaranteed. Activities depend on season, park rules, local conditions and the movement of wild animals.' },
+      { question: 'Are park fees included?', answer: 'Park fees are listed as excluded unless agreed. The written proposal should state any applicable entry fees and activity charges.' },
+      { question: 'Which activities are included?', answer: 'The sample refers to locally guided nature experiences. Confirm the specific activities, permitted areas, guide arrangements and fees before travel.' },
+    ],
+    preQuoteChecklist: [
+      'Confirm the exact day-by-day route and overnight stops.',
+      'List accommodation type, meals and any dietary arrangements.',
+      'Specify transport, guide and local support arrangements.',
+      'Confirm permits, entry fees, exclusions and any seasonal contingencies.',
+    ],
+    relatedDestinationSlugs: ['everest-region'],
+    relatedTrekSlugs: ['everest-trail-highlights'],
+    planningFaqs: [
+      { question: 'Does this itinerary reach Everest Base Camp?', answer: 'The sample is titled Everest Trail Highlights and does not promise Everest Base Camp or Kala Patthar. The exact endpoint, overnight plan and highest point must be confirmed in the written itinerary.' },
+      { question: 'Are flights to Lukla included?', answer: 'Flights to Lukla are listed as an exclusion in this sample. Confirm the actual transport plan, fare treatment and contingency arrangements in the quote.' },
+      { question: 'How are acclimatisation days handled?', answer: 'The sample mentions time around Namche for acclimatisation. The full ascent and sleeping-altitude plan should be reviewed and confirmed for the selected route and traveller.' },
+    ],
+    preQuoteChecklist: [
+      'Confirm the exact day-by-day route and overnight stops.',
+      'List accommodation type, meals and any dietary arrangements.',
+      'Specify transport, guide and local support arrangements.',
+      'Confirm permits, entry fees, exclusions and any seasonal contingencies.',
+    ],
+    relatedDestinationSlugs: ['pokhara', 'annapurna-region'],
+    relatedTrekSlugs: ['annapurna-foothills-walk'],
+    planningFaqs: [
+      { question: 'Which exact trail does this sample use?', answer: 'The current outline describes village and forest trails but does not identify one operating route. The precise trail, overnight stops and daily stages must be confirmed before it is treated as a fixed itinerary.' },
+      { question: 'What is the highest altitude?', answer: 'A maximum altitude is not published for this sample. Ask the team to confirm the highest point and sleeping elevations for the proposed route.' },
+      { question: 'Are meals and accommodation included?', answer: 'They are not specified in this sample outline. Ask for the accommodation type, meal plan and any dietary arrangements to be listed clearly in the written proposal.' },
+    ],
+    preQuoteChecklist: [
+      'Confirm the exact day-by-day route and overnight stops.',
+      'List accommodation type, meals and any dietary arrangements.',
+      'Specify transport, guide and local support arrangements.',
+      'Confirm permits, entry fees, exclusions and any seasonal contingencies.',
+    ],
+    relatedDestinationSlugs: ['kathmandu', 'pokhara'],
+    relatedTrekSlugs: [],
+    planningFaqs: [
+      { question: 'Is this a fixed departure?', answer: 'No fixed departure date is published here. This is a sample seven-day outline; timing and arrangements are confirmed after you share your travel dates.' },
+      { question: 'Are international flights included?', answer: 'International airfare and travel insurance are listed as exclusions. Any domestic transport and other inclusions should be confirmed in the written proposal.' },
+      { question: 'Can I change the pace or places visited?', answer: 'The outline is a starting point. Discuss your interests, available time and preferred pace with the team before the itinerary is confirmed.' },
+    ],
+    preQuoteChecklist: [
+      'Confirm the exact day-by-day route and overnight stops.',
+      'List accommodation type, meals and any dietary arrangements.',
+      'Specify transport, guide and local support arrangements.',
+      'Confirm permits, entry fees, exclusions and any seasonal contingencies.',
+    ],
 
 export type DestinationImage = {
   src: string
@@ -57,6 +109,10 @@ export type TravelPackage = ImageAttribution & {
   itinerary: { day: string; title: string; detail: string }[]
   inclusions: string[]
   exclusions: string[]
+  relatedDestinationSlugs: string[]
+  relatedTrekSlugs: string[]
+  planningFaqs: DestinationFaq[]
+  preQuoteChecklist: string[]
 }
 
 export type Article = ImageAttribution & {
