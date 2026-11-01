@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { ArrowUpRight, Check } from 'lucide-react'
+import { getWhatsAppHref } from '@/lib/contact-links'
 
 interface EnquiryResponse {
   status?: unknown
@@ -34,12 +35,35 @@ export function ContactForm() {
   const [failureReference, setFailureReference] = useState('')
   const [successReference, setSuccessReference] = useState('')
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [servicePrefill, setServicePrefill] = useState({ key: '', interest: '', message: '' })
 
   useEffect(() => {
     if (!submitted || !successRef.current) return
     successRef.current.focus()
     successRef.current.scrollIntoView({ block: 'start' })
   }, [submitted])
+
+  useEffect(() => {
+    const serviceSlug = new URLSearchParams(window.location.search).get('service')
+    if (!serviceSlug) return
+
+    const serviceNames: Record<string, string> = {
+      flights: 'Flights and air tickets',
+      bus: 'Bus tickets and future service updates',
+      hotels: 'Hotel reservations',
+      vehicles: 'Vehicles and transfers',
+      'tours-trekking': 'Tours and trekking',
+      assistance: 'Travel assistance',
+    }
+    const serviceName = serviceNames[serviceSlug]
+    if (!serviceName) return
+
+    const message = serviceSlug === 'bus'
+      ? 'I would like to ask about future updates for bus ticket support. Please let me know when this service becomes available.'
+      : `I am interested in ${serviceName.toLowerCase()}. Please let me know what options, costs and arrangements may be available.`
+
+    setServicePrefill({ key: serviceSlug, interest: 'travel_service', message })
+  }, [])
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -132,9 +156,9 @@ export function ContactForm() {
       <h3>Thank you for getting in touch.</h3>
       <p>Web3Forms confirmed your enquiry was submitted to our team. This is not a booking confirmation.</p>
       {successReference && <p className="success-reference">Reference: <strong>{successReference}</strong></p>}
-      <div className="success-actions"><a href="tel:+9779851248173">Call +977 9851248173</a><a href="mailto:3kanya2018@gmail.com">Email our team</a></div>
+      <div className="success-actions"><a href="tel:+9779851248173">Call +977 9851248173</a><a href={getWhatsAppHref('Hello Teenkanya, I would like to follow up on my enquiry.')} target="_blank" rel="noreferrer">WhatsApp</a><a href="mailto:3kanya2018@gmail.com">Email our team</a></div>
       <button type="button" className="text-link" onClick={() => { setSubmitted(false); startNewEnquiry() }}>Send another enquiry</button>
-    </div> : <form className="contact-form" onSubmit={handleSubmit}>
+    </div> : <form key={servicePrefill.key || 'default'} className="contact-form" onSubmit={handleSubmit}>
       <div className="form-row">
         <label htmlFor="enquiry-full-name">Your name
           <input id="enquiry-full-name" name="fullName" autoComplete="name" required minLength={2} maxLength={120} placeholder="Full name" disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.fullName)} aria-describedby={fieldErrors.fullName ? 'enquiry-full-name-error' : undefined} />
@@ -162,7 +186,7 @@ export function ContactForm() {
           {fieldErrors.preferredContactChannel && <span className="field-error" id="enquiry-contact-channel-error">{fieldErrors.preferredContactChannel}</span>}
         </label>
         <label htmlFor="enquiry-interest">What are you planning?
-          <select id="enquiry-interest" name="interest" defaultValue="" required disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.interest)} aria-describedby={fieldErrors.interest ? 'enquiry-interest-error' : undefined}>
+          <select id="enquiry-interest" name="interest" defaultValue={servicePrefill.interest} required disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.interest)} aria-describedby={fieldErrors.interest ? 'enquiry-interest-error' : undefined}>
             <option value="" disabled>Select an interest</option><option value="tour">Tour or holiday</option><option value="trekking">Trekking</option><option value="travel_service">Travel service</option><option value="other">Something else</option>
           </select>
           {fieldErrors.interest && <span className="field-error" id="enquiry-interest-error">{fieldErrors.interest}</span>}
@@ -180,7 +204,7 @@ export function ContactForm() {
       </div>
       <label className="checkbox-label"><input type="checkbox" name="datesFlexible" disabled={isSubmitting || submissionLocked} /> My travel dates are flexible</label>
       <label htmlFor="enquiry-message">Your message
-        <textarea id="enquiry-message" name="message" rows={5} required minLength={10} maxLength={4000} placeholder="Tell us a little about your journey..." disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.message)} aria-describedby={fieldErrors.message ? 'enquiry-message-error' : undefined} />
+        <textarea id="enquiry-message" name="message" rows={5} defaultValue={servicePrefill.message} required minLength={10} maxLength={4000} placeholder="Tell us a little about your journey..." disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.message)} aria-describedby={fieldErrors.message ? 'enquiry-message-error' : undefined} />
         {fieldErrors.message && <span className="field-error" id="enquiry-message-error">{fieldErrors.message}</span>}
       </label>
       <label className="contact-form-honeypot" aria-hidden="true">Leave this field empty<input name="website" tabIndex={-1} autoComplete="off" /></label>
