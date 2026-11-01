@@ -826,3 +826,11 @@ figure { margin: 0; }
 .editorial-points-magnetic :active {
   transform: scale(0.98) !important;
 }
+
+/* About page principle items magnetic */
+.principle-magnetic {
+  cursor: pointer;
+}
+.principle-magnetic :active {
+  transform: scale(0.98) !important;
+}
