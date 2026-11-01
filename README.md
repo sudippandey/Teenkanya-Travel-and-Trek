@@ -1,249 +1,146 @@
-<div align="center">
-  <img src="https://raw.githubusercontent.com/sudippandey/Teenkanya-Travel-and-Trek/main/public/teenkanya-logo.jpg" alt="Teenkanya Travel & Trek" width="180" />
-  <h1>Teenkanya Travel & Trek</h1>
-  <p><strong>A thoughtful digital travel guide to Nepal.</strong></p>
-  <p>Explore destinations, discover sample journeys and trekking routes, and start a conversation with a Kathmandu-based travel team.</p>
-  <p>
-    <a href="https://3kanyatravel.vercel.app/">Website</a> ·
-    <a href="https://github.com/sudippandey/Teenkanya-Travel-and-Trek/issues">Issues</a> ·
-    <a href="https://github.com/sudippandey/Teenkanya-Travel-and-Trek/pulls">Pull requests</a>
-  </p>
-  <p>
-    <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-black?logo=next.js" />
-    <img alt="React" src="https://img.shields.io/badge/React-19-149eca?logo=react&logoColor=white" />
-    <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.7-3178c6?logo=typescript&logoColor=white" />
-    <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_CSS-v4-06b6d4?logo=tailwindcss&logoColor=white" />
-    <a href="https://github.com/sudippandey/Teenkanya-Travel-and-Trek/actions/workflows/quality.yml"><img alt="Quality checks" src="https://github.com/sudippandey/Teenkanya-Travel-and-Trek/actions/workflows/quality.yml/badge.svg?branch=main" /></a>
-  </p>
-</div>
+# Teenkanya Travel & Trek
 
-![Himalayan landscape in Nepal](https://raw.githubusercontent.com/sudippandey/Teenkanya-Travel-and-Trek/main/public/images/destinations/everest-region/01.jpg)
+A Nepal travel and trekking website built for **Teenkanya Travel & Trek**, a Kathmandu-based travel company.
 
-## About the project
+The site helps visitors explore destinations, compare sample journeys, understand trekking options and send an enquiry to the team. It is designed around direct travel consultation rather than instant online booking.
 
-Teenkanya Travel & Trek is a public-facing travel website for presenting Nepal as a destination and helping prospective travellers make an informed enquiry. The experience brings together destination guides, sample tours, trekking information, travel services and a contact journey.
+<p align="center">
+  <img src="https://raw.githubusercontent.com/sudippandey/Teenkanya-Travel-and-Trek/main/public/teenkanya-logo.jpg" alt="Teenkanya Travel & Trek logo" width="150" />
+</p>
 
-The website is designed as an **enquiry-led travel brochure**, not an online booking marketplace. Prices, availability, departure dates and operational arrangements are discussed and confirmed directly with the team rather than implied by sample catalogue content.
+<p align="center">
+  <a href="https://3kanyatravel.vercel.app/">Visit the website</a> ·
+  <a href="https://github.com/sudippandey/Teenkanya-Travel-and-Trek/issues">Report an issue</a>
+</p>
 
-## What the website includes
+![A view of the Everest region in Nepal](public/images/destinations/everest-region/01.jpg)
 
-| Area | What it does |
+## What is included
+
+- **Destination guides** — eight destination pages with highlights, practical access information, planning notes, FAQs and related journeys.
+- **Tours and sample packages** — four example itineraries to help visitors start planning. Final routes, prices and arrangements are confirmed through enquiry.
+- **Trekking information** — three trek profiles covering route context, preparation, season guidance, permits and safety.
+- **Journey finder** — search destinations, tours and treks together, then filter by experience and duration. Filters are reflected in the URL so a search can be shared.
+- **Travel services** — six service categories with enquiry links and direct WhatsApp contact.
+- **Travel journal** — editorial travel articles and destination information.
+- **Enquiry form** — a structured contact flow for sending requests to the team.
+
+## Built with
+
+| Layer | Technology |
 | --- | --- |
-| **Home** | Introduces the brand and highlights destinations, sample journeys and journal content. |
-| **Destinations** | Browse and search 8 destination guides, with practical planning notes, attractions, access and permit context, FAQs and related journeys. |
-| **Tours & packages** | Explore 4 sample journey ideas with itinerary outlines, inclusions/exclusions, related destinations and planning questions. |
-| **Trekking** | Browse 3 sample trek listings with route notes, season guidance, preparation, permit context and safety information. |
-| **Journey finder** | Search destinations, tours and treks together; filter by experience and duration; share or bookmark the selected filters through the URL. |
-| **Travel services** | Review 6 service categories and start a service-specific enquiry or WhatsApp conversation. |
-| **Travel journal** | Read editorial destination guides and practical travel notes. |
-| **Contact & enquiries** | Send a structured enquiry or contact the team by phone, WhatsApp and email. |
+| Application | Next.js App Router, React, TypeScript |
+| Styling | Tailwind CSS |
+| UI components | Reusable React components, Lucide icons |
+| Enquiry API | Next.js Route Handler with server-side validation |
+| Data and persistence | Typed catalogue data; Supabase for enquiry persistence |
+| Email notification | Web3Forms |
+| Quality checks | pnpm, TypeScript, Node.js tests, GitHub Actions |
 
-## Technology
-
-- **Framework:** Next.js App Router
-- **Language:** TypeScript
-- **UI:** React 19, Tailwind CSS v4 and reusable UI components
-- **Icons:** Lucide React
-- **Forms and server workflow:** Next.js Route Handler with server-side validation
-- **Enquiry persistence:** Supabase Postgres (server-side integration)
-- **Email notification:** Web3Forms standard submit API
-- **Analytics:** Vercel Analytics
-- **Hosting workflow:** Vercel deployments connected to GitHub
-- **Automated quality:** GitHub Actions, pnpm, TypeScript checks, Node.js tests and Next.js production build
-
-## Getting started
+## Run locally
 
 ### Requirements
 
-- Node.js 22 (the CI workflow uses Node 22)
+- Node.js 22
 - pnpm 12.3.4
 - Git
 
-### 1. Clone the repository
+### Setup
 
 ```bash
 git clone https://github.com/sudippandey/Teenkanya-Travel-and-Trek.git
 cd Teenkanya-Travel-and-Trek
-```
 
-### 2. Install dependencies
-
-```bash
 corepack enable
 corepack prepare pnpm@12.3.4 --activate
 pnpm install
-```
-
-### 3. Configure environment variables
-
-Create a local environment file:
-
-```bash
 cp .env.example .env.local
-```
-
-Add the server-side values required for the enquiry workflow:
-
-| Variable | Purpose |
-| --- | --- |
-| `SUPABASE_URL` | Supabase project URL used by the server-side enquiry repository. |
-| `SUPABASE_SECRET_KEY` | Preferred server-only Supabase credential. |
-| `SUPABASE_SERVICE_ROLE_KEY` | Legacy server-only credential fallback if the preferred secret key is not configured. |
-| `WEB3FORMS_ACCESS_KEY` | Server-side Web3Forms access key used to send enquiry notifications. |
-
-Use one Supabase server credential, not both. Never commit `.env.local`, paste secrets into issues or pull requests, or expose a Supabase secret / service-role key or Web3Forms access key in a `NEXT_PUBLIC_*` variable.
-
-The public pages can be explored locally, but successful enquiry persistence and notification require the corresponding services and credentials to be configured.
-
-### 4. Start the development server
-
-```bash
 pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## Useful commands
+### Environment variables
 
-| Command | Description |
+The public pages can run locally without connecting the enquiry providers. To test the complete enquiry flow, configure these server-side variables in `.env.local`:
+
+| Variable | Purpose |
 | --- | --- |
-| `pnpm dev` | Start the local Next.js development server. |
-| `pnpm typecheck` | Run the TypeScript compiler without emitting files. |
-| `pnpm test` | Run the Node.js unit and regression tests. |
-| `pnpm check` | Run TypeScript checks followed by the test suite. |
-| `pnpm build` | Create an optimized production build. |
-| `pnpm start` | Serve the production build locally. |
+| `SUPABASE_URL` | Supabase project URL |
+| `SUPABASE_SECRET_KEY` | Preferred server-only Supabase credential |
+| `SUPABASE_SERVICE_ROLE_KEY` | Legacy server-only fallback |
+| `WEB3FORMS_ACCESS_KEY` | Access key for enquiry email notifications |
 
-Before opening a pull request, run:
+Configure one Supabase credential. Never commit `.env.local`, expose server credentials through `NEXT_PUBLIC_*` variables, or include secrets in issues or pull requests.
+
+A migration is included in `supabase/migrations/`, but its presence in the repository does not mean it has been applied to a live Supabase project. The database, permissions, rate limiting and notification settings must be configured and tested separately before relying on live enquiry submissions.
+
+## Development commands
+
+| Command | Purpose |
+| --- | --- |
+| `pnpm dev` | Start the development server |
+| `pnpm typecheck` | Run TypeScript checks |
+| `pnpm test` | Run automated tests |
+| `pnpm check` | Run typechecking and tests |
+| `pnpm build` | Create a production build |
+| `pnpm start` | Run the production build locally |
+
+Before submitting a change:
 
 ```bash
 pnpm check
 pnpm build
 ```
 
-The GitHub Actions **Quality checks** workflow runs on pushes and pull requests targeting `main`, `v1/**` and `v2/**`. It installs from the frozen pnpm lockfile, runs typechecking and tests, and builds the application.
-
-## Project structure
+## Project layout
 
 ```text
-.
-├── app/
-│   ├── about/                 # About page
-│   ├── api/enquiries/         # Enquiry API route
-│   ├── blog/                  # Journal index and article pages
-│   ├── contact/               # Contact and enquiry page
-│   ├── destinations/          # Destination index and detail routes
-│   ├── services/              # Travel services page
-│   ├── tours/                 # Tour index and detail routes
-│   ├── trekking/              # Trek index and detail routes
-│   ├── globals.css            # Global design system and styles
-│   ├── layout.tsx             # Root layout, metadata and shared shell
-│   ├── robots.ts              # Search crawler rules
-│   └── sitemap.ts             # Public route sitemap
-├── components/
-│   ├── ui/                    # Reusable UI primitives
-│   ├── contact-form.tsx       # Client-side enquiry form
-│   ├── journey-finder.tsx     # Cross-catalogue search and filters
-│   ├── collection-browser.tsx # Catalogue search and filtering
-│   ├── page-templates.tsx     # Shared page sections and templates
-│   ├── travel-cards.tsx       # Destination, package and article cards
-│   ├── travel-gallery.tsx     # Image gallery
-│   ├── trek-detail.tsx        # Trek detail presentation
-│   ├── site-header.tsx        # Global navigation
-│   └── site-footer.tsx        # Global footer
-├── docs/
-│   ├── V1-ARCHITECTURE.md     # Product and architecture direction
-│   └── WEB3FORMS-VERIFICATION.md
-├── lib/
-│   ├── enquiries/              # Validation, persistence and notification workflow
-│   ├── travel-data.ts          # Destination, package, article and service content
-│   ├── trekking-data.ts        # Trek route and safety profiles
-│   ├── destination-images.json # Image metadata and attribution
-│   ├── travel-service.ts       # Catalogue access abstraction
-│   └── contact-links.ts        # Shared WhatsApp link helper
-├── public/
-│   ├── images/                 # Destination photography
-│   └── ...                     # Brand marks and app icons
-├── supabase/
-│   └── migrations/             # SQL schema and database functions
-├── tests/                      # Validation, workflow and content regression tests
-├── .env.example                # Environment variable names (no secrets)
-├── .github/workflows/          # CI quality workflow
-├── next.config.mjs
-├── package.json
-└── pnpm-lock.yaml
+app/                  Next.js routes and pages
+components/           Shared page sections and UI components
+docs/                 Architecture and provider notes
+lib/
+  enquiries/          Enquiry validation, persistence and notification
+  travel-data.ts      Destination, package, journal and service content
+  trekking-data.ts    Trek profiles and planning information
+  travel-service.ts   Catalogue data access layer
+public/               Brand assets and destination photography
+supabase/migrations/  Database schema and functions
+tests/                Automated regression tests
 ```
 
-## How the application is organised
+### Where content lives
 
-### Public catalogue
+- `lib/travel-data.ts` contains destination, sample package, journal and service content.
+- `lib/trekking-data.ts` contains trekking profiles and related planning information.
+- `lib/destination-images.json` records image paths, alt text, captions, credits, licences and source details.
+- `lib/travel-service.ts` provides the catalogue access layer used by pages.
 
-The App Router pages compose reusable components from `components/`. Catalogue content is currently held in typed source modules:
+## Enquiry flow
 
-- `lib/travel-data.ts` — destinations, sample packages, journal articles, services and browse-card data.
-- `lib/trekking-data.ts` — route stages, season notes, permit context, preparation, safety guidance and FAQs for trekking listings.
-- `lib/destination-images.json` — image paths, alternative text, captions, credits, licence details and source links.
+The contact form sends a request to `POST /api/enquiries`. The server validates the request, applies abuse protections, stores the enquiry through the Supabase integration and sends an email notification through Web3Forms.
 
-Pages access catalogue content through `lib/travel-service.ts`. This adapter keeps the presentation layer separate from the current sample-backed data source and provides a replacement point for a future CMS or database-backed catalogue.
+The browser does not choose the notification recipient. That recipient is configured against the provider access key. The form distinguishes a confirmed submission from a saved enquiry whose notification needs to be retried.
 
-### Enquiry lifecycle
+For provider setup and verification details, see [the Web3Forms verification notes](docs/WEB3FORMS-VERIFICATION.md).
 
-The contact form submits JSON to `POST /api/enquiries`. The server-side workflow is separated into small modules:
+## Content accuracy
 
-1. The route checks the request origin and content type, limits request-body size and rejects honeypot submissions.
-2. `lib/enquiries/validation.ts` normalises and validates the submitted fields.
-3. `lib/enquiries/submission-workflow.ts` coordinates persistence, notification and retry outcomes.
-4. `lib/enquiries/server.ts` stores enquiries in Supabase, generates a reference, applies a database-backed rate limit and handles duplicate submission IDs.
-5. `lib/enquiries/web3forms.ts` sends the notification through the Web3Forms standard `/submit` endpoint.
-6. The form displays success only after the application confirms the notification workflow; saved-but-unconfirmed submissions retain a reference so the user can retry safely.
+The catalogue is intended to support planning conversations, not to imply unverified availability or commercial commitments.
 
-The notification recipient is associated with the Web3Forms access key in the provider account. The application does not accept a recipient address from the browser.
+- Sample journeys are examples, not guaranteed departures.
+- Prices, availability and final itineraries are confirmed directly with the travel team.
+- Accommodation, meals, transport, permits, route operations and other inclusions must be confirmed for each enquiry.
+- Trekking information should be checked against current official guidance before travel.
+- Keep image credits and licence information with the relevant image metadata.
 
-### Database and operational prerequisites
+## Current scope
 
-The repository includes a Supabase migration at `supabase/migrations/20261031000000_create_enquiries.sql`. It defines the enquiries table, rate-limit storage, row-level security and the rate-limit database function used by the server.
+This repository contains the public website, travel catalogue and enquiry workflow. It does not currently provide a staff enquiry dashboard, full content-management system, customer accounts, online payments, supplier inventory or a confirmed booking lifecycle.
 
-**A migration file in Git does not mean that a Supabase project has been configured or that the migration has been applied.** Before relying on live enquiries, the intended Supabase project must be configured, the migration must be applied and the persistence, permissions, rate-limit and retry/concurrency behaviour must be tested against a non-production environment. Web3Forms server-side restrictions and the access-key recipient must also be verified in the provider dashboard. See [Web3Forms verification notes](docs/WEB3FORMS-VERIFICATION.md).
+## Project notes
 
-## Content and business-integrity principles
-
-This project deliberately avoids presenting unverified commercial information as fact:
-
-- Sample tours and trek listings are planning starting points, not guaranteed departures.
-- Prices and availability are confirmed through direct enquiry; the site does not invent live rates.
-- Exact route operations, overnight stops, transport, accommodation, meals, permits and inclusions must be confirmed before being represented as a final itinerary.
-- Trekking altitude, access and permit information should be checked against current official guidance and the selected route.
-- Do not add fabricated testimonials, awards, licences, company history, partnerships, team credentials or customer numbers.
-- Keep image credits, licences and source links with the image metadata.
-
-## Current scope and future work
-
-The current repository is focused on the public website, catalogue browsing and enquiry capture. A staff-facing enquiry console, full catalogue CMS, customer accounts, quote management, confirmed booking lifecycle, supplier inventory and payment integrations are not represented as completed features.
-
-Future work should be introduced as small, reviewable modules with clear data ownership, server-side security and operational requirements.
-
-## Contributing
-
-1. Create a focused branch from `main` (for example, `v2/feature-name`).
-2. Keep changes scoped to one coherent improvement.
-3. Add or update tests for changed behaviour and content relationships.
-4. Run `pnpm check` and `pnpm build`.
-5. Open a pull request into `main` and describe the change, validation and any operational prerequisites.
-6. Never include secrets, unverified business claims or unreviewed database changes.
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the working agreement.
-
-## Useful links
-
-- [Website](https://3kanyatravel.vercel.app/)
-- [Source repository](https://github.com/sudippandey/Teenkanya-Travel-and-Trek)
+- [Architecture overview](docs/V1-ARCHITECTURE.md)
+- [Web3Forms verification](docs/WEB3FORMS-VERIFICATION.md)
+- [Contribution guide](CONTRIBUTING.md)
 - [Open issues](https://github.com/sudippandey/Teenkanya-Travel-and-Trek/issues)
-- [Pull requests](https://github.com/sudippandey/Teenkanya-Travel-and-Trek/pulls)
-- [Architecture notes](docs/V1-ARCHITECTURE.md)
-- [Web3Forms verification notes](docs/WEB3FORMS-VERIFICATION.md)
-
----
-
-<div align="center">
-  <sub>Built to help travellers explore Nepal with context, clarity and a direct line to local planning support.</sub>
-</div>
