@@ -578,3 +578,21 @@ figure { margin: 0; }
 .destination-faq-list article { padding: 20px; border: 1px solid var(--border); background: var(--surface); }
 .destination-faq-list h3 { margin: 0 0 9px; color: var(--forest); font-family: var(--display); font-size: 19px; font-weight: 400; }
 .destination-faq-list p { margin: 0; color: var(--muted-foreground); font-size: 11px; line-height: 1.75; }
+
+/* ---------- Cinematic hero atmosphere ---------- */
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+.hero-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.hero-glow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 66% 44% at 50% 92%, rgba(169, 92, 61, 0.16), transparent 70%);
+}
