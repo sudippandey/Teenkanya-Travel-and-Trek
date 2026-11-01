@@ -145,7 +145,7 @@ export function ContactForm() {
       <p>Web3Forms confirmed your enquiry was submitted to our team. This is not a booking confirmation.</p>
       {successReference && <p className="success-reference">Reference: <strong>{successReference}</strong></p>}
       <div className="success-actions"><a href="tel:+9779851248173">Call +977 9851248173</a><a href="mailto:3kanya2018@gmail.com">Email our team</a></div>
-      <button type="button" className="text-link" onClick={() => { setSubmitted(false); startNewEnquiry() }}>Send another enquiry</button>
+      <Magnetic className="send-anchor"><button type="button" className="text-link" onClick={() => { setSubmitted(false); startNewEnquiry() }}>Send another enquiry</button></Magnetic>
     </div> : <form className="contact-form" onSubmit={handleSubmit}>
       <div className="form-row">
         <label htmlFor="enquiry-full-name">Your name
