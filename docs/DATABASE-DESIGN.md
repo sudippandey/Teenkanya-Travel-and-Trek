@@ -5,7 +5,7 @@ Postgres on Supabase. Migrations live in `supabase/migrations/` and are **additi
 | Migration | Purpose |
 | --- | --- |
 | `20261031000000_create_enquiries.sql` | Existing: `enquiries`, `enquiry_rate_limits`, `consume_enquiry_rate_limit`. |
-| `20261101000000_backend_platform.sql` | New: catalogue association, special requirements, fingerprint, notification tracking, `staff_members`, `enquiry_events`, triggers, staff RPCs. |
+| `20261101000000_backend_platform.sql` | New: catalogue association, special requirements, fingerprint, notification tracking, `staff_members`, `enquiry_events`, triggers, staff RPCs and atomic enquiry persistence. |
 
 The new migration uses `add column if not exists` / `create table if not exists`, drops nothing, and backfills nothing. Existing rows get `NULL` or safe defaults (`notification_attempts = 0`, `acknowledgement_status = 'not_configured'`).
 
@@ -80,8 +80,21 @@ erDiagram
 | `enquiries_record_events` (after) | Writes `created` and every `notification_*` transition into `enquiry_events`. |
 | `change_enquiry_status(ref, from, to, actor, note)` | Compare-and-set status update plus audit event in one transaction. Returns `updated`, `conflict` or `not_found`. |
 | `add_enquiry_note(ref, actor, note)` | Appends a `note_added` event. Returns `added` or `not_found`. |
+| `save_enquiry_with_content_dedup(...)` | Atomically checks submission idempotency and 24-hour content duplicates, then inserts if no match. Transaction-scoped advisory locks serialize same-key submissions. Returns the canonical row and duplicate reason. |
 
 All functions use `set search_path = ''` and are executable by `service_role` only.
+
+## Database regression tests
+
+The pgTAP test at `supabase/tests/enquiry-content-dedup.test.sql` verifies first insert, same-submission retry, content duplicate suppression and one-row persistence. Run it against a disposable local Supabase database after applying migrations:
+
+```bash
+supabase start
+supabase db reset
+supabase test db
+```
+
+A separate parallel-request smoke test should also be run against local Supabase before production rollout to verify that simultaneous calls using different submission IDs but the same fingerprint return one inserted row and one content duplicate.
 
 ## Applying the migration
 
