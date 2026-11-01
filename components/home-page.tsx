@@ -3,18 +3,29 @@
 import { useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowDownRight, ArrowUpRight } from 'lucide-react';
+import { ArrowDownRight, ArrowUpRight, Compass, Heart, MapPin } from 'lucide-react';
 import { JourneyFinder } from '@/components/journey-finder';
 import { TravelGallery } from '@/components/travel-gallery';
-import { ArticleCard, DestinationCard, PackageCard } from '@/components/travel-cards';
+import { ArticleCard, PackageCard } from '@/components/travel-cards';
 import { PhotoCredit } from '@/components/photo-credit';
 import { ScrollReveal } from '@/components/scroll-reveal';
+import { CustomCursor } from '@/components/cinematic/CustomCursor';
+import { DestinationGallery } from '@/components/cinematic/DestinationGallery';
+import { ScrollExperience } from '@/components/cinematic/ScrollExperience';
+import { Magnetic } from '@/components/cinematic';
 import { destinationPhotos, galleryImages } from '@/lib/travel-data';
 import { gsap, useGSAP } from '@/lib/gsap';
 import type { Article, BrowseItem, TravelPackage } from '@/lib/travel-data';
 
+const approach = [
+  { icon: Compass, title: 'Start with your interests', description: 'Choose the places, pace and experiences that matter most to you.' },
+  { icon: MapPin, title: 'Plan with local context', description: 'Talk through routes and practical details with a team based in Kathmandu.' },
+  { icon: Heart, title: 'Leave room for the journey', description: 'Keep plans flexible where weather, access and local conditions can change.' },
+];
+
 export function HomePage({ destinationItems, packageItems, articles, packages, treks }: { destinationItems: BrowseItem[]; packageItems: BrowseItem[]; articles: Article[]; packages: TravelPackage[]; treks: BrowseItem[] }) {
   const heroRef = useRef<HTMLElement>(null);
+  const homeRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
     const mm = gsap.matchMedia();
@@ -39,12 +50,86 @@ export function HomePage({ destinationItems, packageItems, articles, packages, t
     return () => mm.revert();
   }, { scope: heroRef });
 
+  useGSAP(() => {
+    const page = homeRef.current;
+    const hero = heroRef.current;
+    if (!page || !hero || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const heroImage = hero.querySelector('.hero-image');
+    if (heroImage) {
+      gsap.to(heroImage, {
+        yPercent: 9,
+        scale: 1.08,
+        ease: 'none',
+        scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: 1.2 },
+      });
+    }
+
+    const editorialImage = page.querySelector('.editorial-image img');
+    const editorialFrame = page.querySelector('.editorial-image');
+    if (editorialImage && editorialFrame) {
+      gsap.to(editorialImage, {
+        yPercent: 7,
+        ease: 'none',
+        scrollTrigger: { trigger: editorialFrame, start: 'top bottom', end: 'bottom top', scrub: 1.2 },
+      });
+    }
+
+    const ctaImage = page.querySelector('.cta-band-image');
+    const ctaBand = page.querySelector('.cta-band');
+    if (ctaImage && ctaBand) {
+      gsap.to(ctaImage, {
+        yPercent: 8,
+        scale: 1.12,
+        ease: 'none',
+        scrollTrigger: { trigger: ctaBand, start: 'top bottom', end: 'bottom top', scrub: 1.2 },
+      });
+    }
+
+    const gallery = page.querySelector('.gallery-grid');
+    const galleryItems = gallery ? Array.from(gallery.querySelectorAll('.gallery-item')) : [];
+    if (gallery && galleryItems.length) {
+      gsap.fromTo(galleryItems, { clipPath: 'inset(0 0 10% 0)' }, {
+        clipPath: 'inset(0 0 0% 0)',
+        duration: 0.9,
+        stagger: 0.08,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: gallery, start: 'top 82%', once: true },
+      });
+    }
+
+    const principleGrid = page.querySelector('.principles-grid');
+    const principles = principleGrid ? Array.from(principleGrid.querySelectorAll('.principle-item')) : [];
+    if (principleGrid && principles.length) {
+      gsap.from(principles, {
+        y: 22,
+        duration: 0.75,
+        stagger: 0.14,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: principleGrid, start: 'top 82%', once: true },
+      });
+      gsap.from(principleGrid.querySelectorAll('.principle-item > svg'), {
+        scale: 0.65,
+        rotation: -12,
+        duration: 0.7,
+        stagger: 0.14,
+        ease: 'back.out(1.5)',
+        scrollTrigger: { trigger: principleGrid, start: 'top 82%', once: true },
+      });
+    }
+  }, { scope: homeRef });
+
   const heroImage = destinationPhotos['everest-region'][0];
   const featuredDestination = destinationItems.find((item) => item.slug === 'pokhara');
-  const supportingDestinations = destinationItems.filter((item) => ['kathmandu', 'mustang', 'chitwan'].includes(item.slug));
+  const supportingDestinations = ['kathmandu', 'mustang', 'chitwan'].flatMap((slug) => {
+    const item = destinationItems.find((destination) => destination.slug === slug);
+    return item ? [item] : [];
+  });
 
   return (
-    <>
+    <div ref={homeRef} className="home-experience">
+      <ScrollExperience />
+      <CustomCursor />
       <section className="hero home-hero" ref={heroRef}>
         <div className="hero-glow" aria-hidden="true" />
         <Image className="hero-image" src={heroImage.src} alt={heroImage.alt} fill priority sizes="100vw" quality={85} />
@@ -56,8 +141,8 @@ export function HomePage({ destinationItems, packageItems, articles, packages, t
             <h1>Find your way<br />into <em>Nepal.</em></h1>
             <p className="hero-copy">From Kathmandu&apos;s living courtyards to the high trails of the Khumbu, plan a journey at your own pace.</p>
             <div className="hero-actions">
-              <Link className="button button-light" href="/destinations">Explore destinations <ArrowUpRight aria-hidden="true" /></Link>
-              <Link className="button button-outline-light" href="/contact">Plan with us <ArrowUpRight aria-hidden="true" /></Link>
+              <Magnetic><Link className="button button-light" href="/destinations" data-cursor-label="MOVE">Explore destinations <ArrowUpRight aria-hidden="true" /></Link></Magnetic>
+              <Magnetic><Link className="button button-outline-light" href="/contact" data-cursor-label="MOVE">Plan with us <ArrowUpRight aria-hidden="true" /></Link></Magnetic>
             </div>
           </div>
 
@@ -81,13 +166,27 @@ export function HomePage({ destinationItems, packageItems, articles, packages, t
             <div className="section-heading-aside"><p>Each region has its own rhythm. Choose a starting point and give the details room to take shape.</p><Link className="text-link" href="/destinations">Explore all destinations</Link></div>
           </div>
 
-          <div className="home-destination-layout">
-            {featuredDestination && <ScrollReveal className="home-destination-feature"><DestinationCard item={featuredDestination} featured /></ScrollReveal>}
-            <div className="home-destination-list">
-              {supportingDestinations.map((item, index) => (
-                <ScrollReveal key={item.slug} delay={index * 80}><DestinationCard item={item} compact /></ScrollReveal>
-              ))}
-            </div>
+          <ScrollReveal className="destination-gallery-reveal">
+            <DestinationGallery featured={featuredDestination} supporting={supportingDestinations} />
+          </ScrollReveal>
+        </div>
+      </section>
+
+      <section className="section section-forest section-home-principles">
+        <div className="container">
+          <div className="section-heading section-heading-inverse">
+            <div><span className="eyebrow eyebrow-light">THE CRAFT OF TRAVEL</span><h2>Travel that leaves<br /><em>room to notice.</em></h2></div>
+            <p>We want planning to feel as thoughtful as the journey itself: grounded in real places, clear about practical details and open to what matters most to you.</p>
+          </div>
+          <div className="principles-grid">
+            {approach.map(({ icon: Icon, title, description }, index) => (
+              <article className="principle-item" key={title}>
+                <span className="principle-number">0{index + 1}</span>
+                <Icon aria-hidden="true" />
+                <h3>{title}</h3>
+                <p>{description}</p>
+              </article>
+            ))}
           </div>
         </div>
       </section>
@@ -148,12 +247,14 @@ export function HomePage({ destinationItems, packageItems, articles, packages, t
       <section className="section section-last-cta">
         <div className="container">
           <div className="cta-band">
-            <div><span className="eyebrow">Your Nepal story starts here</span><h2>Let&apos;s plan your next journey.</h2></div>
-            <Link className="button button-dark" href="/contact">Talk to our team <ArrowUpRight aria-hidden="true" /></Link>
+            <Image className="cta-band-image" src={destinationPhotos.pokhara[2].src} alt="" fill sizes="(max-width: 780px) 100vw, 1240px" loading="lazy" />
+            <div className="cta-band-content"><span className="eyebrow">Your Nepal story starts here</span><h2>Let&apos;s plan your next journey.</h2></div>
+            <Magnetic><Link className="button button-dark" href="/contact" data-cursor-label="MOVE">Talk to our team <ArrowUpRight aria-hidden="true" /></Link></Magnetic>
+            <PhotoCredit className="cta-photo-credit" credit={destinationPhotos.pokhara[2].credit} license={destinationPhotos.pokhara[2].license} sourceUrl={destinationPhotos.pokhara[2].sourceUrl} />
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }
 
