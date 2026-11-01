@@ -2,10 +2,11 @@ import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
+import { siteUrl } from '@/lib/site-url'
 import './globals.css'
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://3kanyatravel.vercel.app'),
+  metadataBase: new URL(siteUrl),
   title: {
     default: 'Teenkanya Travel & Trek | Thoughtful Journeys Through Nepal',
     template: '%s | Teenkanya Travel & Trek',
