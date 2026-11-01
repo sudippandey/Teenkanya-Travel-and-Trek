@@ -585,3 +585,22 @@ figure { margin: 0; }
 .service-actions a { display: inline-flex; align-items: center; gap: 7px; color: var(--forest); font-size: 10px; }
 .service-actions a:last-child { color: var(--clay-dark); }
 .service-actions svg { width: 13px; height: 13px; }
+
+
+/* ---------- Cinematic hero atmosphere ---------- */
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+.hero-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.hero-glow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 66% 44% at 50% 92%, rgba(169, 92, 61, 0.16), transparent 70%);
+}
