@@ -11,6 +11,7 @@ export type DestinationImage = {
 }
 
 export type ContentSource = { label: string; url: string }
+export type DestinationFaq = { question: string; answer: string }
 export type Attraction = { name: string; description: string; image: DestinationImage }
 
 export type Destination = {
@@ -22,6 +23,12 @@ export type Destination = {
   heroImage: DestinationImage
   gallery: DestinationImage[]
   bestTime: string
+  mapQuery: string
+  accessNotes: string
+  permitNotes: string
+  relatedPackageSlugs: string[]
+  relatedTrekSlugs: string[]
+  planningFaqs: DestinationFaq[]
   highlights: string[]
   activities: string[]
   overview: string
@@ -90,6 +97,16 @@ export const destinations: Destination[] = [
     description: 'A living valley of temple squares, courtyards and everyday city life.',
     heroImage: photoSets.kathmandu[1], gallery: photoSets.kathmandu,
     bestTime: 'Autumn and spring are often comfortable for walking; weather and festival dates vary from year to year.',
+    mapQuery: 'Kathmandu Valley, Nepal',
+    accessNotes: 'The valley is served by Tribhuvan International Airport. Road travel between heritage sites can take longer than map distances suggest, especially during busy periods.',
+    permitNotes: 'A standard valley visit does not use a trekking permit. Heritage sites can have separate entry arrangements, restricted areas and visitor rules; check current information for each monument.',
+    relatedPackageSlugs: ['kathmandu-pokhara-discovery'],
+    relatedTrekSlugs: [],
+    planningFaqs: [
+      { question: 'How much time should I allow for Kathmandu Valley?', answer: 'The valley has several distinct heritage areas. Travel time between them depends on traffic and site opening arrangements, so plan a flexible schedule rather than assuming every site fits into one day.' },
+      { question: 'Are all heritage areas open to every visitor?', answer: 'Some religious spaces and inner areas have access restrictions. Follow signs and local guidance, and check current visitor rules before entering.' },
+      { question: 'Can I combine Kathmandu with Pokhara?', answer: 'The sample Kathmandu and Pokhara journey is a starting point. Transport schedules, time at each place and the final route should be confirmed with the team.' },
+    ],
     highlights: ['Kathmandu Durbar Square', 'Swayambhunath', 'Boudhanath', 'Pashupatinath', 'Patan and Bhaktapur'],
     activities: ['Heritage walks', 'Temple and stupa visits', 'Newari food experiences', 'Artisan and market visits'],
     overview: 'Kathmandu Valley brings together dense city neighborhoods, active places of worship and historic palace squares. Its seven monument zones include Kathmandu, Patan and Bhaktapur Durbar Squares, Swayambhu, Bauddhanath, Pashupati and Changu Narayan. Move between them with time for local context and changing street life.',
@@ -109,6 +126,16 @@ export const destinations: Destination[] = [
     description: 'Lakeside days, hillside viewpoints and a close-up view of the Annapurna skyline.',
     heroImage: photoSets.pokhara[0], gallery: photoSets.pokhara,
     bestTime: 'Autumn and spring often offer clearer mountain views; visibility depends on weather and local conditions.',
+    mapQuery: 'Pokhara, Nepal',
+    accessNotes: 'Pokhara is a common gateway for the Annapurna region and is connected with Kathmandu by road and domestic air services. Schedules, road conditions and journey times can change.',
+    permitNotes: 'A city visit to Pokhara does not itself require a trekking permit. Routes entering the Annapurna Conservation Area have separate entry requirements; confirm the exact route before departure.',
+    relatedPackageSlugs: ['kathmandu-pokhara-discovery', 'annapurna-foothills-walk'],
+    relatedTrekSlugs: ['annapurna-foothills-walk'],
+    planningFaqs: [
+      { question: 'Is Pokhara a starting point for Annapurna treks?', answer: 'Yes. Pokhara is a common gateway, but the actual trailhead and onward transport depend on the chosen route.' },
+      { question: 'Are mountain views guaranteed?', answer: 'No. Visibility depends on weather, cloud and season. Leave flexibility if mountain views are a priority.' },
+      { question: 'Can I add adventure activities?', answer: 'Activities and operators vary. Confirm licences, safety arrangements, weather conditions and current operating status before booking.' },
+    ],
     highlights: ['Phewa Lake', 'Sarangkot', 'World Peace Pagoda', 'Davis Falls', 'Mahendra Cave'],
     activities: ['Boating', 'Viewpoint visits', 'Short hikes', 'Paragliding with licensed local operators'],
     overview: 'Pokhara is a lakeside city and a common starting point for journeys into the Annapurna region. Phewa Lake, nearby hill viewpoints and the surrounding foothills give the city a gentler rhythm than the high trails beyond it. Mountain views are weather-dependent.',
@@ -127,6 +154,16 @@ export const destinations: Destination[] = [
     description: 'High mountain trails, Sherpa communities and the landscapes of Sagarmatha.',
     heroImage: photoSets['everest-region'][0], gallery: photoSets['everest-region'],
     bestTime: 'Spring and autumn are commonly chosen for trekking; high-altitude weather can change quickly.',
+    mapQuery: 'Everest Region, Solukhumbu, Nepal',
+    accessNotes: 'The Khumbu is commonly approached through Lukla or overland trailheads. The right approach depends on the route, season and current flight, road and trail conditions.',
+    permitNotes: 'Sagarmatha National Park entry requirements apply. Nepal Tourism Board currently lists Everest Base Camp routes among those covered by its licensed-guide and agency-issued TIMS provision. Confirm the exact requirements for the selected route and traveller.',
+    relatedPackageSlugs: ['everest-trail-highlights'],
+    relatedTrekSlugs: ['everest-trail-highlights'],
+    planningFaqs: [
+      { question: 'Does every Everest-region trip go to Everest Base Camp?', answer: 'No. The region includes several routes and viewpoints. The proposed endpoint, overnight plan and any side trips should be stated in the itinerary.' },
+      { question: 'What should I know about altitude?', answer: 'High-altitude routes require conservative ascent planning. Sleeping elevations, acclimatisation days and the highest point should be confirmed before travel.' },
+      { question: 'Can flights to Lukla be delayed?', answer: 'Weather and operating conditions can affect mountain flights. Keep contingency time and confirm the latest arrangements with the operator.' },
+    ],
     highlights: ['Namche Bazaar', 'Tengboche Monastery', 'Khumbu Glacier', 'Gokyo Lakes', 'Everest viewpoints'],
     activities: ['Trekking with acclimatization days', 'Village stays', 'Monastery visits', 'Mountain photography'],
     overview: 'The Khumbu is a high-altitude region where walking routes connect Sherpa settlements, monasteries and glacial landscapes. Sagarmatha National Park protects much of the area. Route, health, weather and acclimatization planning matter at every stage.',
@@ -145,6 +182,16 @@ export const destinations: Destination[] = [
     description: 'A broad Himalayan region of village routes, forest paths and high mountain passes.',
     heroImage: photoSets['annapurna-region'][0], gallery: photoSets['annapurna-region'],
     bestTime: 'Spring and autumn are often selected for trekking; conditions differ across valleys and elevations.',
+    mapQuery: 'Annapurna Region, Nepal',
+    accessNotes: 'Pokhara is a common gateway, but the Annapurna region has multiple trailheads and approach routes. Road transfers and walking routes depend on the selected trek.',
+    permitNotes: 'Routes entering the Annapurna Conservation Area require the relevant conservation-area entry permit. Guide and TIMS requirements depend on the exact route and current government rules; verify before departure.',
+    relatedPackageSlugs: ['annapurna-foothills-walk'],
+    relatedTrekSlugs: ['annapurna-foothills-walk'],
+    planningFaqs: [
+      { question: 'Which Annapurna trek is right for me?', answer: 'The region includes routes with very different durations, elevations and difficulty. Choose after comparing the actual daily stages, highest sleeping altitude and available time.' },
+      { question: 'Do all Annapurna routes have the same permit requirements?', answer: 'No. Requirements depend on the exact route and current rules. Confirm the permit checklist for the itinerary you plan to follow.' },
+      { question: 'Are teahouses available?', answer: 'Accommodation varies by route and settlement. Ask for the overnight plan and expected facilities before confirming a trip.' },
+    ],
     highlights: ['Annapurna Base Camp', 'Ghorepani–Poon Hill', 'Manang', 'Thorong La', 'Traditional hill villages'],
     activities: ['Trekking', 'Village stays', 'Viewpoint walks', 'Hot-spring visits where open'],
     overview: 'The Annapurna region spans a wide range of elevations and landscapes. Well-known routes include the Annapurna Circuit, Ghorepani–Poon Hill and the approach to Annapurna Base Camp. Daily walking, elevation gain and weather vary substantially by itinerary.',
@@ -163,6 +210,16 @@ export const destinations: Destination[] = [
     description: 'River edges, grasslands and forest habitats in Nepal’s southern lowlands.',
     heroImage: photoSets.chitwan[5], gallery: photoSets.chitwan,
     bestTime: 'Cooler months are generally more comfortable for outdoor activities; wildlife sightings are never guaranteed.',
+    mapQuery: 'Chitwan National Park, Nepal',
+    accessNotes: 'Park and community access points in Chitwan are reached by road from several major cities. The best arrival point and transfer depend on the chosen lodge or activity.',
+    permitNotes: 'National park entry and activity rules depend on the area and activity. Confirm current park fees, permitted activities and operator arrangements before visiting.',
+    relatedPackageSlugs: ['wild-nepal-chitwan'],
+    relatedTrekSlugs: [],
+    planningFaqs: [
+      { question: 'Will I definitely see a rhinoceros or tiger?', answer: 'No wildlife sighting can be guaranteed. Animals move freely in their habitat, and sightings depend on season, conditions and chance.' },
+      { question: 'Are all activities allowed inside the park?', answer: 'No. Activities are subject to park rules, designated areas and current conditions. Follow authorized guides and park instructions.' },
+      { question: 'How should I behave around wildlife?', answer: 'Keep a safe distance, never feed or approach animals, and follow instructions from the guide throughout the visit.' },
+    ],
     highlights: ['Chitwan National Park', 'Rapti River', 'Birdlife', 'Tharu culture', 'Terai landscapes'],
     activities: ['Guided nature walks', 'Birdwatching', 'Canoe trips where permitted', 'Community-led cultural visits'],
     overview: 'Chitwan National Park protects a varied lowland landscape of riverine forest and grassland. Visitors can learn about wildlife and the communities of the Terai with local guides. Animal sightings depend on nature and should never be promised.',
@@ -181,6 +238,16 @@ export const destinations: Destination[] = [
     description: 'A trans-Himalayan landscape of broad valleys, dry cliffs and old settlements.',
     heroImage: photoSets.mustang[0], gallery: photoSets.mustang,
     bestTime: 'The dry season is often preferred, but access, weather and permit requirements vary by route.',
+    mapQuery: 'Mustang, Nepal',
+    accessNotes: 'Jomsom and lower Mustang access can involve road or air connections, depending on the season and current conditions. Upper Mustang requires additional route-specific planning.',
+    permitNotes: 'Upper Mustang is a restricted area and requires a special permit arranged under current government rules. This requirement does not apply uniformly to every place described as Mustang; confirm the exact route and permit category.',
+    relatedPackageSlugs: [],
+    relatedTrekSlugs: [],
+    planningFaqs: [
+      { question: 'Does visiting all of Mustang require a restricted-area permit?', answer: 'No. The special restricted-area permit applies to designated Upper Mustang areas, not every location in Mustang. Confirm the exact route before travel.' },
+      { question: 'Can Mustang be visited during the monsoon?', answer: 'Some areas lie in a rain-shadow region, but access, weather and road conditions still vary. Check current local advice for the specific route.' },
+      { question: 'Can I travel independently into Upper Mustang?', answer: 'Restricted-area rules can require permits and agency arrangements. Confirm current requirements with an authorized operator before making plans.' },
+    ],
     highlights: ['Lo Manthang', 'Kagbeni', 'Jomsom', 'Kali Gandaki Valley', 'Jharkot'],
     activities: ['Village walks', 'Monastery visits', 'Scenic road journeys', 'Trekking with current permit guidance'],
     overview: 'Mustang lies in the rain shadow of the Himalaya and includes landscapes shaped by the Kali Gandaki valley and historic settlements. Upper Mustang has distinct access and permit requirements; confirm current rules before planning a visit.',
@@ -199,6 +266,16 @@ export const destinations: Destination[] = [
     description: 'An alpine valley shaped by mountain trails, Tamang culture and high pastures.',
     heroImage: photoSets.langtang[0], gallery: photoSets.langtang,
     bestTime: 'Spring and autumn are commonly chosen for trekking; snow, weather and trail conditions vary.',
+    mapQuery: 'Langtang Valley, Rasuwa, Nepal',
+    accessNotes: 'Langtang routes are commonly approached by road from Kathmandu via Dhunche or Syabrubesi. Road conditions and travel times vary, so confirm the current access plan before departure.',
+    permitNotes: 'Langtang National Park entry requirements apply. Nepal Tourism Board currently lists Langtang routes among those covered by its revised TIMS and licensed-guide provision. Confirm current requirements for the exact itinerary.',
+    relatedPackageSlugs: [],
+    relatedTrekSlugs: ['langtang-valley-trail'],
+    planningFaqs: [
+      { question: 'Where does the Langtang Valley trek begin?', answer: 'The common valley route starts from Syabrubesi and follows the valley towards Langtang Village and Kyanjin Gompa. Confirm the exact starting point and road transfer in the proposed itinerary.' },
+      { question: 'How high is Kyanjin Gompa?', answer: 'Nepal Tourism Board material places Kyanjin at approximately 3,800 m. Optional viewpoint walks climb higher and should be assessed separately.' },
+      { question: 'Is the road to the trailhead always reliable?', answer: 'Road conditions can change with weather and local events. Keep flexibility and confirm the latest access information before travel.' },
+    ],
     highlights: ['Langtang National Park', 'Kyanjin Gompa', 'Langtang Lirung', 'Tamang communities', 'Alpine landscapes'],
     activities: ['Trekking', 'Village visits', 'Viewpoint walks', 'Local food and culture experiences'],
     overview: 'Langtang Valley is a Himalayan trekking area within Langtang National Park. The route passes through mountain communities and changing alpine terrain. Local guidance, current trail conditions and a considered pace are important to a comfortable journey.',
@@ -217,6 +294,16 @@ export const destinations: Destination[] = [
     description: 'A contemplative heritage landscape and an important Buddhist pilgrimage site.',
     heroImage: photoSets.lumbini[0], gallery: photoSets.lumbini,
     bestTime: 'Cooler months are generally more comfortable for time outdoors; check local weather and site hours.',
+    mapQuery: 'Lumbini, Nepal',
+    accessNotes: 'Lumbini can be reached by road and through regional air connections with onward transfers. Confirm current flight schedules and ground transport for the travel dates.',
+    permitNotes: 'A standard Lumbini heritage visit does not imply a restricted-area trekking permit. Site entry arrangements, opening hours and visitor rules may apply; check current local guidance.',
+    relatedPackageSlugs: [],
+    relatedTrekSlugs: [],
+    planningFaqs: [
+      { question: 'Is Lumbini mainly a pilgrimage destination?', answer: 'Lumbini is an important Buddhist pilgrimage and heritage site. Visitors with different interests are welcome to explore respectfully and follow site guidance.' },
+      { question: 'How should I dress and behave at religious sites?', answer: 'Choose respectful clothing, follow posted rules and ask before photographing worshippers or ceremonies.' },
+      { question: 'Can Lumbini be combined with other destinations?', answer: 'It can be included in a wider Nepal journey, but travel distances and connections should be planned around the available time.' },
+    ],
     highlights: ['Maya Devi Temple', 'Ashoka Pillar', 'Sacred Garden', 'Monastic zone', 'Pilgrimage paths'],
     activities: ['Pilgrimage', 'Walking and cycling', 'Monastery visits', 'Quiet time in the Sacred Garden'],
     overview: 'Lumbini is recognized by UNESCO as the birthplace of the Buddha and is a place of pilgrimage and reflection. The Sacred Garden, Maya Devi Temple, Ashoka Pillar and international monasteries invite a slower visit and respectful attention to religious practice.',

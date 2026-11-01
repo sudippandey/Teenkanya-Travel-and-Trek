@@ -571,3 +571,10 @@ figure { margin: 0; }
 .trek-season-calendar small { display: block; margin-top: 12px; color: var(--clay-dark); font-size: 10px; line-height: 1.65; }
 .trek-faq-list { display: grid; gap: 10px; margin-top: 20px; }
 @media (max-width: 520px) { .trek-season-calendar { grid-template-columns: 1fr; } }
+
+
+/* V2 destination planning */
+.destination-faq-list { display: grid; gap: 10px; margin-top: 20px; }
+.destination-faq-list article { padding: 20px; border: 1px solid var(--border); background: var(--surface); }
+.destination-faq-list h3 { margin: 0 0 9px; color: var(--forest); font-family: var(--display); font-size: 19px; font-weight: 400; }
+.destination-faq-list p { margin: 0; color: var(--muted-foreground); font-size: 11px; line-height: 1.75; }

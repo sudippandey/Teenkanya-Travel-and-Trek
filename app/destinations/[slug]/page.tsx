@@ -3,7 +3,9 @@ import { notFound } from 'next/navigation'
 import { DestinationDetail } from '@/components/page-templates'
 import { travelCatalog } from '@/lib/travel-service'
 
-export async function generateStaticParams() { return (await travelCatalog.listDestinations()).map(({ slug }) => ({ slug })) }
+export async function generateStaticParams() {
+  return (await travelCatalog.listDestinations()).map(({ slug }) => ({ slug }))
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
@@ -25,13 +27,12 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
   ])
   if (!destination) notFound()
 
-  const keyword = destination.slug.replace(/-region$/, '').toLowerCase()
-  const includesDestination = (item: { title: string; location: string; description: string }) =>
-    `${item.title} ${item.location} ${item.description}`.toLowerCase().includes(keyword)
+  const relatedPackages = new Set(destination.relatedPackageSlugs)
+  const relatedTrekSlugs = new Set(destination.relatedTrekSlugs)
 
   return <DestinationDetail
     destination={destination}
-    relatedPackages={packageItems.filter(includesDestination)}
-    relatedTreks={treks.filter(includesDestination)}
+    relatedPackages={packageItems.filter((item) => relatedPackages.has(item.slug))}
+    relatedTreks={treks.filter((item) => relatedTrekSlugs.has(item.slug))}
   />
 }
