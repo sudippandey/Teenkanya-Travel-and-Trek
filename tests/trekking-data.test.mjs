@@ -16,7 +16,9 @@ test('every public trek has a structured planning profile', () => {
     assert.ok(profile.permits.length > 0, `${slug} should explain permit checks`)
     assert.ok(profile.accommodation.length > 0, `${slug} should explain accommodation`)
     assert.ok(profile.preparation.length > 0, `${slug} should include preparation guidance`)
-    assert.ok(profile.safetyNotes.length > 0, `${slug} should include safety guidance`)\n    assert.ok(profile.seasonCalendar.length >= 4, `${slug} should include a four-season planning calendar`)\n    assert.ok(profile.faqs.length >= 4, `${slug} should include route-specific FAQs`)
+    assert.ok(profile.safetyNotes.length > 0, `${slug} should include safety guidance`)
+    assert.ok(profile.seasonCalendar.length >= 4, `${slug} should include a four-season planning calendar`)
+    assert.ok(profile.faqs.length >= 4, `${slug} should include route-specific FAQs`)
     assert.ok(profile.contentSources.length > 0, `${slug} should cite official sources`)
     for (const source of profile.contentSources) {
       assert.match(source.url, /^https:\/\//)
