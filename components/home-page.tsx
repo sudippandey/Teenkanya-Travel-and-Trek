@@ -68,7 +68,7 @@ export function HomePage({ destinationItems, packageItems, articles, packages, t
             <h1>Find your way<br />into <em>Nepal.</em></h1>
             <p className="hero-copy">From Kathmandu&apos;s living courtyards to the high trails of the Khumbu, plan a journey at your own pace.</p>
             <div className="hero-actions">
-              <Link className="button button-light" href="/destinations"><ArrowUpRight aria-hidden="true" /></Link>
+              <Link className="button button-light" href="/destinations">Explore destinations <ArrowUpRight aria-hidden="true" /></Link>
               <Link className="button button-outline-light" href="/contact">Plan with us <ArrowUpRight aria-hidden="true" /></Link>
             </div>
           </div>
@@ -100,6 +100,27 @@ export function HomePage({ destinationItems, packageItems, articles, packages, t
                 <ScrollReveal key={item.slug} delay={index * 80}><DestinationCard item={item} /></ScrollReveal>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section section-forest">
+        <div className="container">
+          <div className="section-heading section-heading-inverse">
+            <div><span className="eyebrow eyebrow-light">A good journey starts with good questions</span><h2>Travel that leaves<br /><em>room to notice.</em></h2></div>
+            <p>We are a Kathmandu-based team. Begin with what you hope to see, how you like to move and the time you have.</p>
+          </div>
+          <div className="principles-grid">
+            {principles.map(({ icon: Icon, title, text }, index) => (
+              <ScrollReveal key={title} delay={index * 80}>
+                <article className="principle-item">
+                  <span className="principle-number">0{index + 1}</span>
+                  <Icon aria-hidden="true" />
+                  <h3>{title}</h3>
+                  <p>{text}</p>
+                </article>
+              </ScrollReveal>
+            ))}
           </div>
         </div>
       </section>
