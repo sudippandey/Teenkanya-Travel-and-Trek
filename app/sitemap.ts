@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { articles, destinations, packages, treks } from '@/lib/travel-data'
+import { siteUrl } from '@/lib/site-url'
 
-const siteUrl = 'https://3kanyatravel.vercel.app'
 const staticPaths = ['/', '/about', '/destinations', '/tours', '/trekking', '/services', '/blog', '/contact']
 
 export default function sitemap(): MetadataRoute.Sitemap {
