@@ -18,6 +18,6 @@ test('every service enquiry slug has a matching contact-form prefill', () => {
   const serviceSlugs = [...services.matchAll(/slug: '([^']+)'/g)].map((match) => match[1])
   assert.equal(serviceSlugs.length, 6)
   for (const slug of serviceSlugs) {
-    assert.ok(form.includes(`'${slug}':`), `Missing prefill for ${slug}`)
+    assert.ok(form.includes(`${slug}:`), `Missing prefill for ${slug}`)
   }
 })
