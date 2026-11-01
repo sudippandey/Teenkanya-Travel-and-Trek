@@ -484,12 +484,12 @@ export const articles: Article[] = [
 ]
 
 export const services = [
-  { number: '01', title: 'Flights & air tickets', status: 'Enquire', description: 'Ask our team about domestic or international flight planning.' },
-  { number: '02', title: 'Bus tickets', status: 'Coming soon', description: 'Intercity bus reservation support is planned for a future phase.' },
-  { number: '03', title: 'Hotel reservations', status: 'Enquire', description: 'Share your route and preferences for accommodation suggestions.' },
-  { number: '04', title: 'Vehicles & transfers', status: 'Enquire', description: 'Plan private ground transport for your Nepal journey.' },
-  { number: '05', title: 'Tours & trekking', status: 'Enquire', description: 'Explore a sample journey or start with a custom itinerary.' },
-  { number: '06', title: 'Travel assistance', status: 'Enquire', description: 'Talk through your travel plans with our Kathmandu-based team.' },
+  { slug: 'flights', number: '01', title: 'Flights & air tickets', status: 'Enquire', description: 'Ask our team about domestic or international flight planning.' },
+  { slug: 'bus', number: '02', title: 'Bus tickets', status: 'Coming soon', description: 'Intercity bus reservation support is planned for a future phase.' },
+  { slug: 'hotels', number: '03', title: 'Hotel reservations', status: 'Enquire', description: 'Share your route and preferences for accommodation suggestions.' },
+  { slug: 'vehicles', number: '04', title: 'Vehicles & transfers', status: 'Enquire', description: 'Plan private ground transport for your Nepal journey.' },
+  { slug: 'tours-trekking', number: '05', title: 'Tours & trekking', status: 'Enquire', description: 'Explore a sample journey or start with a custom itinerary.' },
+  { slug: 'assistance', number: '06', title: 'Travel assistance', status: 'Enquire', description: 'Talk through your travel plans with our Kathmandu-based team.' },
 ]
 
 export const galleryImages: DestinationImage[] = [
