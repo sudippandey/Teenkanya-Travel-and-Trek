@@ -1,10 +1,28 @@
-export type TrekSeason = {\n  season: string\n  conditions: string\n  planning: string\n}\n\nexport type TrekFaq = {\n  question: string\n  answer: string\n}\n\nexport type TrekProfile = {
+export type TrekRouteStage = {
+  name: string
+  detail: string
+}
+
+export type TrekSeason = {
+  season: string
+  conditions: string
+  planning: string
+}
+
+export type TrekFaq = {
+  question: string
+  answer: string
+}
+
+export type TrekProfile = {
   routeSummary: string
   routeStages: TrekRouteStage[]
   altitudeNote: string
   permits: string[]
   accommodation: string[]
   bestSeason: string
+  seasonCalendar: TrekSeason[]
+  faqs: TrekFaq[]
   preparation: string[]
   safetyNotes: string[]
   contentSources: { label: string; url: string }[]
