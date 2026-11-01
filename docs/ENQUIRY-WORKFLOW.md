@@ -10,23 +10,24 @@ sequenceDiagram
   participant W as Web3Forms
   C->>R: JSON + submissionId
   R->>R: origin, content-type, size, honeypot
-  R->>R: validateEnquiry (+ catalogue lookup)
+  R->>R: validateEnquiry (+ authoritative catalogue lookup)
   R->>DB: consume_enquiry_rate_limit(hmac(ip))
   alt limit exceeded
     R-->>C: 429
   end
-  R->>DB: find content duplicate (24h, same fingerprint)
-  alt duplicate found
-    R->>DB: event duplicate_suppressed
-    Note over R,DB: reuse existing enquiry (claim if retryable)
+  R->>DB: save_enquiry_with_content_dedup(...)
+  Note over DB: transaction-scoped advisory locks serialize idempotency key and content fingerprint
+  alt same submission id or same content within 24h
+    DB-->>R: canonical existing enquiry + duplicate reason
+    Note over R,DB: reuse existing row (claim only if retryable)
   else new
-    R->>DB: insert (notification_status = pending)
+    DB->>DB: insert pending enquiry in same transaction
     Note over DB: triggers: attempts = 1, event "created"
   end
   alt shouldNotify
     R->>W: send notification
     W-->>R: HTTP 2xx and success true?
-    R->>DB: notification_status = sent or failed (only from pending)
+    R->>DB: update canonical persisted submission id to sent or failed
   end
   R-->>C: 201/200 reference, or 502 saved+reference, or 409, or 503
 ```
@@ -35,8 +36,10 @@ sequenceDiagram
 
 1. **No false success.** `201/200` is returned only after the row exists **and** Web3Forms returned `success: true`.
 2. **No lost leads.** The row is written before notification; a provider failure returns `502` with the saved reference.
-3. **No duplicate emails from retries.** The same `submissionId`, or the same content within 24 hours, maps to the existing enquiry. Notification is only re-attempted when the existing row is `failed`, `not_configured` or a `pending` row older than the 2-minute lease, and the claim is a compare-and-set on `(notification_status, updated_at)` so two concurrent retries cannot both send.
-4. **Audit trail.** Creation, every notification state change, duplicate suppression, retry requests, staff status changes and notes are recorded in `enquiry_events`.
+3. **Atomic duplicate suppression.** `save_enquiry_with_content_dedup` runs in one Postgres transaction. Transaction-scoped advisory locks serialize both the client submission ID and normalized content fingerprint before checking/inserting. Concurrent submissions with the same fingerprint therefore cannot both insert.
+4. **Correct notification ownership.** Notification status updates use the canonical persisted row's `submission_id`, not the ID from a later request that was suppressed as a content duplicate.
+5. **No duplicate emails from retries.** The same `submissionId`, or the same content within 24 hours, maps to the existing enquiry. Notification is only re-attempted when the existing row is `failed`, `not_configured` or a `pending` row older than the 2-minute lease, and the claim is a compare-and-set on `(notification_status, updated_at)` so two concurrent retries cannot both send.
+6. **Audit trail.** Creation, every notification state change, duplicate suppression, retry requests, staff status changes and notes are recorded in `enquiry_events`.
 
 ## Status lifecycle (staff-managed)
 
