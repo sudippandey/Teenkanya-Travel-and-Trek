@@ -4,7 +4,8 @@ import { ArrowLeft, ArrowUpRight, Clock3, MapPin } from 'lucide-react'
 import { PhotoCredit } from '@/components/photo-credit'
 import { TravelGallery } from '@/components/travel-gallery'
 import { DestinationHero } from '@/components/cinematic/DestinationHero';
-import { ItineraryJourney } from '@/components/cinematic/ItineraryJourney';
+import { ItineraryJourney } from '@/components/cinematic/ItineraryJourney'
+import { Magnetic } from '@/components/cinematic';
 import { DestinationCard, PackageCard } from '@/components/travel-cards'
 import type { Article, BrowseItem, Destination, DestinationImage, TravelPackage } from '@/lib/travel-data'
 
