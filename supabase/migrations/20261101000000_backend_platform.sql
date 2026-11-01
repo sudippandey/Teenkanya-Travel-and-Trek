@@ -212,3 +212,148 @@ revoke all on function public.change_enquiry_status(text, text, text, uuid, text
 grant execute on function public.change_enquiry_status(text, text, text, uuid, text) to service_role;
 revoke all on function public.add_enquiry_note(text, uuid, text) from public, anon, authenticated;
 grant execute on function public.add_enquiry_note(text, uuid, text) to service_role;
+
+-- 7. Atomic public enquiry persistence and content deduplication.
+-- Both locks are transaction-scoped. The submission lock makes retries with
+-- the same idempotency key safe; the fingerprint lock serializes distinct
+-- submissions that normalize to the same customer enquiry. The insert and
+-- duplicate lookup therefore happen in one database transaction.
+create or replace function public.save_enquiry_with_content_dedup(
+  p_submission_id uuid,
+  p_reference text,
+  p_full_name text,
+  p_email text,
+  p_phone text,
+  p_country_of_residence text,
+  p_preferred_contact_channel text,
+  p_interest text,
+  p_message text,
+  p_travel_start_date date,
+  p_dates_flexible boolean,
+  p_traveller_count smallint,
+  p_catalogue_item_type text,
+  p_catalogue_item_slug text,
+  p_special_requirements text,
+  p_content_fingerprint text,
+  p_source_page text
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = ''
+as $function$
+declare
+  v_row public.enquiries%rowtype;
+begin
+  if p_content_fingerprint !~ '^[a-f0-9]{64}$' then
+    raise exception 'Invalid enquiry fingerprint';
+  end if;
+
+  -- Stable lock order avoids deadlocks while covering both idempotency and
+  -- content-based duplicate suppression.
+  perform pg_advisory_xact_lock(hashtextextended(p_submission_id::text, 0));
+
+  select * into v_row
+  from public.enquiries
+  where submission_id = p_submission_id
+  for update;
+
+  if found then
+    return jsonb_build_object(
+      'duplicate', true,
+      'duplicate_reason', 'submission',
+      'row', to_jsonb(v_row)
+    );
+  end if;
+
+  perform pg_advisory_xact_lock(hashtextextended(p_content_fingerprint, 0));
+
+  -- Recheck the idempotency key after waiting for the fingerprint lock.
+  select * into v_row
+  from public.enquiries
+  where submission_id = p_submission_id
+  for update;
+
+  if found then
+    return jsonb_build_object(
+      'duplicate', true,
+      'duplicate_reason', 'submission',
+      'row', to_jsonb(v_row)
+    );
+  end if;
+
+  select * into v_row
+  from public.enquiries
+  where content_fingerprint = p_content_fingerprint
+    and submission_id <> p_submission_id
+    and created_at >= now() - interval '24 hours'
+    and status <> 'spam'
+  order by created_at desc
+  limit 1
+  for update;
+
+  if found then
+    return jsonb_build_object(
+      'duplicate', true,
+      'duplicate_reason', 'content',
+      'row', to_jsonb(v_row)
+    );
+  end if;
+
+  insert into public.enquiries (
+    submission_id,
+    reference,
+    full_name,
+    email,
+    phone,
+    country_of_residence,
+    preferred_contact_channel,
+    interest,
+    message,
+    travel_start_date,
+    dates_flexible,
+    traveller_count,
+    catalogue_item_type,
+    catalogue_item_slug,
+    special_requirements,
+    content_fingerprint,
+    source_page,
+    notification_status
+  ) values (
+    p_submission_id,
+    p_reference,
+    p_full_name,
+    p_email,
+    p_phone,
+    p_country_of_residence,
+    p_preferred_contact_channel,
+    p_interest,
+    p_message,
+    p_travel_start_date,
+    p_dates_flexible,
+    p_traveller_count,
+    p_catalogue_item_type,
+    p_catalogue_item_slug,
+    p_special_requirements,
+    p_content_fingerprint,
+    p_source_page,
+    'pending'
+  )
+  returning * into v_row;
+
+  return jsonb_build_object(
+    'duplicate', false,
+    'duplicate_reason', null,
+    'row', to_jsonb(v_row)
+  );
+end;
+$function$;
+
+revoke all on function public.save_enquiry_with_content_dedup(
+  uuid, text, text, text, text, text, text, text, text, date, boolean,
+  smallint, text, text, text, text, text
+) from public, anon, authenticated;
+grant execute on function public.save_enquiry_with_content_dedup(
+  uuid, text, text, text, text, text, text, text, text, date, boolean,
+  smallint, text, text, text, text, text
+) to service_role;
