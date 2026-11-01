@@ -94,7 +94,7 @@ supabase db reset
 supabase test db
 ```
 
-A separate parallel-request smoke test should also be run against local Supabase before production rollout to verify that simultaneous calls using different submission IDs but the same fingerprint return one inserted row and one content duplicate.
+A parallel-request smoke test is available as `pnpm test:db:dedup-concurrency`. Run it only against a disposable local Supabase instance; it refuses non-local URLs unless `ALLOW_NONLOCAL_DEDUP_TEST=true` is explicitly set. For example, use the local URL and service-role key printed by `supabase status`. It fires two RPC calls concurrently with different submission IDs and the same fingerprint, verifies both resolve to one canonical row, and deletes its test row afterward.
 
 ## Applying the migration
 
