@@ -45,7 +45,7 @@ export function ItineraryJourney({
         <RevealList
           items={itinerary.map((item) => (
             <div key={item.day} className="itinerary-row">
-              <span className="itinerary-day">{item.day}</span>
+              <span className="itinerary-day Magnetic">{item.day}</span>
               <div className="itinerary-content">
                 <h3>{item.title}</h3>
                 <p>{item.detail}</p>
