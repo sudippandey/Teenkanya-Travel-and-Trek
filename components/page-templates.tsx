@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { ArrowLeft, ArrowUpRight, Clock3, MapPin } from 'lucide-react'
 import { PhotoCredit } from '@/components/photo-credit'
 import { TravelGallery } from '@/components/travel-gallery'
-import { PackageCard } from '@/components/travel-cards'
+import { DestinationCard, PackageCard } from '@/components/travel-cards'
 import type { Article, BrowseItem, Destination, DestinationImage, TravelPackage } from '@/lib/travel-data'
 
 export function PageHero({ eyebrow, title, description, image, crumbs = [] }: { eyebrow: string; title: string; description: string; image: DestinationImage; crumbs?: { label: string; href: string }[] }) {
@@ -161,20 +161,48 @@ function browseHeroImage(item: BrowseItem): DestinationImage {
   return { src: item.image, alt: item.imageAlt, downloadUrl: '', caption: item.title, credit: item.imageCredit, license: item.imageLicense, sourceUrl: item.imageSource }
 }
 
-export function PackageDetail({ travelPackage }: { travelPackage: TravelPackage }) {
+export function PackageDetail({ travelPackage, relatedDestinations = [], relatedTreks = [] }: { travelPackage: TravelPackage; relatedDestinations?: BrowseItem[]; relatedTreks?: BrowseItem[] }) {
+  const tripJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'TouristTrip',
+    name: travelPackage.title,
+    description: travelPackage.description,
+    itinerary: travelPackage.itinerary.map((day) => ({ '@type': 'ItemList', name: `${day.day}: ${day.title}`, description: day.detail })),
+  }
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: travelPackage.planningFaqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+    })),
+  }
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(tripJsonLd).replace(/</g, '\\u003c') }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd).replace(/</g, '\\u003c') }} />
       <PageHero eyebrow={travelPackage.category} title={travelPackage.title} description={travelPackage.description} image={packageHeroImage(travelPackage)} crumbs={[{ label: 'Journeys', href: '/tours' }]} />
       <section className="section section-soft"><div className="container detail-layout">
         <div className="detail-main">
           <section><span className="eyebrow">A sample journey</span><h2>Thoughtfully paced, ready to make your own.</h2><p>{travelPackage.description} This itinerary is an editable sample, not a confirmed departure. Route details, timing and inclusions should be confirmed before travel.</p></section>
           <section><h2>Journey highlights</h2><ul className="detail-list">{travelPackage.highlights.map((item) => <li key={item}>{item}</li>)}</ul></section>
-          <section><h2>Itinerary overview</h2><div className="itinerary">{travelPackage.itinerary.map((item) => <div className="itinerary-row" key={item.day}><span>{item.day}</span><div><h3>{item.title}</h3><p>{item.detail}</p></div></div>)}</div></section>
+          <section><h2>Day-by-day outline</h2><p>The stages below are a planning outline. Exact walking times, transport schedules, overnight stops and meal arrangements are confirmed in the final proposal.</p><div className="itinerary">{travelPackage.itinerary.map((item) => <div className="itinerary-row" key={item.day}><span>{item.day}</span><div><h3>{item.title}</h3><p>{item.detail}</p></div></div>)}</div></section>
           <section><h2>Included in this outline</h2><ul className="detail-list">{travelPackage.inclusions.map((item) => <li key={item}>{item}</li>)}</ul></section>
           <section><h2>Not included</h2><ul className="detail-list">{travelPackage.exclusions.map((item) => <li key={item}>{item}</li>)}</ul></section>
+          <section><h2>What to confirm before your quote</h2><p>To make the proposal operationally clear, ask the team to confirm each of these details in writing.</p><ul className="detail-list">{travelPackage.preQuoteChecklist.map((item) => <li key={item}>{item}</li>)}</ul></section>
+          <section><h2>Common questions</h2><div className="destination-faq-list">{travelPackage.planningFaqs.map((faq) => <article key={faq.question}><h3>{faq.question}</h3><p>{faq.answer}</p></article>)}</div></section>
         </div>
-        <aside className="detail-aside"><span className="eyebrow">Journey details</span><h3>{travelPackage.title}</h3><div className="detail-facts"><span><MapPin aria-hidden="true" />Places <strong>{travelPackage.destination}</strong></span><span><Clock3 aria-hidden="true" />Duration <strong>{travelPackage.duration}</strong></span><span>Experience <strong>{travelPackage.category}</strong></span><span>Price <strong>On request</strong></span></div><p>No live availability or fixed pricing is shown. Send preferred dates to discuss the options.</p><Link className="button button-dark" href={`/contact?tour=${travelPackage.slug}`}>Enquire about this journey <ArrowUpRight aria-hidden="true" /></Link></aside>
+        <aside className="detail-aside"><span className="eyebrow">Journey details</span><h3>{travelPackage.title}</h3><div className="detail-facts"><span><MapPin aria-hidden="true" />Places <strong>{travelPackage.destination}</strong></span><span><Clock3 aria-hidden="true" />Sample duration <strong>{travelPackage.duration}</strong></span><span>Experience <strong>{travelPackage.category}</strong></span><span>Price <strong>On request</strong></span></div><p>No live availability or fixed pricing is shown. Send preferred dates to discuss the options.</p><Link className="button button-dark" href={`/contact?tour=${travelPackage.slug}`}>Enquire about this journey <ArrowUpRight aria-hidden="true" /></Link></aside>
       </div></section>
+      {(relatedDestinations.length > 0 || relatedTreks.length > 0) && <section className="section">
+        <div className="container">
+          <div className="section-heading"><div><span className="eyebrow">Continue exploring</span><h2>Places and trails<br /><em>along the way.</em></h2></div><p>These links are tied to the sample route by explicit catalogue references, not title matching.</p></div>
+          {relatedDestinations.length > 0 && <div className="destination-grid">{relatedDestinations.map((item) => <DestinationCard item={item} key={item.slug} />)}</div>}
+          {relatedTreks.length > 0 && <div className="related-treks">{relatedTreks.map((trek) => <Link className="related-trek-link" href={trek.href} key={trek.slug}><span><small>{trek.location} · {trek.duration}</small><strong>{trek.title}</strong></span><ArrowUpRight aria-hidden="true" /></Link>)}</div>}
+        </div>
+      </section>}
       <JourneyCta title="Have a different route in mind? Let’s talk." />
     </>
   )
