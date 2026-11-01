@@ -727,3 +727,12 @@ figure { margin: 0; }
     transition: none;
   }
 }
+
+/* ---------- Contact form submit button press state ---------- */
+.submit-magnetic {
+  display: inline-flex;
+}
+.submit-magnetic .button:active {
+  transform: scale(0.97) !important;
+}
+
