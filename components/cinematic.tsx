@@ -89,9 +89,9 @@ export function Reveal({
 
   useGSAP(() => {
     const target = ref.current;
-    if (!target) return;
+    if (!target || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    gsap.fromTo(target, { autoAlpha: opacity, y }, {
+    gsap.fromTo(target, { autoAlpha: opacity, y },
       autoAlpha: 1,
       y: 0,
       duration: 1.05,
@@ -140,7 +140,7 @@ export function RevealList({
 
   useGSAP(() => {
     const container = ref.current;
-    if (!container) return;
+    if (!container || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const children = gsap.utils.toArray(container.querySelectorAll(':scope > *'));
     if (!children.length) return;
@@ -164,7 +164,7 @@ export function RevealList({
     <div
       ref={ref}
       className={`reveal-list${className ? ` ${className}` : ''}`}
-      style={{ opacity: 0 }}
+      style={{ willChange: 'transform, opacity' }}
     >
       {items}
     </div>
