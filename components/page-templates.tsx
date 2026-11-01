@@ -34,8 +34,28 @@ export function JourneyCta({ title = 'Your journey can start with a conversation
 }
 
 export function DestinationDetail({ destination, relatedPackages = [], relatedTreks = [] }: { destination: Destination; relatedPackages?: BrowseItem[]; relatedTreks?: BrowseItem[] }) {
+  const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination.mapQuery)}`
+  const destinationJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'TouristDestination',
+    name: destination.title,
+    description: destination.description,
+    image: destination.gallery.map((image) => image.src),
+  }
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: destination.planningFaqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+    })),
+  }
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(destinationJsonLd).replace(/</g, '\\u003c') }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd).replace(/</g, '\\u003c') }} />
       <PageHero eyebrow={destination.region} title={destination.title} description={destination.description} image={destination.heroImage} crumbs={[{ label: 'Destinations', href: '/destinations' }]} />
 
       <section className="section destination-gallery-section">
@@ -71,6 +91,27 @@ export function DestinationDetail({ destination, relatedPackages = [], relatedTr
               <h2>Ways to explore</h2>
               <ul className="detail-list">{destination.activities.map((activity) => <li key={activity}>{activity}</li>)}</ul>
             </section>
+            <section>
+              <h2>Getting there</h2>
+              <p>{destination.accessNotes}</p>
+              <a className="text-link" href={mapUrl} target="_blank" rel="noreferrer">Explore {destination.title} on Google Maps <ArrowUpRight aria-hidden="true" /></a>
+            </section>
+            <section>
+              <h2>Permits and local requirements</h2>
+              <p>{destination.permitNotes}</p>
+              <p className="trek-disclaimer">Permit rules, fees and access arrangements can change. Confirm current requirements for your route, nationality and travel dates before departure.</p>
+            </section>
+            <section>
+              <h2>Planning questions</h2>
+              <div className="destination-faq-list">
+                {destination.planningFaqs.map((faq) => (
+                  <article key={faq.question}>
+                    <h3>{faq.question}</h3>
+                    <p>{faq.answer}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
             <section aria-labelledby="destination-notes-heading">
               <h2 className="sr-only" id="destination-notes-heading">Destination notes</h2>
               <div className="destination-notes-grid">
@@ -93,6 +134,7 @@ export function DestinationDetail({ destination, relatedPackages = [], relatedTr
               <span>Best time <strong>{destination.bestTime}</strong></span>
             </div>
             <p>Conditions, access and opening details change. Ask the team for current information before confirming travel.</p>
+            <a className="text-link" href={mapUrl} target="_blank" rel="noreferrer">Open map <ArrowUpRight aria-hidden="true" /></a>
             <Link className="button button-dark" href={`/contact?destination=${destination.slug}`}>Ask about this place <ArrowUpRight aria-hidden="true" /></Link>
           </aside>
         </div>
