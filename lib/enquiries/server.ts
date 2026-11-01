@@ -39,9 +39,14 @@ interface EnquiryRow {
   updated_at: string
 }
 
+interface AtomicEnquirySaveResult {
+  duplicate: boolean
+  duplicate_reason: 'submission' | 'content' | null
+  row: EnquiryRow
+}
+
 const enquiryColumns = 'id,submission_id,reference,full_name,email,phone,country_of_residence,preferred_contact_channel,interest,message,travel_start_date,dates_flexible,traveller_count,catalogue_item_type,catalogue_item_slug,special_requirements,source_page,notification_status,updated_at'
 const notificationLeaseMs = 2 * 60 * 1000
-const duplicateWindowMs = 24 * 60 * 60 * 1000
 
 export const publicRateLimit = { limit: 5, windowSeconds: 900 } as const
 
@@ -108,22 +113,6 @@ async function findBy(client: SupabaseClient, column: 'submission_id' | 'referen
   return data as EnquiryRow | null
 }
 
-async function findRecentContentDuplicate(client: SupabaseClient, fingerprint: string, submissionId: string) {
-  const { data, error } = await client
-    .from('enquiries')
-    .select(enquiryColumns)
-    .eq('content_fingerprint', fingerprint)
-    .neq('submission_id', submissionId)
-    .gte('created_at', new Date(Date.now() - duplicateWindowMs).toISOString())
-    .neq('status', 'spam')
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle()
-
-  if (error) throw new Error('Duplicate enquiry check failed')
-  return data as EnquiryRow | null
-}
-
 function isNotificationClaimable(row: EnquiryRow) {
   const pendingIsStale = row.notification_status === 'pending'
     && Date.parse(row.updated_at) < Date.now() - notificationLeaseMs
@@ -168,52 +157,42 @@ export async function saveEnquiry(
   if (allowed !== true) return { status: 'rate_limited' }
 
   const contentFingerprint = computeContentFingerprint(enquiry, secret)
-  const contentDuplicate = await findRecentContentDuplicate(client, contentFingerprint, enquiry.submissionId)
-  if (contentDuplicate) {
-    await recordEvent(client, contentDuplicate.id, { eventType: 'duplicate_suppressed', actorType: 'customer' })
-    logEvent('info', 'enquiry.duplicate_suppressed', { reference: contentDuplicate.reference })
-    return resolveExistingEnquiry(client, contentDuplicate)
-  }
+  const { data, error } = await client.rpc('save_enquiry_with_content_dedup', {
+    p_submission_id: enquiry.submissionId,
+    p_reference: createReference(),
+    p_full_name: enquiry.fullName,
+    p_email: enquiry.email,
+    p_phone: enquiry.phone,
+    p_country_of_residence: enquiry.countryOfResidence,
+    p_preferred_contact_channel: enquiry.preferredContactChannel,
+    p_interest: enquiry.interest,
+    p_message: enquiry.message,
+    p_travel_start_date: enquiry.travelStartDate,
+    p_dates_flexible: enquiry.datesFlexible,
+    p_traveller_count: enquiry.travellerCount,
+    p_catalogue_item_type: enquiry.catalogueItemType,
+    p_catalogue_item_slug: enquiry.catalogueItemSlug,
+    p_special_requirements: enquiry.specialRequirements,
+    p_content_fingerprint: contentFingerprint,
+    p_source_page: enquiry.sourcePage,
+  })
 
-  for (let attempt = 0; attempt < 3; attempt += 1) {
-    const reference = createReference()
-    const { data, error } = await client
-      .from('enquiries')
-      .insert({
-        submission_id: enquiry.submissionId,
-        reference,
-        full_name: enquiry.fullName,
-        email: enquiry.email,
-        phone: enquiry.phone,
-        country_of_residence: enquiry.countryOfResidence,
-        preferred_contact_channel: enquiry.preferredContactChannel,
-        interest: enquiry.interest,
-        message: enquiry.message,
-        travel_start_date: enquiry.travelStartDate,
-        dates_flexible: enquiry.datesFlexible,
-        traveller_count: enquiry.travellerCount,
-        catalogue_item_type: enquiry.catalogueItemType,
-        catalogue_item_slug: enquiry.catalogueItemSlug,
-        special_requirements: enquiry.specialRequirements,
-        content_fingerprint: contentFingerprint,
-        source_page: enquiry.sourcePage,
-        notification_status: 'pending',
-      })
-      .select(enquiryColumns)
-      .single()
-
-    if (!error && data) return toPersistedEnquiry(data as EnquiryRow, true, false)
-
-    if (error?.code === '23505') {
-      const existing = await findBy(client, 'submission_id', enquiry.submissionId)
-      if (existing) return resolveExistingEnquiry(client, existing)
-      continue
-    }
-
+  if (error || !data || typeof data !== 'object' || !('row' in data)) {
     throw new Error('Enquiry could not be saved')
   }
 
-  throw new Error('Enquiry reference could not be generated')
+  const saved = data as AtomicEnquirySaveResult
+  if (!saved.row?.id || !saved.row.submission_id) throw new Error('Enquiry save returned an invalid record')
+
+  if (saved.duplicate) {
+    if (saved.duplicate_reason === 'content') {
+      await recordEvent(client, saved.row.id, { eventType: 'duplicate_suppressed', actorType: 'customer' })
+      logEvent('info', 'enquiry.duplicate_suppressed', { reference: saved.row.reference })
+    }
+    return resolveExistingEnquiry(client, saved.row)
+  }
+
+  return toPersistedEnquiry(saved.row, true, false)
 }
 
 export async function updateEnquiryNotificationStatus(
