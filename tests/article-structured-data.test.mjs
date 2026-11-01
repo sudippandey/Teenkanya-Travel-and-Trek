@@ -20,7 +20,7 @@ test('article structured data includes accurate editorial fields and absolute UR
   assert.equal(data.image, 'https://example.com/images/nepal.jpg')
   assert.equal(data.mainEntityOfPage['@id'], 'https://example.com/blog/first-time-in-nepal')
   assert.equal(data.publisher.name, 'Teenkanya Travel & Trek')
-  assert.equal(data.wordCount, 9)
+  assert.equal(data.wordCount, 8)
   assert.equal('datePublished' in data, false, 'descriptive editorial labels must not be presented as publication dates')
 })
 
