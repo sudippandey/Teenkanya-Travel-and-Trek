@@ -1,6 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowLeft, ArrowUpRight, Clock3, MapPin } from 'lucide-react'
+import { TrackedLink } from '@/components/tracked-link'
+import { siteUrl } from '@/lib/site-config'
 import { PhotoCredit } from '@/components/photo-credit'
 import { TravelGallery } from '@/components/travel-gallery'
 import { DestinationHero } from '@/components/cinematic/DestinationHero'
@@ -31,7 +33,7 @@ export function PageIntro({ label, title, children }: { label: string; title: st
 }
 
 export function JourneyCta({ title = 'Your journey can start with a conversation.' }: { title?: string }) {
-  return <section className="section"><div className="container"><div className="cta-band"><div><span className="eyebrow">Let&apos;s plan together</span><h2>{title}</h2></div><Link className="button button-dark" href="/contact">Make an enquiry <ArrowUpRight aria-hidden="true" /></Link></div></div></section>
+  return <section className="section"><div className="container"><div className="cta-band"><div><span className="eyebrow">Let&apos;s plan together</span><h2>{title}</h2></div><TrackedLink className="button button-dark" href="/contact" eventName="contact_click" eventProperties={{ channel: 'enquiry', location: 'journey_cta' }}>Make an enquiry <ArrowUpRight aria-hidden="true" /></TrackedLink></div></div></section>
 }
 
 export function DestinationDetail({ destination, relatedPackages = [], relatedTreks = [] }: { destination: Destination; relatedPackages?: BrowseItem[]; relatedTreks?: BrowseItem[] }) {
@@ -41,6 +43,7 @@ export function DestinationDetail({ destination, relatedPackages = [], relatedTr
     '@type': 'TouristDestination',
     name: destination.title,
     description: destination.description,
+    url: new URL(`/destinations/${destination.slug}`, siteUrl).toString(),
     image: destination.gallery.map((image) => image.src),
   }
   const faqJsonLd = {
@@ -136,7 +139,7 @@ export function DestinationDetail({ destination, relatedPackages = [], relatedTr
             </div>
             <p>Conditions, access and opening details change. Ask the team for current information before confirming travel.</p>
             <a className="text-link" href={mapUrl} target="_blank" rel="noreferrer">Open map <ArrowUpRight aria-hidden="true" /></a>
-            <Link className="button button-dark" href={`/contact?destination=${destination.slug}`}>Ask about this place <ArrowUpRight aria-hidden="true" /></Link>
+            <TrackedLink className="button button-dark" href={`/contact?interest=tour&focus=nepal_tour&destination=${encodeURIComponent(destination.title)}`} eventName="destination_enquiry_click" eventProperties={{ destination: destination.slug }}>Ask about this place <ArrowUpRight aria-hidden="true" /></TrackedLink>
           </aside>
         </div>
       </section>
@@ -163,13 +166,6 @@ function browseHeroImage(item: BrowseItem): DestinationImage {
 }
 
 export function PackageDetail({ travelPackage, relatedDestinations = [], relatedTreks = [] }: { travelPackage: TravelPackage; relatedDestinations?: BrowseItem[]; relatedTreks?: BrowseItem[] }) {
-  const tripJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'TouristTrip',
-    name: travelPackage.title,
-    description: travelPackage.description,
-    itinerary: travelPackage.itinerary.map((day) => ({ '@type': 'ItemList', name: `${day.day}: ${day.title}`, description: day.detail })),
-  }
   const faqJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -182,7 +178,6 @@ export function PackageDetail({ travelPackage, relatedDestinations = [], related
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(tripJsonLd).replace(/</g, '\\u003c') }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd).replace(/</g, '\\u003c') }} />
       <PageHero eyebrow={travelPackage.category} title={travelPackage.title} description={travelPackage.description} image={packageHeroImage(travelPackage)} crumbs={[{ label: 'Journeys', href: '/tours' }]} />
       <section className="section section-soft"><div className="container detail-layout">
@@ -195,7 +190,7 @@ export function PackageDetail({ travelPackage, relatedDestinations = [], related
           <section><h2>What to confirm before your quote</h2><p>To make the proposal operationally clear, ask the team to confirm each of these details in writing.</p><ul className="detail-list">{travelPackage.preQuoteChecklist.map((item) => <li key={item}>{item}</li>)}</ul></section>
           <section><h2>Common questions</h2><div className="destination-faq-list">{travelPackage.planningFaqs.map((faq) => <article key={faq.question}><h3>{faq.question}</h3><p>{faq.answer}</p></article>)}</div></section>
         </div>
-        <aside className="detail-aside"><span className="eyebrow">Journey details</span><h3>{travelPackage.title}</h3><div className="detail-facts"><span><MapPin aria-hidden="true" />Places <strong>{travelPackage.destination}</strong></span><span><Clock3 aria-hidden="true" />Sample duration <strong>{travelPackage.duration}</strong></span><span>Experience <strong>{travelPackage.category}</strong></span><span>Price <strong>On request</strong></span></div><p>No live availability or fixed pricing is shown. Send preferred dates to discuss the options.</p><Link className="button button-dark" href={`/contact?tour=${travelPackage.slug}`}>Enquire about this journey <ArrowUpRight aria-hidden="true" /></Link></aside>
+        <aside className="detail-aside"><span className="eyebrow">Journey details</span><h3>{travelPackage.title}</h3><div className="detail-facts"><span><MapPin aria-hidden="true" />Places <strong>{travelPackage.destination}</strong></span><span><Clock3 aria-hidden="true" />Sample duration <strong>{travelPackage.duration}</strong></span><span>Experience <strong>{travelPackage.category}</strong></span><span>Price <strong>On request</strong></span></div><p>No live availability or fixed pricing is shown. Send preferred dates to discuss the options.</p><TrackedLink className="button button-dark" href={`/contact?interest=tour&focus=nepal_tour&package=${encodeURIComponent(travelPackage.title)}&destination=${encodeURIComponent(travelPackage.destination)}`} eventName="package_enquiry_click" eventProperties={{ package: travelPackage.slug }}>Enquire about this journey <ArrowUpRight aria-hidden="true" /></TrackedLink></aside>
       </div></section>
       {(relatedDestinations.length > 0 || relatedTreks.length > 0) && <section className="section">
         <div className="container">
@@ -215,7 +210,7 @@ export function TrekDetail({ trek }: { trek: BrowseItem }) {
       <PageHero eyebrow={`${trek.category} · Trekking`} title={trek.title} description={trek.description} image={browseHeroImage(trek)} crumbs={[{ label: 'Trekking', href: '/trekking' }]} />
       <section className="section section-soft"><div className="container detail-layout">
         <div className="detail-main"><section><span className="eyebrow">On the trail</span><h2>A trek shaped by the landscape.</h2><p>{trek.description} Routes are subject to local conditions, weather and individual pace. Discuss the route and level of support with the team before making plans.</p></section><section><h2>What to expect</h2><ul className="detail-list"><li>Route planning with acclimatization and rest in mind</li><li>Local guide and ground support coordination</li><li>Flexible timing based on season and conditions</li><li>Pre-trek conversation about fitness and preparation</li></ul></section><section><h2>Travel notes</h2><p>Difficulty descriptions are indicative only. Fitness, altitude and weather affect every trek differently. Ask for current route information and discuss your experience before confirming travel.</p></section></div>
-        <aside className="detail-aside"><span className="eyebrow">Trek overview</span><h3>{trek.title}</h3><div className="detail-facts"><span>Region <strong>{trek.location}</strong></span><span>Duration <strong>{trek.duration}</strong></span><span>Difficulty <strong>{trek.category}</strong></span><span>Pricing <strong>On request</strong></span></div><p>Route, services and availability are discussed directly with the team.</p><Link className="button button-dark" href={`/contact?trek=${trek.slug}`}>Enquire about this trek <ArrowUpRight aria-hidden="true" /></Link></aside>
+        <aside className="detail-aside"><span className="eyebrow">Trek overview</span><h3>{trek.title}</h3><div className="detail-facts"><span>Region <strong>{trek.location}</strong></span><span>Duration <strong>{trek.duration}</strong></span><span>Difficulty <strong>{trek.category}</strong></span><span>Pricing <strong>On request</strong></span></div><p>Route, services and availability are discussed directly with the team.</p><TrackedLink className="button button-dark" href={`/contact?interest=trekking&focus=trekking&package=${encodeURIComponent(trek.title)}&destination=${encodeURIComponent(trek.location)}`} eventName="trek_enquiry_click" eventProperties={{ trek: trek.slug }}>Enquire about this trek <ArrowUpRight aria-hidden="true" /></TrackedLink></aside>
       </div></section>
       <JourneyCta title="Let’s find the right trail for you." />
     </>

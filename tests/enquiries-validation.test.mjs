@@ -28,6 +28,43 @@ test('normalizes a valid enquiry for storage', () => {
   assert.equal(result.value.travelStartDate, '2027-10-10')
 })
 
+test('validates and preserves package-specific trip context in the existing message field', () => {
+  const result = validateEnquiry({
+    ...validEmailEnquiry,
+    travelFocus: 'international_tour',
+    destinationOrPackage: 'Japan autumn trip',
+    budgetRange: 'USD 2,000 per person',
+    additionalRequirements: 'Vegetarian meals and step-free accommodation.',
+  })
+
+  assert.equal(result.success, true)
+  if (!result.success) return
+
+  assert.match(result.value.message, /Travel focus: International tour/u)
+  assert.match(result.value.message, /Destination or package: Japan autumn trip/u)
+  assert.match(result.value.message, /Indicative budget: USD 2,000 per person/u)
+  assert.match(result.value.message, /Additional requirements: Vegetarian meals/u)
+  assert.match(result.value.message, /Message\nWe would like to plan a trek in October\./u)
+})
+
+test('rejects invalid travel focus and oversized planning details', () => {
+  const result = validateEnquiry({
+    ...validEmailEnquiry,
+    travelFocus: 'unknown',
+    destinationOrPackage: 'x'.repeat(161),
+    budgetRange: 'x'.repeat(101),
+    additionalRequirements: 'x'.repeat(1001),
+  })
+
+  assert.equal(result.success, false)
+  if (result.success) return
+
+  assert.match(result.fieldErrors.travelFocus, /valid travel focus/u)
+  assert.match(result.fieldErrors.destinationOrPackage, /under 160 characters/u)
+  assert.match(result.fieldErrors.budgetRange, /under 100 characters/u)
+  assert.match(result.fieldErrors.additionalRequirements, /under 1,000 characters/u)
+})
+
 test('accepts a phone-only enquiry when phone is the preferred contact', () => {
   const result = validateEnquiry({
     ...validEmailEnquiry,
