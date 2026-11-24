@@ -82,7 +82,8 @@ figure { margin: 0; }
 .hero-image-layer { position: absolute; inset: 0; opacity: 0; transition: opacity 1.35s cubic-bezier(.22,.61,.36,1); }
 .hero-image-layer.is-active { z-index: 1; opacity: 1; animation: hero-crossfade-in 1.35s cubic-bezier(.22,.61,.36,1) both; }
 .hero-image-layer.is-outgoing { z-index: 2; opacity: 0; }
-.hero-image-layer img.hero-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 52%; animation: hero-cinematic-drift 7s ease-out both; }
+.hero-image-layer.is-preloading { z-index: 0; opacity: 0; }
+.hero-image-layer img.hero-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 52%; animation: hero-cinematic-drift 6.5s ease-out both; }
 .hero-image-layer.is-static img.hero-image { animation: none; }
 .hero-overlay { z-index: 3; background: linear-gradient(90deg, rgba(44,26,61,.84) 0%, rgba(44,26,61,.61) 40%, rgba(44,26,61,.19) 76%, rgba(44,26,61,.16) 100%), linear-gradient(0deg, rgba(44,26,61,.65), transparent 48%, rgba(44,26,61,.12)); }
 .hero-atmosphere { z-index: 4; pointer-events: none; background: linear-gradient(140deg, rgba(90,59,138,.2), transparent 46%); }
@@ -310,28 +311,43 @@ figure { margin: 0; }
 .contact-detail { display: flex; align-items: flex-start; gap: 13px; color: var(--forest); font-size: 11px; }
 .contact-detail svg { width: 16px; height: 16px; color: var(--clay); }
 .contact-detail small { display: block; margin-bottom: 4px; color: var(--muted-foreground); font-size: 8px; letter-spacing: .13em; text-transform: uppercase; }
-.contact-form-wrap { padding: clamp(23px, 4.5vw, 44px); background: #F7F3FA; border: 1px solid var(--border); }
-.contact-form { display: flex; flex-direction: column; gap: 18px; }
+.contact-form-wrap { padding: clamp(20px, 3.2vw, 34px); background: #F7F3FA; border: 1px solid var(--border); }
+.contact-form { display: flex; flex-direction: column; gap: 15px; }
+.contact-form-heading h2 { margin: 0; color: var(--forest); font-family: var(--display); font-size: clamp(27px, 3vw, 36px); font-weight: 400; line-height: 1.15; }
+.contact-form-heading p { margin: 8px 0 0; color: var(--muted-foreground); font-size: 11px; line-height: 1.6; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.contact-form label { display: flex; flex-direction: column; gap: 8px; color: var(--forest); font-size: 10px; font-weight: 600; }
-.contact-form input, .contact-form select, .contact-form textarea { width: 100%; min-height: 46px; padding: 12px 13px; border: 1px solid var(--border); outline: 0; background: var(--surface); color: var(--foreground); font-size: 11px; font-weight: 400; }
-.contact-form textarea { min-height: 132px; resize: vertical; }
+.contact-form label { display: flex; flex-direction: column; gap: 7px; color: var(--forest); font-size: 10px; font-weight: 600; }
+.contact-form input, .contact-form select, .contact-form textarea { width: 100%; min-height: 44px; padding: 11px 12px; border: 1px solid var(--border); outline: 0; background: var(--surface); color: var(--foreground); font-size: 12px; font-weight: 400; }
+.contact-form textarea { min-height: 100px; resize: vertical; }
 .contact-form input:focus, .contact-form select:focus, .contact-form textarea:focus { border-color: var(--forest); box-shadow: 0 0 0 2px rgba(90,59,138,.14); }
 .contact-form input::placeholder, .contact-form textarea::placeholder { color: var(--muted-foreground); }
 .contact-form input:disabled, .contact-form select:disabled, .contact-form textarea:disabled { background: #F7F3FA; color: var(--muted-foreground); cursor: not-allowed; }
-.contact-form .checkbox-label { flex-direction: row; align-items: center; gap: 10px; padding-top: 23px; }
-.contact-form .checkbox-label input { width: 18px; min-height: 18px; flex: 0 0 auto; margin: 0; padding: 0; accent-color: var(--forest); }
+.optional-note { color: var(--muted-foreground); font-size: 9px; font-weight: 400; }
 .contact-form-honeypot { position: absolute !important; left: -10000px !important; top: auto !important; width: 1px !important; height: 1px !important; overflow: hidden !important; }
-.contact-form button:disabled { cursor: wait; opacity: .7; }
+.contact-form button:disabled { cursor: not-allowed; opacity: .65; }
 .field-error { display: block; color: #9e2c38; font-size: 11px; font-weight: 400; line-height: 1.45; }
-.form-submit-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
-.form-submit-row > p { max-width: 290px; margin: 0; color: var(--muted-foreground); font-size: 9px; line-height: 1.6; }
-.form-submit-row .button { flex-shrink: 0; }
-.form-submit-row .button:disabled { opacity: .7; cursor: wait; }
-.form-disclaimer { margin: -5px 0 0; color: var(--muted-foreground); font-size: 9px; line-height: 1.65; }
+.form-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 14px 20px; }
+.form-actions .button { flex-shrink: 0; }
+.whatsapp-alternative { color: var(--forest); font-size: 10px; text-decoration: underline; text-underline-offset: 3px; }
+.form-reassurance { margin: -7px 0 0; color: var(--muted-foreground); font-size: 10px; line-height: 1.5; }
+.form-disclaimer { margin: -6px 0 0; color: var(--muted-foreground); font-size: 9px; line-height: 1.65; }
+.form-disclaimer a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
 .form-error { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 13px 15px; border-left: 2px solid #9c352d; background: #fff8f8; color: #9c352d; font-size: 11px; line-height: 1.55; }
 .form-error p { margin: 0; }
 .form-error .text-link { align-self: flex-start; margin: 0; color: #7b2630; }
+.ambient-sound-player { position: fixed; right: 16px; bottom: 16px; z-index: 30; width: min(250px, calc(100vw - 24px)); padding: 9px 11px; border: 1px solid rgba(90,59,138,.18); background: rgba(255,255,255,.96); color: var(--forest); box-shadow: 0 8px 28px rgba(44,26,61,.12); backdrop-filter: blur(12px); opacity: 0; translate: 0 8px; pointer-events: none; transition: opacity .22s ease, translate .22s ease; }
+.ambient-sound-player.is-visible { opacity: 1; translate: 0 0; pointer-events: auto; }
+@media (prefers-reduced-motion: reduce) { .ambient-sound-player { transition: none; } }
+.ambient-sound-heading { display: flex; align-items: center; gap: 10px; }
+.ambient-sound-icon { display: grid; width: 32px; height: 32px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: #F0EAF5; color: var(--forest); }
+.ambient-sound-icon svg { width: 16px; height: 16px; }
+.ambient-sound-heading p { margin: 0; color: var(--forest); font-size: 10px; font-weight: 600; }
+.ambient-sound-heading div > span { display: block; margin-top: 3px; color: var(--muted-foreground); font-size: 8px; }
+.ambient-sound-controls { display: flex; align-items: center; gap: 8px; margin-top: 9px; color: var(--muted-foreground); }
+.ambient-sound-controls button { display: grid; width: 28px; height: 28px; flex: 0 0 auto; place-items: center; border: 1px solid var(--border); background: var(--surface); color: var(--forest); }
+.ambient-sound-controls button:disabled, .ambient-sound-controls input:disabled { cursor: not-allowed; opacity: .45; }
+.ambient-sound-controls button svg, .ambient-sound-controls > svg { width: 13px; height: 13px; }
+.ambient-sound-controls input { width: 100%; height: 4px; accent-color: var(--forest); }
 .form-success { scroll-margin-top: 100px; text-align: center; }
 .form-success:focus { outline: 2px solid var(--clay); outline-offset: 4px; }
 .success-icon { width: 48px; height: 48px; display: grid; place-items: center; margin: 0 auto 16px; background: #EAE2F2; color: var(--forest); }
@@ -570,8 +586,10 @@ figure { margin: 0; }
   .collection-selects label { flex: 1 1 210px; justify-content: space-between; }
   .collection-selects select { min-width: 0; }
   .form-row { grid-template-columns: 1fr; }
-  .form-submit-row { flex-direction: column; align-items: stretch; }
-  .form-submit-row .button { justify-content: space-between; }
+  .form-actions { align-items: stretch; flex-direction: column; }
+  .form-actions .button { width: 100%; justify-content: space-between; }
+  .whatsapp-alternative { align-self: center; }
+  .ambient-sound-player { right: 12px; bottom: 12px; width: min(250px, calc(100vw - 24px)); }
   .detail-list { grid-template-columns: 1fr; }
   .itinerary-row { grid-template-columns: 66px 1fr; gap: 12px; }
   .attraction-grid, .destination-notes-grid { grid-template-columns: 1fr; }

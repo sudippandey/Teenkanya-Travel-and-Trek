@@ -2,6 +2,7 @@ import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
+import { AmbientSoundPlayer } from '@/components/ambient-sound-player'
 import { serializeJsonLd } from '@/lib/article-structured-data'
 import { business, siteUrl } from '@/lib/site-config'
 import './globals.css'
@@ -69,6 +70,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <SiteHeader />
         <main id="main-content">{children}</main>
         <SiteFooter />
+        <AmbientSoundPlayer />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
