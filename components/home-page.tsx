@@ -15,13 +15,21 @@ import { ScrollExperience } from '@/components/cinematic/ScrollExperience';
 import { Magnetic } from '@/components/cinematic';
 import { destinationPhotos, galleryImages } from '@/lib/travel-data';
 import { gsap, useGSAP } from '@/lib/gsap';
+import { TrackedLink } from '@/components/tracked-link';
 import type { Article, BrowseItem, TravelPackage } from '@/lib/travel-data';
 
 const approach = [
-  { icon: Compass, title: 'Start with your interests', description: 'Choose the places, pace and experiences that matter most to you.' },
-  { icon: MapPin, title: 'Plan with local context', description: 'Talk through routes and practical details with a team based in Kathmandu.' },
-  { icon: Heart, title: 'Leave room for the journey', description: 'Keep plans flexible where weather, access and local conditions can change.' },
+  { icon: Compass, title: 'Start with your interests', description: 'Share your preferred places, pace, travel dates and the experiences that matter most.' },
+  { icon: MapPin, title: 'Plan with local context', description: 'Talk through practical details with a Kathmandu-based team and clarify who operates each service.' },
+  { icon: Heart, title: 'Confirm before you commit', description: 'Get current availability, inclusions, prices, operator details and cancellation terms in writing before booking.' },
 ];
+
+const planningPaths = [
+  { label: 'Nepal tours', focus: 'nepal_tour', interest: 'tour', detail: 'Explore sample Nepal itineraries and ask about current options.' },
+  { label: 'Domestic travel', focus: 'domestic_tour', interest: 'tour', detail: 'Discuss travel within Nepal, shaped around your dates.' },
+  { label: 'International travel', focus: 'international_tour', interest: 'tour', detail: 'Ask about international travel planning from Nepal.' },
+  { label: 'Adventure experiences', focus: 'adventure_activity', interest: 'other', detail: 'Tell us which activity or experience you have in mind.' },
+] as const;
 
 export function HomePage({ destinationItems, packageItems, articles, packages, treks }: { destinationItems: BrowseItem[]; packageItems: BrowseItem[]; articles: Article[]; packages: TravelPackage[]; treks: BrowseItem[] }) {
   const heroRef = useRef<HTMLElement>(null);
@@ -125,6 +133,7 @@ export function HomePage({ destinationItems, packageItems, articles, packages, t
     const item = destinationItems.find((destination) => destination.slug === slug);
     return item ? [item] : [];
   });
+  const featuredTreks = treks.slice(0, 3);
 
   return (
     <div ref={homeRef} className="home-experience">
@@ -137,17 +146,17 @@ export function HomePage({ destinationItems, packageItems, articles, packages, t
 
         <div className="container hero-inner">
           <div className="hero-content">
-            <span className="hero-kicker">Journeys from Kathmandu, Nepal</span>
-            <h1>Find your way<br />into <em>Nepal.</em></h1>
-            <p className="hero-copy">From Kathmandu&apos;s living courtyards to the high trails of the Khumbu, plan a journey at your own pace.</p>
+            <span className="hero-kicker">Teenkanya Travel &amp; Trek · Kathmandu, Nepal</span>
+            <h1>Journeys begin<br />with a <em>conversation.</em></h1>
+            <p className="hero-copy">A Kathmandu-based team for travellers in Nepal and visitors from abroad. Explore Nepal tours and treks, domestic trips, international travel and adventure experiences through a clear, personal enquiry.</p>
             <div className="hero-actions">
-              <Magnetic><Link className="button button-dark" href="/destinations" data-cursor-label="MOVE">Explore destinations <ArrowUpRight aria-hidden="true" /></Link></Magnetic>
-              <Magnetic><Link className="button button-outline-light" href="/contact" data-cursor-label="MOVE">Plan with us <ArrowUpRight aria-hidden="true" /></Link></Magnetic>
+              <Magnetic><TrackedLink className="button button-dark" href="/contact?interest=tour&amp;focus=nepal_tour" data-cursor-label="MOVE" eventName="contact_click" eventProperties={{ channel: 'enquiry', location: 'home_hero' }}>Plan your trip <ArrowUpRight aria-hidden="true" /></TrackedLink></Magnetic>
+              <Magnetic><Link className="button button-outline-light" href="/destinations" data-cursor-label="MOVE">Explore Nepal <ArrowUpRight aria-hidden="true" /></Link></Magnetic>
             </div>
           </div>
 
           <div className="hero-bottomline">
-            <span>Thoughtful travel, rooted in Nepal</span>
+            <span>Based in Kathmandu · Serving travellers in Nepal and abroad</span>
             <PhotoCredit credit={heroImage.credit} license={heroImage.license} sourceUrl={heroImage.sourceUrl} />
           </div>
         </div>
@@ -204,6 +213,33 @@ export function HomePage({ destinationItems, packageItems, articles, packages, t
         </div>
       </section>
 
+      <section className="section section-featured-treks" aria-labelledby="featured-treks-heading">
+        <div className="container">
+          <div className="section-heading">
+            <div><span className="eyebrow">On foot</span><h2 id="featured-treks-heading">Featured <em>treks.</em></h2></div>
+            <div className="section-heading-aside"><p>Explore sample route pages, then ask the team to confirm current conditions, availability and support for your dates.</p><Link className="text-link" href="/trekking">View all trekking</Link></div>
+          </div>
+          <div className="featured-trek-grid">
+            {featuredTreks.map((trek) => (
+              <article className="featured-trek-card" key={trek.slug}>
+                <div className="featured-trek-image-frame">
+                  <Link className="featured-trek-image" href={trek.href} aria-label={`Explore the ${trek.title} trek`}>
+                    <Image src={trek.image} alt={trek.imageAlt} fill sizes="(max-width: 520px) 100vw, (max-width: 780px) 50vw, 33vw" loading="lazy" />
+                  </Link>
+                  <PhotoCredit className="featured-trek-photo-credit" credit={trek.imageCredit} license={trek.imageLicense} sourceUrl={trek.imageSource} />
+                </div>
+                <div className="featured-trek-body">
+                  <span className="eyebrow">{trek.category} · {trek.duration}</span>
+                  <h3><Link href={trek.href}>{trek.title}</Link></h3>
+                  <p>{trek.location}</p>
+                  <TrackedLink className="text-link" href={`/contact?interest=trekking&focus=trekking&package=${encodeURIComponent(trek.title)}`} eventName="trek_enquiry_click" eventProperties={{ trek: trek.slug }}>Ask about this trek <ArrowUpRight aria-hidden="true" /></TrackedLink>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="section section-editorial">
         <div className="container editorial-section">
           <figure className="editorial-image">
@@ -214,8 +250,15 @@ export function HomePage({ destinationItems, packageItems, articles, packages, t
           <div className="editorial-copy">
             <span className="eyebrow">A little more human</span><h2>Make space for<br /><em>the unexpected.</em></h2>
             <p>Travel is more than the places you reach. It is the morning tea before a walk, a conversation you did not plan and the feeling of being welcomed somewhere new.</p>
-            <p>Teenkanya Travel &amp; Trek is based in Kathmandu. We help travelers bring Nepal plans together with local context and practical care.</p>
-            <div className="editorial-points"><span>Personal travel planning</span><span>Destination-specific ideas</span><span>Clear, practical conversations</span><span>Flexible sample journeys</span></div>
+            <p>Teenkanya Travel &amp; Trek is based in Kathmandu and welcomes travellers from Nepal and abroad. Ask about Nepal journeys, travel within Nepal, international plans, adventure activities or practical travel arrangements.</p>
+            <p>Trips may be operated by Teenkanya or by partner operators, depending on the itinerary. Before you commit, ask us to confirm the operator, inclusions, availability, price and cancellation terms in writing.</p>
+            <div className="editorial-points editorial-service-links">
+              {planningPaths.map((path) => (
+                <TrackedLink key={path.focus} href={`/contact?interest=${path.interest}&focus=${path.focus}&package=${encodeURIComponent(path.label)}`} eventName="service_enquiry_click" eventProperties={{ focus: path.focus }}>
+                  <span>{path.label}</span><small>{path.detail}</small><ArrowUpRight aria-hidden="true" />
+                </TrackedLink>
+              ))}
+            </div>
             <Link className="text-link" href="/about">Get to know Teenkanya</Link>
           </div>
         </div>
@@ -249,7 +292,7 @@ export function HomePage({ destinationItems, packageItems, articles, packages, t
           <div className="cta-band">
             <Image className="cta-band-image" src={destinationPhotos.pokhara[2].src} alt="" fill sizes="(max-width: 780px) 100vw, 1240px" loading="lazy" />
             <div className="cta-band-content"><span className="eyebrow">Your Nepal story starts here</span><h2>Let&apos;s plan <em>your next journey.</em></h2></div>
-            <Magnetic><Link className="button button-dark" href="/contact" data-cursor-label="MOVE">Talk to our team <ArrowUpRight aria-hidden="true" /></Link></Magnetic>
+            <Magnetic><TrackedLink className="button button-dark" href="/contact" data-cursor-label="MOVE" eventName="contact_click" eventProperties={{ channel: 'enquiry', location: 'home_footer_cta' }}>Talk to our team <ArrowUpRight aria-hidden="true" /></TrackedLink></Magnetic>
             <PhotoCredit className="cta-photo-credit" credit={destinationPhotos.pokhara[2].credit} license={destinationPhotos.pokhara[2].license} sourceUrl={destinationPhotos.pokhara[2].sourceUrl} />
           </div>
         </div>

@@ -3,7 +3,10 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { ArrowUpRight, Check } from 'lucide-react'
+import { track } from '@vercel/analytics'
 import { getWhatsAppHref } from '@/lib/contact-links'
+import { travelFocuses } from '@/lib/enquiries/validation'
+import { TrackedLink } from '@/components/tracked-link'
 
 interface EnquiryResponse {
   status?: unknown
@@ -35,7 +38,13 @@ export function ContactForm() {
   const [failureReference, setFailureReference] = useState('')
   const [successReference, setSuccessReference] = useState('')
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
-  const [servicePrefill, setServicePrefill] = useState({ key: '', interest: '', message: '' })
+  const [servicePrefill, setServicePrefill] = useState({
+    key: '',
+    interest: '',
+    focus: '',
+    destinationOrPackage: '',
+    message: '',
+  })
 
   useEffect(() => {
     if (!submitted || !successRef.current) return
@@ -44,9 +53,8 @@ export function ContactForm() {
   }, [submitted])
 
   useEffect(() => {
-    const serviceSlug = new URLSearchParams(window.location.search).get('service')
-    if (!serviceSlug) return
-
+    const params = new URLSearchParams(window.location.search)
+    const serviceSlug = params.get('service') ?? ''
     const serviceNames: Record<string, string> = {
       flights: 'Flights and air tickets',
       bus: 'Bus tickets and future service updates',
@@ -56,13 +64,31 @@ export function ContactForm() {
       assistance: 'Travel assistance',
     }
     const serviceName = serviceNames[serviceSlug]
-    if (!serviceName) return
+    const packageName = params.get('package') ?? ''
+    const destination = params.get('destination') ?? params.get('trek') ?? ''
+    const focus = params.get('focus') ?? ''
+    const requestedInterest = params.get('interest') ?? ''
+    const interest = ['tour', 'trekking', 'travel_service', 'other'].includes(requestedInterest)
+      ? requestedInterest
+      : serviceName
+        ? 'travel_service'
+        : ''
+    const message = params.get('message') ?? (serviceName
+      ? serviceSlug === 'bus'
+        ? 'I would like to ask about future updates for bus ticket support. Please let me know when this service becomes available.'
+        : `I am interested in ${serviceName.toLowerCase()}. Please let me know what options, costs and arrangements may be available.`
+      : '')
 
-    const message = serviceSlug === 'bus'
-      ? 'I would like to ask about future updates for bus ticket support. Please let me know when this service becomes available.'
-      : `I am interested in ${serviceName.toLowerCase()}. Please let me know what options, costs and arrangements may be available.`
-
-    setServicePrefill({ key: serviceSlug, interest: 'travel_service', message })
+    const key = [serviceSlug, packageName, destination, focus, interest, message].join('|')
+    if (key !== '|||||') {
+      setServicePrefill({
+        key,
+        interest,
+        focus: travelFocuses.includes(focus as (typeof travelFocuses)[number]) ? focus : '',
+        destinationOrPackage: packageName || destination,
+        message,
+      })
+    }
   }, [])
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -85,6 +111,10 @@ export function ContactForm() {
       countryOfResidence: formData.get('countryOfResidence'),
       preferredContactChannel: formData.get('preferredContactChannel'),
       interest: formData.get('interest'),
+      travelFocus: formData.get('travelFocus'),
+      destinationOrPackage: formData.get('destinationOrPackage'),
+      budgetRange: formData.get('budgetRange'),
+      additionalRequirements: formData.get('additionalRequirements'),
       message: formData.get('message'),
       travelStartDate: formData.get('travelStartDate'),
       datesFlexible: formData.get('datesFlexible') === 'on',
@@ -107,6 +137,10 @@ export function ContactForm() {
       }
 
       if (response.ok && isRecord(result) && result.status === 'received' && typeof result.reference === 'string') {
+        track('enquiry_submission', {
+          interest: typeof payload.interest === 'string' ? payload.interest : 'other',
+          focus: typeof payload.travelFocus === 'string' ? payload.travelFocus : 'unspecified',
+        })
         setSubmitted(true)
         setSubmissionLocked(false)
         setFailureReference('')
@@ -154,9 +188,9 @@ export function ContactForm() {
       <span className="success-icon"><Check aria-hidden="true" /></span>
       <span className="eyebrow">ENQUIRY SENT</span>
       <h3>Thank you for getting in touch.</h3>
-      <p>Web3Forms confirmed your enquiry was submitted to our team. This is not a booking confirmation.</p>
+      <p>Your enquiry has been saved and the notification process has been accepted. This is not a booking confirmation. If you do not hear back, contact our team directly.</p>
       {successReference && <p className="success-reference">Reference: <strong>{successReference}</strong></p>}
-      <div className="success-actions"><a href="tel:+9779851248173">Call +977 9851248173</a><a href={getWhatsAppHref('Hello Teenkanya, I would like to follow up on my enquiry.')} target="_blank" rel="noreferrer">WhatsApp</a><a href="mailto:3kanya2018@gmail.com">Email our team</a></div>
+      <div className="success-actions"><TrackedLink href="tel:+9779851248173" eventName="contact_click" eventProperties={{ channel: 'phone', location: 'enquiry_success' }}>Call +977 9851248173</TrackedLink><TrackedLink href={getWhatsAppHref('Hello Teenkanya, I would like to follow up on my enquiry.')} target="_blank" rel="noreferrer" eventName="whatsapp_click" eventProperties={{ location: 'enquiry_success' }}>WhatsApp</TrackedLink><TrackedLink href="mailto:3kanya2018@gmail.com" eventName="contact_click" eventProperties={{ channel: 'email', location: 'enquiry_success' }}>Email our team</TrackedLink></div>
       <button type="button" className="text-link" onClick={() => { setSubmitted(false); startNewEnquiry() }}>Send another enquiry</button>
     </div> : <form key={servicePrefill.key || 'default'} className="contact-form" onSubmit={handleSubmit}>
       <div className="form-row">
@@ -193,6 +227,26 @@ export function ContactForm() {
         </label>
       </div>
       <div className="form-row">
+        <label htmlFor="enquiry-travel-focus">Travel focus (optional)
+          <select id="enquiry-travel-focus" name="travelFocus" defaultValue={servicePrefill.focus} disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.travelFocus)} aria-describedby={fieldErrors.travelFocus ? 'enquiry-travel-focus-error' : undefined}>
+            <option value="">Choose a travel focus</option>
+            <option value="nepal_tour">Nepal tour</option>
+            <option value="domestic_tour">Domestic tour in Nepal</option>
+            <option value="international_tour">International tour</option>
+            <option value="adventure_activity">Adventure activity</option>
+            <option value="trekking">Trekking and hiking</option>
+            <option value="transportation">Transportation and travel arrangements</option>
+            <option value="hotel_accommodation">Hotel and accommodation</option>
+            <option value="other">Other travel experience</option>
+          </select>
+          {fieldErrors.travelFocus && <span className="field-error" id="enquiry-travel-focus-error">{fieldErrors.travelFocus}</span>}
+        </label>
+        <label htmlFor="enquiry-destination-package">Destination or package (optional)
+          <input id="enquiry-destination-package" name="destinationOrPackage" defaultValue={servicePrefill.destinationOrPackage} maxLength={160} placeholder="A place or journey you have in mind" disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.destinationOrPackage)} aria-describedby={fieldErrors.destinationOrPackage ? 'enquiry-destination-package-error' : undefined} />
+          {fieldErrors.destinationOrPackage && <span className="field-error" id="enquiry-destination-package-error">{fieldErrors.destinationOrPackage}</span>}
+        </label>
+      </div>
+      <div className="form-row">
         <label htmlFor="enquiry-travel-date">Preferred travel date
           <input id="enquiry-travel-date" type="date" name="travelStartDate" disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.travelStartDate)} aria-describedby={fieldErrors.travelStartDate ? 'enquiry-travel-date-error' : undefined} />
           {fieldErrors.travelStartDate && <span className="field-error" id="enquiry-travel-date-error">{fieldErrors.travelStartDate}</span>}
@@ -203,8 +257,16 @@ export function ContactForm() {
         </label>
       </div>
       <label className="checkbox-label"><input type="checkbox" name="datesFlexible" disabled={isSubmitting || submissionLocked} /> My travel dates are flexible</label>
+      <label htmlFor="enquiry-budget-range">Indicative budget (optional)
+        <input id="enquiry-budget-range" name="budgetRange" maxLength={100} placeholder="Range, currency and whether per person" disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.budgetRange)} aria-describedby={fieldErrors.budgetRange ? 'enquiry-budget-range-error' : undefined} />
+        {fieldErrors.budgetRange && <span className="field-error" id="enquiry-budget-range-error">{fieldErrors.budgetRange}</span>}
+      </label>
+      <label htmlFor="enquiry-additional-requirements">Additional requirements (optional)
+        <textarea id="enquiry-additional-requirements" name="additionalRequirements" rows={3} maxLength={1000} placeholder="Accessibility, dietary or other planning needs" disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.additionalRequirements)} aria-describedby={fieldErrors.additionalRequirements ? 'enquiry-additional-requirements-error' : undefined} />
+        {fieldErrors.additionalRequirements && <span className="field-error" id="enquiry-additional-requirements-error">{fieldErrors.additionalRequirements}</span>}
+      </label>
       <label htmlFor="enquiry-message">Your message
-        <textarea id="enquiry-message" name="message" rows={5} defaultValue={servicePrefill.message} required minLength={10} maxLength={4000} placeholder="Tell us a little about your journey..." disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.message)} aria-describedby={fieldErrors.message ? 'enquiry-message-error' : undefined} />
+        <textarea id="enquiry-message" name="message" rows={5} defaultValue={servicePrefill.message} required minLength={10} maxLength={3000} placeholder="Tell us a little about your journey..." disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.message)} aria-describedby={fieldErrors.message ? 'enquiry-message-error' : undefined} />
         {fieldErrors.message && <span className="field-error" id="enquiry-message-error">{fieldErrors.message}</span>}
       </label>
       <label className="contact-form-honeypot" aria-hidden="true">Leave this field empty<input name="website" tabIndex={-1} autoComplete="off" /></label>
@@ -215,7 +277,7 @@ export function ContactForm() {
         {submissionLocked && <button type="button" className="text-link" onClick={startNewEnquiry}>Edit details and submit as a new enquiry</button>}
       </div>}
       <div className="form-submit-row"><p>Sending an enquiry does not confirm a booking. Our team will follow up using your preferred contact method.</p><button className="button button-primary" type="submit" disabled={isSubmitting}>{isSubmitting ? 'Sending…' : submissionLocked ? 'Retry submission' : 'Send an enquiry'} <ArrowUpRight aria-hidden="true" /></button></div>
-      <p className="form-disclaimer">Your details are used to respond to this enquiry. If a saved enquiry cannot be emailed, retrying uses the same reference and does not create a duplicate.</p>
+      <p className="form-disclaimer">Your details are used to respond to this enquiry. If a saved enquiry cannot be emailed, retrying uses the same reference and does not create a duplicate. <a href="/privacy">Read our privacy notice.</a></p>
     </form>}
   </div>
 }

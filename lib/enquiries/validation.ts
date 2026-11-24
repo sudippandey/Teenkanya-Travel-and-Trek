@@ -1,8 +1,30 @@
 export const enquiryInterests = ['tour', 'trekking', 'travel_service', 'other'] as const
 export const contactChannels = ['email', 'phone', 'whatsapp'] as const
+export const travelFocuses = [
+  'nepal_tour',
+  'domestic_tour',
+  'international_tour',
+  'adventure_activity',
+  'trekking',
+  'transportation',
+  'hotel_accommodation',
+  'other',
+] as const
 
 export type EnquiryInterest = (typeof enquiryInterests)[number]
 export type ContactChannel = (typeof contactChannels)[number]
+export type TravelFocus = (typeof travelFocuses)[number]
+
+const travelFocusLabels: Record<TravelFocus, string> = {
+  nepal_tour: 'Nepal tour',
+  domestic_tour: 'Domestic tour in Nepal',
+  international_tour: 'International tour',
+  adventure_activity: 'Adventure activity',
+  trekking: 'Trekking and hiking',
+  transportation: 'Transportation and travel arrangements',
+  hotel_accommodation: 'Hotel and accommodation',
+  other: 'Other travel experience',
+}
 
 export interface ValidatedEnquiry {
   submissionId: string
@@ -120,9 +142,50 @@ export function validateEnquiry(input: unknown): EnquiryValidationResult {
     fieldErrors.preferredContactChannel = 'Provide a phone number for your selected contact method.'
   }
 
-  const message = typeof source.message === 'string' ? normalizeMessage(source.message) : ''
-  if (message.length < 10 || message.length > 4000) {
-    fieldErrors.message = 'Write a message using 10 to 4,000 characters.'
+  const rawMessage = typeof source.message === 'string' ? normalizeMessage(source.message) : ''
+  if (rawMessage.length < 10 || rawMessage.length > 3000) {
+    fieldErrors.message = 'Write a message using 10 to 3,000 characters.'
+  }
+
+  let travelFocus: TravelFocus | null = null
+  if (source.travelFocus !== undefined && source.travelFocus !== null && source.travelFocus !== '') {
+    if (typeof source.travelFocus !== 'string' || !travelFocuses.includes(source.travelFocus as TravelFocus)) {
+      fieldErrors.travelFocus = 'Choose a valid travel focus.'
+    } else {
+      travelFocus = source.travelFocus as TravelFocus
+    }
+  }
+
+  const destinationOrPackage = optionalText(source, 'destinationOrPackage', fieldErrors)
+  if (destinationOrPackage && destinationOrPackage.length > 160) {
+    fieldErrors.destinationOrPackage = 'Keep the destination or package under 160 characters.'
+  }
+
+  const budgetRange = optionalText(source, 'budgetRange', fieldErrors)
+  if (budgetRange && budgetRange.length > 100) {
+    fieldErrors.budgetRange = 'Keep the budget range under 100 characters.'
+  }
+
+  const additionalRequirements = source.additionalRequirements === undefined || source.additionalRequirements === null
+    ? null
+    : typeof source.additionalRequirements === 'string'
+      ? normalizeMessage(source.additionalRequirements)
+      : (fieldErrors.additionalRequirements = 'Enter valid text.', null)
+  if (additionalRequirements && additionalRequirements.length > 1000) {
+    fieldErrors.additionalRequirements = 'Keep additional requirements under 1,000 characters.'
+  }
+
+  const tripDetails = [
+    travelFocus ? `Travel focus: ${travelFocusLabels[travelFocus]}` : null,
+    destinationOrPackage ? `Destination or package: ${destinationOrPackage}` : null,
+    budgetRange ? `Indicative budget: ${budgetRange}` : null,
+    additionalRequirements ? `Additional requirements: ${additionalRequirements}` : null,
+  ].filter((detail): detail is string => detail !== null)
+  const message = tripDetails.length > 0
+    ? `Trip details\n${tripDetails.join('\n')}\n\nMessage\n${rawMessage}`
+    : rawMessage
+  if (message.length > 4000) {
+    fieldErrors.message = 'The combined trip details and message must be under 4,000 characters.'
   }
 
   let travelStartDate: string | null = null

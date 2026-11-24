@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { ArticleDetail } from '@/components/page-templates'
-import { createArticleStructuredData, serializeJsonLd } from '@/lib/article-structured-data'
 import { travelCatalog } from '@/lib/travel-service'
 
 export async function generateStaticParams() { return (await travelCatalog.listArticles()).map(({ slug }) => ({ slug })) }
@@ -22,13 +21,5 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   const article = await travelCatalog.getArticle(slug)
   if (!article) notFound()
 
-  const structuredData = createArticleStructuredData(article)
-
-  return <>
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: serializeJsonLd(structuredData) }}
-    />
-    <ArticleDetail article={article} />
-  </>
+  return <ArticleDetail article={article} />
 }

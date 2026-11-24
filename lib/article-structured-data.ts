@@ -1,3 +1,5 @@
+import { siteUrl as configuredSiteUrl } from './site-config.ts'
+
 export type StructuredArticle = {
   slug: string
   title: string
@@ -7,7 +9,7 @@ export type StructuredArticle = {
   content: string[]
 }
 
-export function createArticleStructuredData(article: StructuredArticle, siteUrl = 'https://3kanyatravel.vercel.app') {
+export function createArticleStructuredData(article: StructuredArticle, siteUrl = configuredSiteUrl) {
   return {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',

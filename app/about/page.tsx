@@ -3,11 +3,13 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { JourneyCta, PageHero } from '@/components/page-templates'
 import { PhotoCredit } from '@/components/photo-credit'
+import { TrackedLink } from '@/components/tracked-link'
+import { business } from '@/lib/site-config'
 import { destinationPhotos } from '@/lib/travel-data'
 
 export const metadata: Metadata = {
   title: 'About Teenkanya',
-  description: 'Teenkanya Travel & Trek is based in Kathmandu and helps travelers plan thoughtful journeys through Nepal.',
+  description: 'Meet Teenkanya Travel & Trek Pvt. Ltd., a Kathmandu-based travel company planning Nepal journeys, domestic trips and international travel enquiries.',
   alternates: { canonical: '/about' },
   openGraph: {
     title: 'About Teenkanya Travel & Trek',
@@ -36,10 +38,10 @@ export default function AboutPage() {
         <div className="editorial-copy">
           <span className="eyebrow">A Kathmandu starting point</span>
           <h2>Rooted in Nepal. <em>Open to your way.</em></h2>
-          <p>Teenkanya Travel &amp; Trek Pvt. Ltd. is based in Kathmandu, Nepal. We help travelers explore the country through cultural visits, holiday itineraries and trekking journeys.</p>
-          <p>Every good plan begins with a conversation about what you hope to see, the time you have and how you like to travel.</p>
+          <p>Teenkanya Travel &amp; Trek Pvt. Ltd. is based in Kathmandu, Nepal. The team helps visitors and local travellers plan Nepal tours, trekking journeys, domestic trips and international travel enquiries.</p>
+          <p>Some trips are operated by Teenkanya and others may be arranged with partner operators. Before you commit, ask for the operator, inclusions, availability, cancellation terms and final price in writing.</p>
           <div className="editorial-points"><span>Thoughtful route ideas</span><span>Clear practical details</span><span>Room to ask questions</span><span>Flexible travel planning</span></div>
-          <Link className="text-link" href="/contact">Start a conversation</Link>
+          <TrackedLink className="text-link" href="/contact" eventName="contact_click" eventProperties={{ channel: 'enquiry', location: 'about' }}>Start a conversation</TrackedLink>
         </div>
       </div>
     </section>
@@ -53,6 +55,21 @@ export default function AboutPage() {
             <p>{description}</p>
           </article>)}
         </div>
+      </div>
+    </section>
+    <section className="section section-soft" aria-labelledby="business-details-heading">
+      <div className="container">
+        <div className="section-heading"><div><span className="eyebrow">BUSINESS INFORMATION</span><h2 id="business-details-heading">The details <em>matter.</em></h2></div><p>Use these published contact details to reach the team. Items in brackets are owner follow-ups and are not claims of registration or certification.</p></div>
+        <dl className="business-info-grid">
+          <div><dt>Registered business name</dt><dd>{business.name}</dd></div>
+          <div><dt>Office location</dt><dd>{business.city}, Nepal <span className="business-info-placeholder">[Full street address: business owner to provide]</span></dd></div>
+          <div><dt>Phone and WhatsApp</dt><dd><TrackedLink href={`tel:${business.telephone}`} eventName="contact_click" eventProperties={{ channel: 'phone', location: 'business_details' }}>{business.telephone}</TrackedLink></dd></div>
+          <div><dt>Customer email</dt><dd><TrackedLink href={`mailto:${business.email}`} eventName="contact_click" eventProperties={{ channel: 'email', location: 'business_details' }}>{business.email}</TrackedLink></dd></div>
+          <div><dt>Registration and applicable travel permissions</dt><dd><span className="business-info-placeholder">[Verified registration number and applicable licence details: business owner to provide]</span></dd></div>
+          <div><dt>Tax registration</dt><dd><span className="business-info-placeholder">[PAN/VAT details or confirmation that they do not apply: business owner to provide]</span></dd></div>
+        </dl>
+        <p className="business-operator-note">For partner-operated trips, the written itinerary or quotation should identify the operating partner and the services they provide. No online booking or fixed-price confirmation is offered on this website.</p>
+        <p className="business-operator-note">Read our <Link className="text-link" href="/privacy">privacy notice</Link> for information about enquiry details and website analytics.</p>
       </div>
     </section>
     <JourneyCta title="Tell us what brings you to Nepal." />
