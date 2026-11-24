@@ -8,6 +8,7 @@ import { JourneyFinder } from '@/components/journey-finder';
 import { TravelGallery } from '@/components/travel-gallery';
 import { ArticleCard, PackageCard } from '@/components/travel-cards';
 import { PhotoCredit } from '@/components/photo-credit';
+import { HomeHeroSequence } from '@/components/home-hero-sequence';
 import { ScrollReveal } from '@/components/scroll-reveal';
 import { CustomCursor } from '@/components/cinematic/CustomCursor';
 import { DestinationGallery } from '@/components/cinematic/DestinationGallery';
@@ -63,16 +64,6 @@ export function HomePage({ destinationItems, packageItems, articles, packages, t
     const hero = heroRef.current;
     if (!page || !hero || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    const heroImage = hero.querySelector('.hero-image');
-    if (heroImage) {
-      gsap.to(heroImage, {
-        yPercent: 9,
-        scale: 1.08,
-        ease: 'none',
-        scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: 1.2 },
-      });
-    }
-
     const editorialImage = page.querySelector('.editorial-image img');
     const editorialFrame = page.querySelector('.editorial-image');
     if (editorialImage && editorialFrame) {
@@ -127,7 +118,6 @@ export function HomePage({ destinationItems, packageItems, articles, packages, t
     }
   }, { scope: homeRef });
 
-  const heroImage = destinationPhotos['everest-region'][0];
   const featuredDestination = destinationItems.find((item) => item.slug === 'pokhara');
   const supportingDestinations = ['kathmandu', 'mustang', 'chitwan'].flatMap((slug) => {
     const item = destinationItems.find((destination) => destination.slug === slug);
@@ -140,8 +130,7 @@ export function HomePage({ destinationItems, packageItems, articles, packages, t
       <ScrollExperience />
       <CustomCursor />
       <section className="hero home-hero" ref={heroRef}>
-        <div className="hero-glow" aria-hidden="true" />
-        <Image className="hero-image" src={heroImage.src} alt={heroImage.alt} fill priority sizes="100vw" quality={85} />
+        <HomeHeroSequence />
         <div className="hero-overlay" />
 
         <div className="container hero-inner">
@@ -155,10 +144,6 @@ export function HomePage({ destinationItems, packageItems, articles, packages, t
             </div>
           </div>
 
-          <div className="hero-bottomline">
-            <span>Based in Kathmandu · Serving travellers in Nepal and abroad</span>
-            <PhotoCredit credit={heroImage.credit} license={heroImage.license} sourceUrl={heroImage.sourceUrl} />
-          </div>
         </div>
 
         <a className="hero-scroll" href="#discover" aria-label="Scroll to discover Nepal"><ArrowDownRight aria-hidden="true" /></a>
