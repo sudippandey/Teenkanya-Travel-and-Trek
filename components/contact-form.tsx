@@ -5,7 +5,6 @@ import type { FormEvent } from 'react'
 import { ArrowUpRight, Check } from 'lucide-react'
 import { track } from '@vercel/analytics'
 import { getWhatsAppHref } from '@/lib/contact-links'
-import { travelFocuses } from '@/lib/enquiries/validation'
 import { TrackedLink } from '@/components/tracked-link'
 
 interface EnquiryResponse {
@@ -41,8 +40,6 @@ export function ContactForm() {
   const [servicePrefill, setServicePrefill] = useState({
     key: '',
     interest: '',
-    focus: '',
-    destinationOrPackage: '',
     message: '',
   })
 
@@ -66,35 +63,36 @@ export function ContactForm() {
     const serviceName = serviceNames[serviceSlug]
     const packageName = params.get('package') ?? ''
     const destination = params.get('destination') ?? params.get('trek') ?? ''
-    const focus = params.get('focus') ?? ''
     const requestedInterest = params.get('interest') ?? ''
     const interest = ['tour', 'trekking', 'travel_service', 'other'].includes(requestedInterest)
       ? requestedInterest
       : serviceName
         ? 'travel_service'
         : ''
-    const message = params.get('message') ?? (serviceName
-      ? serviceSlug === 'bus'
-        ? 'I would like to ask about future updates for bus ticket support. Please let me know when this service becomes available.'
-        : `I am interested in ${serviceName.toLowerCase()}. Please let me know what options, costs and arrangements may be available.`
-      : '')
+    const message = params.get('message') ?? (packageName
+      ? `I am interested in ${packageName}${destination ? ` in ${destination}` : ''}. Please let me know more about this trip.`
+      : destination
+        ? `I am interested in visiting ${destination}. Please let me know more about this trip.`
+        : serviceName
+          ? serviceSlug === 'bus'
+            ? 'I would like to ask about future updates for bus ticket support. Please let me know when this service becomes available.'
+            : `I am interested in ${serviceName.toLowerCase()}. Please let me know what options may be available.`
+          : '')
 
-    const key = [serviceSlug, packageName, destination, focus, interest, message].join('|')
-    if (key !== '|||||') {
-      setServicePrefill({
-        key,
-        interest,
-        focus: travelFocuses.includes(focus as (typeof travelFocuses)[number]) ? focus : '',
-        destinationOrPackage: packageName || destination,
-        message,
-      })
-    }
+    const key = [serviceSlug, packageName, destination, interest, message].join('|')
+    if (key !== '||||') setServicePrefill({ key, interest, message })
   }, [])
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const form = event.currentTarget
     if (!form.reportValidity() || isSubmitting) return
+
+    const contactData = new FormData(form)
+    if (!String(contactData.get('email') ?? '').trim() && !String(contactData.get('phone') ?? '').trim()) {
+      setFieldErrors({ contact: 'Add a phone number or email address so our team can reply.' })
+      return
+    }
 
     setError('')
     setFieldErrors({})
@@ -108,17 +106,8 @@ export function ContactForm() {
       fullName: formData.get('fullName'),
       email: formData.get('email'),
       phone: formData.get('phone'),
-      countryOfResidence: formData.get('countryOfResidence'),
-      preferredContactChannel: formData.get('preferredContactChannel'),
       interest: formData.get('interest'),
-      travelFocus: formData.get('travelFocus'),
-      destinationOrPackage: formData.get('destinationOrPackage'),
-      budgetRange: formData.get('budgetRange'),
-      additionalRequirements: formData.get('additionalRequirements'),
       message: formData.get('message'),
-      travelStartDate: formData.get('travelStartDate'),
-      datesFlexible: formData.get('datesFlexible') === 'on',
-      travellerCount: formData.get('travellerCount') || null,
       website: formData.get('website'),
     }
 
@@ -139,7 +128,7 @@ export function ContactForm() {
       if (response.ok && isRecord(result) && result.status === 'received' && typeof result.reference === 'string') {
         track('enquiry_submission', {
           interest: typeof payload.interest === 'string' ? payload.interest : 'other',
-          focus: typeof payload.travelFocus === 'string' ? payload.travelFocus : 'unspecified',
+          focus: 'unspecified',
         })
         setSubmitted(true)
         setSubmissionLocked(false)
@@ -183,6 +172,15 @@ export function ContactForm() {
     setFieldErrors({})
   }
 
+  function clearContactError() {
+    setFieldErrors((previous) => {
+      if (!previous.contact) return previous
+      const next = { ...previous }
+      delete next.contact
+      return next
+    })
+  }
+
   return <div className="contact-form-wrap">
     {submitted ? <div ref={successRef} className="form-success" role="status" tabIndex={-1}>
       <span className="success-icon"><Check aria-hidden="true" /></span>
@@ -193,91 +191,51 @@ export function ContactForm() {
       <div className="success-actions"><TrackedLink href="tel:+9779851248173" eventName="contact_click" eventProperties={{ channel: 'phone', location: 'enquiry_success' }}>Call +977 9851248173</TrackedLink><TrackedLink href={getWhatsAppHref('Hello Teenkanya, I would like to follow up on my enquiry.')} target="_blank" rel="noreferrer" eventName="whatsapp_click" eventProperties={{ location: 'enquiry_success' }}>WhatsApp</TrackedLink><TrackedLink href="mailto:3kanya2018@gmail.com" eventName="contact_click" eventProperties={{ channel: 'email', location: 'enquiry_success' }}>Email our team</TrackedLink></div>
       <button type="button" className="text-link" onClick={() => { setSubmitted(false); startNewEnquiry() }}>Send another enquiry</button>
     </div> : <form key={servicePrefill.key || 'default'} className="contact-form" onSubmit={handleSubmit}>
-      <div className="form-row">
-        <label htmlFor="enquiry-full-name">Your name
-          <input id="enquiry-full-name" name="fullName" autoComplete="name" required minLength={2} maxLength={120} placeholder="Full name" disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.fullName)} aria-describedby={fieldErrors.fullName ? 'enquiry-full-name-error' : undefined} />
-          {fieldErrors.fullName && <span className="field-error" id="enquiry-full-name-error">{fieldErrors.fullName}</span>}
+      <header className="contact-form-heading">
+        <h2>Plan Your Trip With Us</h2>
+        <p>Tell us a little about what you&apos;re looking for. Our team will help with the rest.</p>
+      </header>
+      <label htmlFor="enquiry-full-name">Full name
+        <input id="enquiry-full-name" name="fullName" autoComplete="name" required minLength={2} maxLength={120} placeholder="Your name" disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.fullName)} aria-describedby={fieldErrors.fullName ? 'enquiry-full-name-error' : undefined} />
+        {fieldErrors.fullName && <span className="field-error" id="enquiry-full-name-error">{fieldErrors.fullName}</span>}
+      </label>
+      <div className="form-row form-contact-row">
+        <label htmlFor="enquiry-phone">Phone number / WhatsApp <span className="optional-note">(required if no email)</span>
+          <input id="enquiry-phone" type="tel" name="phone" autoComplete="tel" maxLength={30} placeholder="+977 98XXXXXXXX" onChange={clearContactError} disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.phone || fieldErrors.contact)} aria-describedby={[fieldErrors.phone ? 'enquiry-phone-error' : '', fieldErrors.contact ? 'enquiry-contact-error' : ''].filter(Boolean).join(' ') || undefined} />
+          {fieldErrors.phone && <span className="field-error" id="enquiry-phone-error">{fieldErrors.phone}</span>}
         </label>
-        <label htmlFor="enquiry-email">Email address (optional if you provide a phone)
-          <input id="enquiry-email" type="email" name="email" autoComplete="email" maxLength={254} placeholder="you@example.com" disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.email)} aria-describedby={fieldErrors.email ? 'enquiry-email-error' : undefined} />
+        <label htmlFor="enquiry-email">Email address <span className="optional-note">(optional if phone provided)</span>
+          <input id="enquiry-email" type="email" name="email" autoComplete="email" maxLength={254} placeholder="you@example.com" onChange={clearContactError} disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.email || fieldErrors.contact)} aria-describedby={[fieldErrors.email ? 'enquiry-email-error' : '', fieldErrors.contact ? 'enquiry-contact-error' : ''].filter(Boolean).join(' ') || undefined} />
           {fieldErrors.email && <span className="field-error" id="enquiry-email-error">{fieldErrors.email}</span>}
         </label>
       </div>
-      <div className="form-row">
-        <label htmlFor="enquiry-phone">Phone (optional if you provide an email)
-          <input id="enquiry-phone" type="tel" name="phone" autoComplete="tel" maxLength={30} placeholder="+977" disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.phone)} aria-describedby={fieldErrors.phone ? 'enquiry-phone-error' : undefined} />
-          {fieldErrors.phone && <span className="field-error" id="enquiry-phone-error">{fieldErrors.phone}</span>}
-        </label>
-        <label htmlFor="enquiry-country">Country of residence
-          <input id="enquiry-country" name="countryOfResidence" autoComplete="country-name" maxLength={100} placeholder="For example, Nepal" disabled={isSubmitting || submissionLocked} />
-        </label>
-      </div>
-      <div className="form-row">
-        <label htmlFor="enquiry-contact-channel">Preferred contact method
-          <select id="enquiry-contact-channel" name="preferredContactChannel" defaultValue="email" disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.preferredContactChannel)} aria-describedby={fieldErrors.preferredContactChannel ? 'enquiry-contact-channel-error' : undefined}>
-            <option value="email">Email</option><option value="phone">Phone</option><option value="whatsapp">WhatsApp</option>
-          </select>
-          {fieldErrors.preferredContactChannel && <span className="field-error" id="enquiry-contact-channel-error">{fieldErrors.preferredContactChannel}</span>}
-        </label>
-        <label htmlFor="enquiry-interest">What are you planning?
-          <select id="enquiry-interest" name="interest" defaultValue={servicePrefill.interest} required disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.interest)} aria-describedby={fieldErrors.interest ? 'enquiry-interest-error' : undefined}>
-            <option value="" disabled>Select an interest</option><option value="tour">Tour or holiday</option><option value="trekking">Trekking</option><option value="travel_service">Travel service</option><option value="other">Something else</option>
-          </select>
-          {fieldErrors.interest && <span className="field-error" id="enquiry-interest-error">{fieldErrors.interest}</span>}
-        </label>
-      </div>
-      <div className="form-row">
-        <label htmlFor="enquiry-travel-focus">Travel focus (optional)
-          <select id="enquiry-travel-focus" name="travelFocus" defaultValue={servicePrefill.focus} disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.travelFocus)} aria-describedby={fieldErrors.travelFocus ? 'enquiry-travel-focus-error' : undefined}>
-            <option value="">Choose a travel focus</option>
-            <option value="nepal_tour">Nepal tour</option>
-            <option value="domestic_tour">Domestic tour in Nepal</option>
-            <option value="international_tour">International tour</option>
-            <option value="adventure_activity">Adventure activity</option>
-            <option value="trekking">Trekking and hiking</option>
-            <option value="transportation">Transportation and travel arrangements</option>
-            <option value="hotel_accommodation">Hotel and accommodation</option>
-            <option value="other">Other travel experience</option>
-          </select>
-          {fieldErrors.travelFocus && <span className="field-error" id="enquiry-travel-focus-error">{fieldErrors.travelFocus}</span>}
-        </label>
-        <label htmlFor="enquiry-destination-package">Destination or package (optional)
-          <input id="enquiry-destination-package" name="destinationOrPackage" defaultValue={servicePrefill.destinationOrPackage} maxLength={160} placeholder="A place or journey you have in mind" disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.destinationOrPackage)} aria-describedby={fieldErrors.destinationOrPackage ? 'enquiry-destination-package-error' : undefined} />
-          {fieldErrors.destinationOrPackage && <span className="field-error" id="enquiry-destination-package-error">{fieldErrors.destinationOrPackage}</span>}
-        </label>
-      </div>
-      <div className="form-row">
-        <label htmlFor="enquiry-travel-date">Preferred travel date
-          <input id="enquiry-travel-date" type="date" name="travelStartDate" disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.travelStartDate)} aria-describedby={fieldErrors.travelStartDate ? 'enquiry-travel-date-error' : undefined} />
-          {fieldErrors.travelStartDate && <span className="field-error" id="enquiry-travel-date-error">{fieldErrors.travelStartDate}</span>}
-        </label>
-        <label htmlFor="enquiry-travellers">Number of travellers
-          <input id="enquiry-travellers" type="number" name="travellerCount" min={1} max={50} step={1} placeholder="1" disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.travellerCount)} aria-describedby={fieldErrors.travellerCount ? 'enquiry-travellers-error' : undefined} />
-          {fieldErrors.travellerCount && <span className="field-error" id="enquiry-travellers-error">{fieldErrors.travellerCount}</span>}
-        </label>
-      </div>
-      <label className="checkbox-label"><input type="checkbox" name="datesFlexible" disabled={isSubmitting || submissionLocked} /> My travel dates are flexible</label>
-      <label htmlFor="enquiry-budget-range">Indicative budget (optional)
-        <input id="enquiry-budget-range" name="budgetRange" maxLength={100} placeholder="Range, currency and whether per person" disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.budgetRange)} aria-describedby={fieldErrors.budgetRange ? 'enquiry-budget-range-error' : undefined} />
-        {fieldErrors.budgetRange && <span className="field-error" id="enquiry-budget-range-error">{fieldErrors.budgetRange}</span>}
+      {fieldErrors.contact && <p className="field-error" id="enquiry-contact-error" role="alert">{fieldErrors.contact}</p>}
+      <label htmlFor="enquiry-interest">Travel interest
+        <select id="enquiry-interest" name="interest" defaultValue={servicePrefill.interest} required disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.interest)} aria-describedby={fieldErrors.interest ? 'enquiry-interest-error' : undefined}>
+          <option value="" disabled>Select what you&apos;re interested in</option>
+          <option value="tour">Tour or holiday</option>
+          <option value="trekking">Trekking</option>
+          <option value="travel_service">Travel services</option>
+          <option value="other">Something else</option>
+        </select>
+        {fieldErrors.interest && <span className="field-error" id="enquiry-interest-error">{fieldErrors.interest}</span>}
       </label>
-      <label htmlFor="enquiry-additional-requirements">Additional requirements (optional)
-        <textarea id="enquiry-additional-requirements" name="additionalRequirements" rows={3} maxLength={1000} placeholder="Accessibility, dietary or other planning needs" disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.additionalRequirements)} aria-describedby={fieldErrors.additionalRequirements ? 'enquiry-additional-requirements-error' : undefined} />
-        {fieldErrors.additionalRequirements && <span className="field-error" id="enquiry-additional-requirements-error">{fieldErrors.additionalRequirements}</span>}
-      </label>
-      <label htmlFor="enquiry-message">Your message
-        <textarea id="enquiry-message" name="message" rows={5} defaultValue={servicePrefill.message} required minLength={10} maxLength={3000} placeholder="Tell us a little about your journey..." disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.message)} aria-describedby={fieldErrors.message ? 'enquiry-message-error' : undefined} />
+      <label htmlFor="enquiry-message">Message <span className="optional-note">(optional)</span>
+        <textarea id="enquiry-message" name="message" rows={4} defaultValue={servicePrefill.message} maxLength={3000} placeholder="Tell us where you'd like to go or what you have in mind..." disabled={isSubmitting || submissionLocked} aria-invalid={Boolean(fieldErrors.message)} aria-describedby={fieldErrors.message ? 'enquiry-message-error' : undefined} />
         {fieldErrors.message && <span className="field-error" id="enquiry-message-error">{fieldErrors.message}</span>}
       </label>
       <label className="contact-form-honeypot" aria-hidden="true">Leave this field empty<input name="website" tabIndex={-1} autoComplete="off" /></label>
-      {fieldErrors.contact && <p className="field-error" role="alert">{fieldErrors.contact}</p>}
       {error && <div className="form-error" role="alert">
         <p>{error}</p>
         {failureReference && <p>Saved enquiry reference: <strong>{failureReference}</strong></p>}
         {submissionLocked && <button type="button" className="text-link" onClick={startNewEnquiry}>Edit details and submit as a new enquiry</button>}
       </div>}
-      <div className="form-submit-row"><p>Sending an enquiry does not confirm a booking. Our team will follow up using your preferred contact method.</p><button className="button button-primary" type="submit" disabled={isSubmitting}>{isSubmitting ? 'Sending…' : submissionLocked ? 'Retry submission' : 'Send an enquiry'} <ArrowUpRight aria-hidden="true" /></button></div>
-      <p className="form-disclaimer">Your details are used to respond to this enquiry. If a saved enquiry cannot be emailed, retrying uses the same reference and does not create a duplicate. <a href="/privacy">Read our privacy notice.</a></p>
+      <div className="form-actions">
+        <button className="button button-primary" type="submit" disabled={isSubmitting}>{isSubmitting ? 'Sending…' : submissionLocked ? 'Retry submission' : 'Send Enquiry'} <ArrowUpRight aria-hidden="true" /></button>
+        <TrackedLink className="whatsapp-alternative" href={getWhatsAppHref('Hello Teenkanya, I would like to discuss my travel plans.')} target="_blank" rel="noreferrer" eventName="whatsapp_click" eventProperties={{ location: 'contact_form' }}>Or chat with us on WhatsApp</TrackedLink>
+      </div>
+      <p className="form-reassurance">No commitment. Our team will contact you to discuss your plans.</p>
+      <p className="form-disclaimer">Your details are only used to respond to your enquiry. <a href="/privacy">Privacy notice</a></p>
     </form>}
   </div>
 }

@@ -16,6 +16,7 @@ const slides: HeroSlide[] = [
   { photo: destinationPhotos.pokhara[0], location: 'Pokhara, Nepal' },
   { photo: destinationPhotos.kathmandu[1], location: 'Kathmandu Valley' },
   { photo: destinationPhotos.mustang[1], location: 'Mustang, Nepal' },
+  { photo: destinationPhotos['annapurna-region'][3], location: 'Annapurna Himal' },
 ];
 
 export function HomeHeroSequence() {
@@ -52,10 +53,10 @@ export function HomeHeroSequence() {
   }, []);
 
   useEffect(() => {
-    if (paused || pageHidden || reducedMotion) return;
-    const timer = window.setTimeout(() => changeSlide(1), 7000);
+    if (paused || pageHidden) return;
+    const timer = window.setTimeout(() => changeSlide(1), 6500);
     return () => window.clearTimeout(timer);
-  }, [activeIndex, changeSlide, pageHidden, paused, reducedMotion]);
+  }, [activeIndex, changeSlide, pageHidden, paused]);
 
   useEffect(() => {
     if (outgoingIndex === null) return;
@@ -64,27 +65,33 @@ export function HomeHeroSequence() {
   }, [activeIndex, outgoingIndex]);
 
   const activeSlide = slides[activeIndex];
-  const visibleIndices = outgoingIndex === null ? [activeIndex] : [outgoingIndex, activeIndex];
+  const nextIndex = (activeIndex + 1) % slides.length;
+  const renderedIndices = Array.from(new Set([outgoingIndex, activeIndex, nextIndex].filter((index): index is number => index !== null)));
 
   return (
     <>
       <div className="hero-image-frame" aria-hidden="true">
-        {visibleIndices.map((index) => (
-          <div
-            className={`hero-image-layer ${index === activeIndex ? 'is-active' : 'is-outgoing'}${reducedMotion ? ' is-static' : ''}`}
-            key={index}
-          >
-            <Image
-              className="hero-image"
-              src={slides[index].photo.src}
-              alt=""
-              fill
-              priority={index === 0}
-              sizes="100vw"
-              quality={85}
-            />
-          </div>
-        ))}
+        {renderedIndices.map((index) => {
+          const isActive = index === activeIndex;
+          const isOutgoing = index === outgoingIndex;
+          return (
+            <div
+              className={`hero-image-layer ${isActive ? 'is-active' : isOutgoing ? 'is-outgoing' : 'is-preloading'}${reducedMotion ? ' is-static' : ''}`}
+              key={index}
+            >
+              <Image
+                className="hero-image"
+                src={slides[index].photo.src}
+                alt=""
+                fill
+                priority={index === 0 && activeIndex === 0}
+                fetchPriority={isActive ? 'high' : 'low'}
+                sizes="100vw"
+                quality={85}
+              />
+            </div>
+          );
+        })}
       </div>
 
       <div className="hero-atmosphere" aria-hidden="true" />

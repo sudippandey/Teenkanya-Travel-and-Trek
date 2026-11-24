@@ -1,30 +1,8 @@
 export const enquiryInterests = ['tour', 'trekking', 'travel_service', 'other'] as const
 export const contactChannels = ['email', 'phone', 'whatsapp'] as const
-export const travelFocuses = [
-  'nepal_tour',
-  'domestic_tour',
-  'international_tour',
-  'adventure_activity',
-  'trekking',
-  'transportation',
-  'hotel_accommodation',
-  'other',
-] as const
 
 export type EnquiryInterest = (typeof enquiryInterests)[number]
 export type ContactChannel = (typeof contactChannels)[number]
-export type TravelFocus = (typeof travelFocuses)[number]
-
-const travelFocusLabels: Record<TravelFocus, string> = {
-  nepal_tour: 'Nepal tour',
-  domestic_tour: 'Domestic tour in Nepal',
-  international_tour: 'International tour',
-  adventure_activity: 'Adventure activity',
-  trekking: 'Trekking and hiking',
-  transportation: 'Transportation and travel arrangements',
-  hotel_accommodation: 'Hotel and accommodation',
-  other: 'Other travel experience',
-}
 
 export interface ValidatedEnquiry {
   submissionId: string
@@ -64,33 +42,14 @@ function normalizeMessage(value: string) {
     .trim()
 }
 
-function optionalText(
-  source: Record<string, unknown>,
-  field: string,
-  fieldErrors: Record<string, string>,
-) {
+function optionalText(source: Record<string, unknown>, field: string, fieldErrors: Record<string, string>) {
   const value = source[field]
-
   if (value === undefined || value === null || value === '') return null
   if (typeof value !== 'string') {
     fieldErrors[field] = 'Enter valid text.'
     return null
   }
-
   return normalizeSingleLine(value) || null
-}
-
-function isValidDate(value: string) {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/u.exec(value)
-  if (!match) return false
-
-  const year = Number(match[1])
-  const month = Number(match[2])
-  const day = Number(match[3])
-  if (year < 1900 || month < 1 || month > 12 || day < 1 || day > 31) return false
-
-  const date = new Date(Date.UTC(year, month - 1, day))
-  return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day
 }
 
 export function validateEnquiry(input: unknown): EnquiryValidationResult {
@@ -118,108 +77,15 @@ export function validateEnquiry(input: unknown): EnquiryValidationResult {
       fieldErrors.phone = 'Enter a valid phone number.'
     }
   }
-
-  const countryOfResidence = optionalText(source, 'countryOfResidence', fieldErrors)
-  if (countryOfResidence && countryOfResidence.length > 100) {
-    fieldErrors.countryOfResidence = 'Keep the country name under 100 characters.'
-  }
-
-  const preferredContactChannel = source.preferredContactChannel
-  if (!contactChannels.includes(preferredContactChannel as ContactChannel)) {
-    fieldErrors.preferredContactChannel = 'Choose a preferred contact method.'
-  }
+  if (!email && !phone) fieldErrors.contact = 'Add a phone number or email address so our team can reply.'
 
   const interest = source.interest
   if (!enquiryInterests.includes(interest as EnquiryInterest)) {
     fieldErrors.interest = 'Choose what you are planning.'
   }
 
-  if (!email && !phone) fieldErrors.contact = 'Provide an email address or phone number.'
-  if (preferredContactChannel === 'email' && !email) {
-    fieldErrors.preferredContactChannel = 'Provide an email address or choose another contact method.'
-  }
-  if ((preferredContactChannel === 'phone' || preferredContactChannel === 'whatsapp') && !phone) {
-    fieldErrors.preferredContactChannel = 'Provide a phone number for your selected contact method.'
-  }
-
-  const rawMessage = typeof source.message === 'string' ? normalizeMessage(source.message) : ''
-  if (rawMessage.length < 10 || rawMessage.length > 3000) {
-    fieldErrors.message = 'Write a message using 10 to 3,000 characters.'
-  }
-
-  let travelFocus: TravelFocus | null = null
-  if (source.travelFocus !== undefined && source.travelFocus !== null && source.travelFocus !== '') {
-    if (typeof source.travelFocus !== 'string' || !travelFocuses.includes(source.travelFocus as TravelFocus)) {
-      fieldErrors.travelFocus = 'Choose a valid travel focus.'
-    } else {
-      travelFocus = source.travelFocus as TravelFocus
-    }
-  }
-
-  const destinationOrPackage = optionalText(source, 'destinationOrPackage', fieldErrors)
-  if (destinationOrPackage && destinationOrPackage.length > 160) {
-    fieldErrors.destinationOrPackage = 'Keep the destination or package under 160 characters.'
-  }
-
-  const budgetRange = optionalText(source, 'budgetRange', fieldErrors)
-  if (budgetRange && budgetRange.length > 100) {
-    fieldErrors.budgetRange = 'Keep the budget range under 100 characters.'
-  }
-
-  const additionalRequirements = source.additionalRequirements === undefined || source.additionalRequirements === null
-    ? null
-    : typeof source.additionalRequirements === 'string'
-      ? normalizeMessage(source.additionalRequirements)
-      : (fieldErrors.additionalRequirements = 'Enter valid text.', null)
-  if (additionalRequirements && additionalRequirements.length > 1000) {
-    fieldErrors.additionalRequirements = 'Keep additional requirements under 1,000 characters.'
-  }
-
-  const tripDetails = [
-    travelFocus ? `Travel focus: ${travelFocusLabels[travelFocus]}` : null,
-    destinationOrPackage ? `Destination or package: ${destinationOrPackage}` : null,
-    budgetRange ? `Indicative budget: ${budgetRange}` : null,
-    additionalRequirements ? `Additional requirements: ${additionalRequirements}` : null,
-  ].filter((detail): detail is string => detail !== null)
-  const message = tripDetails.length > 0
-    ? `Trip details\n${tripDetails.join('\n')}\n\nMessage\n${rawMessage}`
-    : rawMessage
-  if (message.length > 4000) {
-    fieldErrors.message = 'The combined trip details and message must be under 4,000 characters.'
-  }
-
-  let travelStartDate: string | null = null
-  if (source.travelStartDate !== undefined && source.travelStartDate !== null && source.travelStartDate !== '') {
-    if (typeof source.travelStartDate !== 'string' || !isValidDate(source.travelStartDate)) {
-      fieldErrors.travelStartDate = 'Enter a valid travel date.'
-    } else {
-      travelStartDate = source.travelStartDate
-    }
-  }
-
-  let datesFlexible = false
-  if (source.datesFlexible !== undefined) {
-    if (typeof source.datesFlexible !== 'boolean') {
-      fieldErrors.datesFlexible = 'Choose whether your travel dates are flexible.'
-    } else {
-      datesFlexible = source.datesFlexible
-    }
-  }
-
-  let travellerCount: number | null = null
-  if (source.travellerCount !== undefined && source.travellerCount !== null && source.travellerCount !== '') {
-    const parsedCount = typeof source.travellerCount === 'number'
-      ? source.travellerCount
-      : typeof source.travellerCount === 'string' && /^\d+$/u.test(source.travellerCount)
-        ? Number(source.travellerCount)
-        : Number.NaN
-
-    if (!Number.isInteger(parsedCount) || parsedCount < 1 || parsedCount > 50) {
-      fieldErrors.travellerCount = 'Enter a whole number from 1 to 50.'
-    } else {
-      travellerCount = parsedCount
-    }
-  }
+  const message = typeof source.message === 'string' ? normalizeMessage(source.message) : ''
+  if (message.length > 3000) fieldErrors.message = 'Keep your message under 3,000 characters.'
 
   if (Object.keys(fieldErrors).length > 0) return { success: false, fieldErrors }
 
@@ -230,13 +96,13 @@ export function validateEnquiry(input: unknown): EnquiryValidationResult {
       fullName,
       email,
       phone,
-      countryOfResidence,
-      preferredContactChannel: preferredContactChannel as ContactChannel,
+      countryOfResidence: null,
+      preferredContactChannel: phone && !email ? 'phone' : 'email',
       interest: interest as EnquiryInterest,
       message,
-      travelStartDate,
-      datesFlexible,
-      travellerCount,
+      travelStartDate: null,
+      datesFlexible: false,
+      travellerCount: null,
     },
   }
 }
