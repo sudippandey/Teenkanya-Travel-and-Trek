@@ -21,3 +21,5 @@ tsconfig.tsbuildinfo
 
 # npm lockfile (pnpm repo uses pnpm-lock.yaml)
 package-lock.json
+.vercel
+.env*
